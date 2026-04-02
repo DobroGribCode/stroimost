@@ -1,0 +1,1065 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Просмотр табеля топлива за {{ per.date|date:"F Y" }} {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<style>
+  tbody tr:hover {
+    background: #d2daff;;
+  }
+</style>
+<style>
+  td:focus-within {
+    background: #f5f5f5;
+  }
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+  {% load mathfilters %}
+  {% if perms.reference.view_period  %}
+    <div class="container-fluid card py-4">
+      <div class="row ">
+        <div class="col-lg-12 col-md-6 mb-md-0 mb-4">
+          <div class="">
+            <div class="card-header pb-0" style="padding: 0.1rem 0.1rem;">
+              <div class="row">
+                <div class="col-lg-12 col-7">
+                  <h6><table  class="table align-items-center ">
+                    <thead>
+                      <tr>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="col-lg-11">
+                        <td>
+                          <a href="/gaz">❮</a>
+                        </td>
+                        <td class="col-lg-2">
+                          Остаток топлива на объекте: {{ per.gaz.gaz_sum }} <button onclick="window.Gaz_Add.showModal();" class="btn bg-gradient-dark px-4 mb-3">Приход</button>
+                        </td>
+                        <td>
+                          <div class="avatar-group text-center mt-2">
+                            Табель топлива {{ per.gaz.obj }} от {{ per.date|date:"F Y" }}
+                          </div>
+                        </td>
+                        <td class="col-lg-3">
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table></h6>
+                </div>
+              </div>
+            </div>
+            <div class="card-body" style="padding: 0.1rem 0.1rem;" >
+              {% if perms.reference.change_driver  %}<form method="POST"> {% csrf_token %}{% endif %}
+                <div class="row col-lg-12" style="min-width: 90%;max-width: 100%;">
+                  <div style="overflow: auto; height: 70vh" class="wrap col-lg-11">
+                    <table cellspacing=0px style="width:100%" class="tabel table align-items-center mb-0">
+                      <thead style="background-color:black;" class="tabel_header">
+                        <tr>
+                          <th rowspan="2" style="border-bottom: none; border-right: none;border-color: black; background:#168de2; font-size: 14px; padding:0.1rem 0.1rem;"  class="tabel_header text-center">№</th>
+                          <th rowspan="2" style="border-bottom: none; border-right: none;border-color: black; background:#168de2; font-size: 14px; padding:0.1rem 0.1rem;"  class="tabel_header text-center">Ком.</th>
+                          <th rowspan="2" style="border-bottom: none; border-right: none;border-color: black; background:#168de2;  font-size: 14px; padding: 0;"  class=" text-centerps-2">Ф.И.О.</th>
+                          <th rowspan="2" style="border-bottom: none; border-right: none;border-color: black; background:#168de2;  font-size: 14px; padding: 0;"  class=" text-centerps-2">Орг.</th>
+                          <th {% with i=per.dw1|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/> <a type="button" onclick="window.approve1.showModal();">{{ per.dw1|date:"D" }}</a></th>
+                          <th {% with i=per.dw2|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw2|date:"D" }}</th>
+                          <th {% with i=per.dw3|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw3|date:"D" }}</th>
+                          <th {% with i=per.dw4|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw4|date:"D" }}</th>
+                          <th {% with i=per.dw5|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw5|date:"D" }}</th>
+                          <th {% with i=per.dw6|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw6|date:"D" }}</th>
+                          <th {% with i=per.dw7|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw7|date:"D" }}</th>
+                          <th {% with i=per.dw8|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw8|date:"D" }}</th>
+                          <th {% with i=per.dw9|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw9|date:"D" }}</th>
+                          <th {% with i=per.dw10|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw10|date:"D" }}</th>
+                          <th {% with i=per.dw11|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw11|date:"D" }}</th>
+                          <th {% with i=per.dw12|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw12|date:"D" }}</th>
+                          <th {% with i=per.dw13|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw13|date:"D" }}</th>
+                          <th {% with i=per.dw14|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw14|date:"D" }}</th>
+                          <th {% with i=per.dw15|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw15|date:"D" }}</th>
+                          <th {% with i=per.dw16|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw16|date:"D" }}</th>
+                          <th {% with i=per.dw17|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw17|date:"D" }}</th>
+                          <th {% with i=per.dw18|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw18|date:"D" }}</th>
+                          <th {% with i=per.dw19|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw19|date:"D" }}</th>
+                          <th {% with i=per.dw20|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw20|date:"D" }}</th>
+                          <th {% with i=per.dw21|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw21|date:"D" }}</th>
+                          <th {% with i=per.dw22|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw22|date:"D" }}</th>
+                          <th {% with i=per.dw23|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw23|date:"D" }}</th>
+                          <th {% with i=per.dw24|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw24|date:"D" }}</th>
+                          <th {% with i=per.dw25|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw25|date:"D" }}</th>
+                          <th {% with i=per.dw26|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw26|date:"D" }}</th>
+                          <th {% with i=per.dw27|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw27|date:"D" }}</th>
+                          <th {% with i=per.dw28|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw28|date:"D" }}</th>
+                          {% if request.user.is_superuser %}
+                            <th {% with i=per.dw29|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw29|date:"D" }}</th>
+                            <th {% with i=per.dw30|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw30|date:"D" }}</th>
+                            <th {% with i=per.dw31|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw31|date:"D" }}</th>
+                          {% else %}
+                            {% if per.date.month == 2 %}
+                              {% if per.date.year == 2024 %}
+                                <th {% with i=per.dw29|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw29|date:"D" }}</th>
+                              {% endif %}
+                            {% else %}
+                                <th {% with i=per.dw29|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw29|date:"D" }}</th>
+                                <th {% with i=per.dw30|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw30|date:"D" }}</th>
+                              {% if per.date.month == 12 or per.date.month == 1 or per.date.month == 3 or per.date.month == 5 or per.date.month == 7 or per.date.month == 8 or per.date.month == 10 or per.date.month == 12 %}
+                                <th {% with i=per.dw31|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-bottom: none; border-right: none;{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}" {% endwith %}/>{{ per.dw31|date:"D" }}</th>
+                              {% endif %}
+                            {% endif %}
+                          {% endif %}
+                          <th rowspan="2" style="border-bottom: none; border-right: none;border-bottom: 1px solid #000000; background:#168de2; padding: 0.1rem 0.1rem;"  class=" text-centerps-2">Сумма</th>
+                          <th rowspan="2" style="border-bottom: none; border-right: none;border-bottom: 1px solid #000000; background:#168de2; font-weight: bold; padding: 0.1rem 0.1rem;"  class=" text-centerps-2"></th>
+                        </tr>
+                        <tr>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da1 == 1 %} background:#00b40b; {% else %} {% with i=per.dw1|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.2rem 0.45rem;"  class="text-center"><a type="button" onclick="window.approve1.showModal();">1</a></th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da2 == 1 %} background:#00b40b; {% else %}{% with i=per.dw2|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.2rem 0.45rem;"  class="text-center"><a type="button" onclick="window.approve2.showModal();">2</a></th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da3 == 1 %} background:#00b40b; {% else %}{% with i=per.dw3|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.2rem 0.45rem;"  class="text-center"><a type="button" onclick="window.approve3.showModal();">3</a></th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da4 == 1 %} background:#00b40b; {% else %}{% with i=per.dw4|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.2rem 0.45rem;"  class="text-center"><a type="button" onclick="window.approve4.showModal();">4</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da5 == 1 %} background:#00b40b; {% else %}{% with i=per.dw5|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.2rem 0.45rem;"  class="text-center"><a type="button" onclick="window.approve5.showModal();">5</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da6 == 1 %} background:#00b40b; {% else %}{% with i=per.dw6|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.2rem 0.45rem;"  class="text-center"><a type="button" onclick="window.approve6.showModal();">6</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da7 == 1 %} background:#00b40b; {% else %}{% with i=per.dw7|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.2rem 0.45rem;"  class="text-center"><a type="button" onclick="window.approve7.showModal();">7</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da8 == 1 %} background:#00b40b; {% else %}{% with i=per.dw8|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.2rem 0.45rem;"  class="text-center"><a type="button" onclick="window.approve8.showModal();">8</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da9 == 1 %} background:#00b40b; {% else %}{% with i=per.dw9|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.2rem 0.45rem;"  class="text-center"><a type="button" onclick="window.approve9.showModal();">9</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da10 == 1 %} background:#00b40b; {% else %}{% with i=per.dw10|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve10.showModal();">10</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da11 == 1 %} background:#00b40b; {% else %}{% with i=per.dw11|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve11.showModal();">11</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da12 == 1 %} background:#00b40b; {% else %}{% with i=per.dw12|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve12.showModal();">12</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da13 == 1 %} background:#00b40b; {% else %}{% with i=per.dw13|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve13.showModal();">13</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da14 == 1 %} background:#00b40b; {% else %}{% with i=per.dw14|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve14.showModal();">14</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da15 == 1 %} background:#00b40b; {% else %}{% with i=per.dw15|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve15.showModal();">15</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da16 == 1 %} background:#00b40b; {% else %}{% with i=per.dw16|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve16.showModal();">16</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da17 == 1 %} background:#00b40b; {% else %}{% with i=per.dw17|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve17.showModal();">17</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da18 == 1 %} background:#00b40b; {% else %}{% with i=per.dw18|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve18.showModal();">18</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da19 == 1 %} background:#00b40b; {% else %}{% with i=per.dw19|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve19.showModal();">19</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da20 == 1 %} background:#00b40b; {% else %}{% with i=per.dw20|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve20.showModal();">20</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da21 == 1 %} background:#00b40b; {% else %}{% with i=per.dw21|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve21.showModal();">21</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da22 == 1 %} background:#00b40b; {% else %}{% with i=per.dw22|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve22.showModal();">22</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da23 == 1 %} background:#00b40b; {% else %}{% with i=per.dw23|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve23.showModal();">23</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da24 == 1 %} background:#00b40b; {% else %}{% with i=per.dw24|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve24.showModal();">24</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da25 == 1 %} background:#00b40b; {% else %}{% with i=per.dw25|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve25.showModal();">25</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da26 == 1 %} background:#00b40b; {% else %}{% with i=per.dw26|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve26.showModal();">26</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da27 == 1 %} background:#00b40b; {% else %}{% with i=per.dw27|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve27.showModal();">27</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none;border-bottom: 1px solid #000000; {% if per.da28 == 1 %} background:#00b40b; {% else %}{% with i=per.dw28|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve28.showModal();">28</a> </th>
+                          {% if request.user.is_superuser %}
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none; {% if per.da29 == 1 %} background:#00b40b; {% else %}{% with i=per.dw29|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve29.showModal();">29</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none; {% if per.da30 == 1 %} background:#00b40b; {% else %}{% with i=per.dw30|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve30.showModal();">30</a> </th>
+                          <th style="position: sticky; top: 0; border-bottom: none; border-right: none; {% if per.da31 == 1 %} background:#00b40b; {% else %}{% with i=per.dw31|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve31.showModal();">31</a> </th>
+                          {% else %}
+                            {% if per.date.month == 2 %}
+                              {% if per.date.year == 2024 %}
+                                  <th style="position: sticky; top: 0; border-bottom: none; border-right: none; {% if per.da29 == 1 %} background:#00b40b; {% else %}{% with i=per.dw29|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve29.showModal();">29</a> </th>
+                              {% endif %}
+                            {% else %}
+                                <th style="position: sticky; top: 0; border-bottom: none; border-right: none; {% if per.da29 == 1 %} background:#00b40b; {% else %}{% with i=per.dw29|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve29.showModal();">29</a> </th>
+                                <th style="position: sticky; top: 0; border-bottom: none; border-right: none; {% if per.da30 == 1 %} background:#00b40b; {% else %}{% with i=per.dw30|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve30.showModal();">30</a> </th>
+                              {% if per.date.month == 12 or per.date.month == 1 or per.date.month == 3 or per.date.month == 5 or per.date.month == 7 or per.date.month == 8 or per.date.month == 10 or per.date.month == 12 %}
+                                <th style="position: sticky; top: 0; border-bottom: none; border-right: none; {% if per.da31 == 1 %} background:#00b40b; {% else %}{% with i=per.dw31|date:'w'  %}{% if i == '0' or i == '6' %} background:#fa5555 !important; {% else %} background:#168de2 !important; {% endif %}{% endwith %} {% endif %} font-weight: bold; padding: 0.1rem 0.164rem"  class="text-center"><a type="button" onclick="window.approve31.showModal();">31</a> </th>
+                              {% endif %}
+                            {% endif %}
+                          {% endif %}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr style="outline: thin solid">
+                          <td colspan="41" style="background:#f1f1f1; font-size: 14px; padding: 0; border: none;padding:0.6rem 0.5rem;" class="align-middle text-center"></td>
+                        </tr>
+                      {% with fors=0 %}
+                        {% for t in tabs %}
+                          {% if t.group == g %}
+                            <tr style="" class=" col-lg-11">
+                              <td style="font-size: 14px; padding: 0; border-bottom: none; border-right: none; border-color: #a1a1a1;" class="align-middle text-center">{{ forloop.counter }}</td>
+                              <td style="font-size: 14px; padding: 0; border-bottom: none; border-right: none; border-color: #a1a1a1;" class="align-middle text-center"><a type="button" onclick="window.comment{{ t.id }}.showModal();"><i {% if t.comment %}style="color:blue;"{% endif %} class="material-icons opacity-7">comment</i></a></td>
+                              <td title="{{ t.persone.position }} | {% if t.persone.company == 1 %}ООО 'ПМК'{% else %}Не оформлен{% endif %}" style="font-size: 14px; padding: 0; border-bottom: none; border-right: none; border-color: #a1a1a1;"   class=" "><a href="/view_persone/{{ t.persone.id }}">{{ t.persone.full_name }}</a></td>
+                              <td style="font-size: 14px; padding: 0; border-bottom: none; border-right: none; border-color: #a1a1a1;" class=" text-center">{% if t.persone.company == 1 %}ПМК{% else %}неоформ{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d1c }}" class="align-middle text-center">{% if per.db1 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="1" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '1')" maxlength="2" style="" name="{{ t.id }}d1" placeholder="" id="{{ t.id }}d1" class="days input-block form-control text-center" value="{{ t.d1|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d1c }}" class="days input-block form-control text-center" value="{{ t.d1|default:''}}">{% endif %}  </td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d2c }}" class="align-middle text-center">{% if per.db2 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="2" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '2')" maxlength="2" style="" name="{{ t.id }}d2" placeholder="" id="{{ t.id }}d2" class="days input-block form-control text-center" value="{{ t.d2|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d2c }}" class="days input-block form-control text-center" value="{{ t.d2|default:''}}">{% endif %} </td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d3c }}" class="align-middle text-center">{% if per.db3 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="3" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '3')" maxlength="2" style="" name="{{ t.id }}d3" placeholder="" id="{{ t.id }}d3" class="days input-block form-control text-center" value="{{ t.d3|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d3c }}" class="days input-block form-control text-center" value="{{ t.d3|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d4c }}" class="align-middle text-center">{% if per.db4 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="4" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '4')" maxlength="2" style="" name="{{ t.id }}d4" placeholder="" id="{{ t.id }}d4" class="days input-block form-control text-center" value="{{ t.d4|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d4c }}" class="days input-block form-control text-center" value="{{ t.d4|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d5c }}" class="align-middle text-center">{% if per.db5 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="5" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '5')" maxlength="2" style="" name="{{ t.id }}d5" placeholder="" id="{{ t.id }}d5" class="days input-block form-control text-center" value="{{ t.d5|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d5c }}" class="days input-block form-control text-center" value="{{ t.d5|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d6c }}" class="align-middle text-center">{% if per.db6 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="6" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '6')" maxlength="2" style="" name="{{ t.id }}d6" placeholder="" id="{{ t.id }}d6" class="days input-block form-control text-center" value="{{ t.d6|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d6c }}" class="days input-block form-control text-center" value="{{ t.d6|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d7c }}" class="align-middle text-center">{% if per.db7 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="7" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '7')" maxlength="2" style="" name="{{ t.id }}d7" placeholder="" id="{{ t.id }}d7" class="days input-block form-control text-center" value="{{ t.d7|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d7c }}" class="days input-block form-control text-center" value="{{ t.d7|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d8c }}" class="align-middle text-center">{% if per.db8 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="8" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '8')" maxlength="2" style="" name="{{ t.id }}d8" placeholder="" id="{{ t.id }}d8" class="days input-block form-control text-center" value="{{ t.d8|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d8c }}" class="days input-block form-control text-center" value="{{ t.d8|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d9c }}" class="align-middle text-center">{% if per.db9 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="9" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '9')" maxlength="2" style="" name="{{ t.id }}d9" placeholder="" id="{{ t.id }}d9" class="days input-block form-control text-center" value="{{ t.d9|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d9c }}" class="days input-block form-control text-center" value="{{ t.d9|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d10c }}" class="align-middle text-center">{% if per.db10 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="10" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '10')" maxlength="2" style="" name="{{ t.id }}d10" placeholder="" id="{{ t.id }}d10" class="days input-block form-control text-center" value="{{ t.d10|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d10c }}" class="days input-block form-control text-center" value="{{ t.d10|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d11c }}" class="align-middle text-center">{% if per.db11 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="11" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '11')" maxlength="2" style="" name="{{ t.id }}d11" placeholder="" id="{{ t.id }}d11" class="days input-block form-control text-center" value="{{ t.d11|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d11c }}" class="days input-block form-control text-center" value="{{ t.d11|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d12c }}" class="align-middle text-center">{% if per.db12 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="12" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '12')" maxlength="2" style="" name="{{ t.id }}d12" placeholder="" id="{{ t.id }}d12" class="days input-block form-control text-center" value="{{ t.d12|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d12c }}" class="days input-block form-control text-center" value="{{ t.d12|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d13c }}" class="align-middle text-center">{% if per.db13 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="13" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '13')" maxlength="2" style="" name="{{ t.id }}d13" placeholder="" id="{{ t.id }}d13" class="days input-block form-control text-center" value="{{ t.d13|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d13c }}" class="days input-block form-control text-center" value="{{ t.d13|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d14c }}" class="align-middle text-center">{% if per.db14 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="14" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '14')" maxlength="2" style="" name="{{ t.id }}d14" placeholder="" id="{{ t.id }}d14" class="days input-block form-control text-center" value="{{ t.d14|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d14c }}" class="days input-block form-control text-center" value="{{ t.d14|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d15c }}" class="align-middle text-center">{% if per.db15 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="15" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '15')" maxlength="2" style="" name="{{ t.id }}d15" placeholder="" id="{{ t.id }}d15" class="days input-block form-control text-center" value="{{ t.d15|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d15c }}" class="days input-block form-control text-center" value="{{ t.d15|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d16c }}" class="align-middle text-center">{% if per.db16 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="16" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '16')" maxlength="2" style="" name="{{ t.id }}d16" placeholder="" id="{{ t.id }}d16" class="days input-block form-control text-center" value="{{ t.d16|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d16c }}" class="days input-block form-control text-center" value="{{ t.d16|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d17c }}" class="align-middle text-center">{% if per.db17 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="17" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '17')" maxlength="2" style="" name="{{ t.id }}d17" placeholder="" id="{{ t.id }}d17" class="days input-block form-control text-center" value="{{ t.d17|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d17c }}" class="days input-block form-control text-center" value="{{ t.d17|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d18c }}" class="align-middle text-center">{% if per.db18 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="18" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '18')" maxlength="2" style="" name="{{ t.id }}d18" placeholder="" id="{{ t.id }}d18" class="days input-block form-control text-center" value="{{ t.d18|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d18c }}" class="days input-block form-control text-center" value="{{ t.d18|default:''}}">{% endif %}</td>
+                              <!--
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d16c }}" class="align-middle text-center">{% if per.db16 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*"data-id={{ t.id }},"1data-day=)"onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '16')" maxlength="2" style="" name="{{ t.id }}d16" placeholder="" id="{{ t.id }}d16" class="days input-block form-control text-center" value="{{ t.d16|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d16c }}" class="days input-block form-control text-center" value="{{ t.d16|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d17c }}" class="align-middle text-center">{% if per.db17 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*"data-id={{ t.id }},"1data-day=)"onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '17')" maxlength="2" style="" name="{{ t.id }}d17" placeholder="" id="{{ t.id }}d17" class="days input-block form-control text-center" value="{{ t.d17|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d17c }}" class="days input-block form-control text-center" value="{{ t.d17|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d18c }}" class="align-middle text-center">{% if per.db18 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*"data-id={{ t.id }},"1data-day=)"onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '18')" maxlength="2" style="" name="{{ t.id }}d18" placeholder="" id="{{ t.id }}d18" class="days input-block form-control text-center" value="{{ t.d18|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d18c }}" class="days input-block form-control text-center" value="{{ t.d18|default:''}}">{% endif %}</td>
+                              -->
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d19c }}" class="align-middle text-center">{% if per.db19 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="19" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '19')" maxlength="2" style="" name="{{ t.id }}d19" placeholder="" id="{{ t.id }}d19" class="days input-block form-control text-center" value="{{ t.d19|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d19c }}" class="days input-block form-control text-center" value="{{ t.d19|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d20c }}" class="align-middle text-center">{% if per.db20 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="20" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '20')" maxlength="2" style="" name="{{ t.id }}d20" placeholder="" id="{{ t.id }}d20" class="days input-block form-control text-center" value="{{ t.d20|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d20c }}" class="days input-block form-control text-center" value="{{ t.d20|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d21c }}" class="align-middle text-center">{% if per.db21 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="21" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '21')" maxlength="2" style="" name="{{ t.id }}d21" placeholder="" id="{{ t.id }}d21" class="days input-block form-control text-center" value="{{ t.d21|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d21c }}" class="days input-block form-control text-center" value="{{ t.d21|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d22c }}" class="align-middle text-center">{% if per.db22 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="22" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '22')" maxlength="2" style="" name="{{ t.id }}d22" placeholder="" id="{{ t.id }}d22" class="days input-block form-control text-center" value="{{ t.d22|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d22c }}" class="days input-block form-control text-center" value="{{ t.d22|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d23c }}" class="align-middle text-center">{% if per.db23 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="23" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '23')" maxlength="2" style="" name="{{ t.id }}d23" placeholder="" id="{{ t.id }}d23" class="days input-block form-control text-center" value="{{ t.d23|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d23c }}" class="days input-block form-control text-center" value="{{ t.d23|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d24c }}" class="align-middle text-center">{% if per.db24 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="24" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '24')" maxlength="2" style="" name="{{ t.id }}d24" placeholder="" id="{{ t.id }}d24" class="days input-block form-control text-center" value="{{ t.d24|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d24c }}" class="days input-block form-control text-center" value="{{ t.d24|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d25c }}" class="align-middle text-center">{% if per.db25 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="25" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '25')" maxlength="2" style="" name="{{ t.id }}d25" placeholder="" id="{{ t.id }}d25" class="days input-block form-control text-center" value="{{ t.d25|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d25c }}" class="days input-block form-control text-center" value="{{ t.d25|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d26c }}" class="align-middle text-center">{% if per.db26 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="26" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '26')" maxlength="2" style="" name="{{ t.id }}d26" placeholder="" id="{{ t.id }}d26" class="days input-block form-control text-center" value="{{ t.d26|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d26c }}" class="days input-block form-control text-center" value="{{ t.d26|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d27c }}" class="align-middle text-center">{% if per.db27 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="27" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '27')" maxlength="2" style="" name="{{ t.id }}d27" placeholder="" id="{{ t.id }}d27" class="days input-block form-control text-center" value="{{ t.d27|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d27c }}" class="days input-block form-control text-center" value="{{ t.d27|default:''}}">{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d28c }}" class="align-middle text-center">{% if per.db28 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="28" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '28')" maxlength="2" style="" name="{{ t.id }}d28" placeholder="" id="{{ t.id }}d28" class="days input-block form-control text-center" value="{{ t.d28|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d28c }}" class="days input-block form-control text-center" value="{{ t.d28|default:''}}">{% endif %}</td>
+                              {% if request.user.is_superuser %}
+                                <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d29c }}" class="align-middle text-center">{% if per.db29 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="29" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '29')" maxlength="2" style="" name="{{ t.id }}d29" placeholder="" id="{{ t.id }}d29" class="days input-block form-control text-center" value="{{ t.d29|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d29c }}" class="days input-block form-control text-center" value="{{ t.d29|default:''}}">{% endif %}</td>
+                                <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d30c }}" class="align-middle text-center">{% if per.db30 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="30" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '30')" maxlength="2" style="" name="{{ t.id }}d30" placeholder="" id="{{ t.id }}d30" class="days input-block form-control text-center" value="{{ t.d30|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d30c }}" class="days input-block form-control text-center" value="{{ t.d30|default:''}}">{% endif %}</td>
+                                <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d31c }}" class="align-middle text-center">{% if per.db31 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="31" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '31')" maxlength="2" style="" name="{{ t.id }}d31" placeholder="" id="{{ t.id }}d31" class="days input-block form-control text-center" value="{{ t.d31|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d31c }}" class="days input-block form-control text-center" value="{{ t.d31|default:''}}">{% endif %}</td>
+                              {% else %}
+                                {% if per.date.month == 2 %}
+                                  {% if per.date.year == 2024 %}
+
+
+                                <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d29c }}" class="align-middle text-center">{% if per.db29 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="29" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '29')" maxlength="2" style="" name="{{ t.id }}d29" placeholder="" id="{{ t.id }}d29" class="days input-block form-control text-center" value="{{ t.d29|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d29c }}" class="days input-block form-control text-center" value="{{ t.d29|default:''}}">{% endif %}</td>
+                                  {% endif %}
+                                {% else %}
+                                  <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d29c }}" class="align-middle text-center">{% if per.db29 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="29" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '29')" maxlength="2" style="" name="{{ t.id }}d29" placeholder="" id="{{ t.id }}d29" class="days input-block form-control text-center" value="{{ t.d29|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d29c }}" class="days input-block form-control text-center" value="{{ t.d29|default:''}}">{% endif %}</td>
+                                  <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d30c }}" class="align-middle text-center">{% if per.db30 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="30" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '30')" maxlength="2" style="" name="{{ t.id }}d30" placeholder="" id="{{ t.id }}d30" class="days input-block form-control text-center" value="{{ t.d30|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d30c }}" class="days input-block form-control text-center" value="{{ t.d30|default:''}}">{% endif %}</td>
+                                  {% if per.date.month == 12 or per.date.month == 1 or per.date.month == 3 or per.date.month == 5 or per.date.month == 7 or per.date.month == 8 or per.date.month == 10 or per.date.month == 12 %}
+                                  <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1; background:{{ t.d31c }}" class="align-middle text-center">{% if per.db31 != 1 or user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or request.user.is_superuser or perms.reference.view_agreement %} <input oninput="this.value = this.value.toUpperCase()" pattern="[БВДУМНО0-9]*" data-id="{{ t.id }}" data-day="31" onblur="checkDayInOtherTable('{{ t.id }}', '{{ per.id }}', '31')" maxlength="2" style="" name="{{ t.id }}d31" placeholder="" id="{{ t.id }}d31" class="days input-block form-control text-center" value="{{ t.d31|default:''}}">{% else %} <input disabled maxlength="2" style="padding: 0; background:{{ t.d31c }}" class="days input-block form-control text-center" value="{{ t.d31|default:''}}">{% endif %}</td>
+                                  {% endif %}
+                                {% endif %}
+                              {% endif %}
+                              <td style="font-size: 14px; padding: 0; border-bottom: none; border-right: none; border-color: #a1a1a1;" class="align-middle text-center">
+                                {{ t.sum|default:'' }}
+                              </td>
+                              <td style="font-size:0.6rem !important; font-weight: bold; padding:0.6rem 0.6rem; border-bottom: none; border-color: #a1a1a1;" class="align-middle text-center">
+                                <div class="dropdown text-center">
+                                  <a class="cursor-pointer" id="dropdownTable{{ t.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-ellipsis-v text-secondary"></i>
+                                  </a>
+                                  <ul class="dropdown-menu text-center" aria-labelledby="dropdownTable">
+                                    {% if perms.reference.delete_driver_list %}<li><a class="dropdown-item text-center border-radius-md" href="/del_driverl/{{ t.id }}/{{ per.id }}">Удалить</a></li>{% endif %}
+                                  </ul>
+                                </div>
+                              </td>
+                            </tr>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
+                            <tr style="">
+                              <td colspan="41" style="font-weight: bold;; background:#f1f1f1; font-size: 14px; padding: 0; border-right-style: groove;border-left-style: groove;padding: 0.1rem 0.1rem" class="align-middle text-center">{{ g }}</td>
+                            </tr>
+                      </tbody>
+                    </table>
+                    <br>
+                  </div>
+                </div>
+                    <dialog id="OtherTabel" class="modal-body col-lg-5" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                      <div>
+                        <div class="modal-dialog">
+                          <div class="">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Ошибка заполнения дня</h5>
+                            </div>
+                            <div class="wrap col-lg-12 modal-body">
+                              <input id="OtherTabelInput" disabled class="form-control">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-9">
+                          <button class="btn" type="button" onclick="window.OtherTabel.close();">Закрыть</button>
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+                    <dialog id="SaveError" class="modal-body col-lg-5" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                      <div>
+                        <div class="modal-dialog">
+                          <div class="">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Ошибка</h5>
+                            </div>
+                            <div class="wrap col-lg-12 modal-body">
+                              <input id="SaveErrorInput" disabled class="form-control">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-9">
+                          <button class="btn" type="button" onclick="window.SaveError.close();">Закрыть</button>
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+                  {% if perms.reference.change_period  %}{% else %}{% if perms.reference.view_period  %}<form method="POST"> {% csrf_token %}{% endif %}{% endif %}
+                    {% for t in tabs %}
+                    <dialog id="comment{{ t.id }}" class="modal-body col-lg-7" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                      <div>
+                        <div class="modal-dialog">
+                          <div class="row">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Комментарий по {{ t.persone.full_name }}</h5>
+                            </div>
+                            <div class="wrap col-lg-12 modal-body">
+                              <textarea disabled class="col-lg-12 form-conrtol" style="height: 300px">{{ t.comment|default:'' }}</textarea>
+                              <br>
+                              <table title="Введите текст и нажмите Enter" style="width:40%; border-color: #363636;" class="table col-lg-5">
+                                <tbody>
+                                  <tr>
+                                    <td>
+                                      <input name="com{{ t.id }}" id="com{{ t.id }}" placeholder="Ввод комментария" class="form-control" >
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-9">
+                          <button class="btn" type="button" onclick="window.comment{{ t.id }}.close();">Закрыть</button>
+                          </div>
+                          <div class="col-lg-3">
+                          <button href="#close" title="Close" class="btn">Сохранить</button>
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+                    {% endfor %}
+                    <dialog id="AddPersoneD" class="modal-body col-lg-6" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                      <div>
+                        <div class="modal-dialog">
+                          <div>
+                            <div class="modal-header">
+                              <input class="form-control" type="text" id="myInput" ondrag="myFunction()" oninput="myFunction()" oncopy="myFunction()" onchange="myFunction()" onkeyup="myFunction()" onkeypress="myFunction()" placeholder="Поиск по ФИО..">
+                            </div>
+                            <div class="">
+                              <table id="myTable" class="table table-align">
+                                <thead>
+                                  <tr class="header">
+                                    <th>ФИО</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for p in persones %}
+                                  <tr>
+                                    <td>
+                                      <a href="/AddPersoneG/{{p.id}}/{{per.id}}">{{ p.full_name }}</a>
+                                    </td>
+                                  </tr>
+                                  {% endfor %}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-9">
+                          </div>
+                          <div class="col-lg-3">
+                            <button class="btn" type="button" onclick="window.AddPersoneD.close();">Закрыть</button>
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+                    <dialog id="GMT" class="modal-body col-lg-6" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                      <div>
+                        <div class="modal-dialog">
+                          <div>
+                            <div class="">
+                              <table class="table table-align">
+                                <thead>
+                                  <tr class="header">
+                                    <th>Табели водителей</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for p in pers %}
+                                  {% if p != per %}
+                                  <tr>
+                                    <td>
+                                      <a href="/group_move_tabelD/{{p.id}}/{{per.id}}">Табель {{ p.type }} {{ p.obj }} от {{ p.date|date:"F Y" }}</a>
+                                    </td>
+                                  </tr>
+                                  {% endif %}
+                                  {% endfor %}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-9">
+                          </div>
+                          <div class="col-lg-3">
+                            <button class="btn" type="button" onclick="window.GMT.close();">Закрыть</button>
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+                    {% for p in all %}
+                    {% if forloop.counter < 32 %}{% with i=forloop.counter %}
+                    <dialog id="approve{{ i }}" class="modal-body col-lg-5" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                      <div>
+                        <div class="modal-dialog">
+                          <div class="">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Проверили {{ i }} {{ per.date|date:"F Y" }}</h5>
+                            </div>
+                            <div class="wrap col-lg-12 modal-body">
+                              {% for a in approvers %}
+                                {% if a.day == i %}
+                                  <p>{{ a.approver }}: проверил в {{ a.time }}</p>
+                                {% endif %}
+                              {% endfor %}
+                              <br>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-9">
+                          <button class="btn" type="button" onclick="window.approve{{ i }}.close();">Закрыть</button>
+                          </div>
+                          <div class="col-lg-3">
+                          <a  href="/approve_tableD/{{ i }}/{{per.id}}" title="" class="btn">Проверил</a>
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+                    {% endwith %}{% else %}
+                    {% endif %}
+                  {% endfor %}
+                    <dialog id="DayError" class="modal-body col-lg-5" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                      <div>
+                        <div class="modal-dialog">
+                          <div class="">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Ошибка заполнения {{ error_d }} дня</h5>
+                            </div>
+                            <div class="wrap col-lg-12 modal-body">
+                              <p>У {{ error_p }} в другом табеле заполнен {{ error_d }} день</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-9">
+                          </div>
+                          <div class="col-lg-3">
+                          <button class="btn" type="button" onclick="window.DayError.close();">Закрыть</button>
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+
+
+                    <dialog id="Gaz_Add" class="modal-body col-lg-5" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                      <div class="raw">
+                        <div class="modal-dialog">
+                          <div class="">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Приход топлива на объект {{ per.gaz.obj }}</h5>
+                            </div>
+                            <div class="wrap col-lg-12 modal-body">
+                              <input id="Gaz_Input" class="form-control" placeholder="Кол-во">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-9">
+                            <a class="btn" type="button" href="#" onclick="Gaz({{ per.id }})">Принять</a>
+                          </div>
+                          <div class="col-lg-3">
+                            <button class="btn" type="button" onclick="window.Gaz_Add.close();">Закрыть</button>
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+
+
+
+                    <dialog id="SalaryError" class="modal-body col-lg-5" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                      <div>
+                        <div class="modal-dialog">
+                          <div class="">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Ошибка расчета {{ error_d }} дня</h5>
+                            </div>
+                            <div class="wrap col-lg-12 modal-body">
+                              <p>{{ error_s }}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-9">
+                          </div>
+                          <div class="col-lg-3">
+                          <button class="btn" type="button" onclick="window.SalaryError.close();">Закрыть</button>
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+                <div class="row">
+                  <div class="col-lg-10">
+                  </div>
+                  <div class="col-lg-2">
+                    <br>
+                    {% if perms.reference.add_driver_list %}<a class="btn bg-gradient-dark px-4 mb-3" type="button" onclick="window.AddPersoneD.showModal();">Добавить сотрудника</a>{% endif %}
+                      {% if perms.reference.change_period  %}<button class="btn bg-gradient-dark px-4 mb-3" type="submit">Сохранить</button>{% endif %}
+                  </div>
+                </div>
+              {% if perms.reference.change_period  %}</form>{% endif %}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  {% endif %}
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+  <script src="/static/bsmodals/bsmodals.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="/static/bsmodals/restapi.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var scrollbar = document.body.clientWidth - window.innerWidth + 'px';
+      console.log(scrollbar);
+      document.querySelector('[href="#openModal"]').addEventListener('click', function () {
+        document.body.style.overflow = 'hidden';
+        document.querySelector('#openModal').style.marginLeft = scrollbar;
+      });
+      document.querySelector('[href="#close"]').addEventListener('click', function () {
+        document.body.style.overflow = 'visible';
+        document.querySelector('#openModal').style.marginLeft = '0px';
+      });
+    });
+  </script>
+  <script src="{{ ASSETS_ROOT }}/js/plugins/chartjs.min.js"></script>
+  <script>
+    var ctx = document.getElementById("chart-bars").getContext("2d");
+
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["M", "T", "W", "T", "F", "S", "S"],
+        datasets: [{
+          label: "Sales",
+          tension: 0.4,
+          borderWidth: 0,
+          borderRadius: 4,
+          borderSkipped: false,
+          backgroundColor: "rgba(255, 255, 255, .8)",
+          data: [50, 20, 10, 22, 50, 10, 40],
+          maxBarThickness: 6
+        }, ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              suggestedMin: 0,
+              suggestedMax: 500,
+              beginAtZero: true,
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+              color: "#fff"
+            },
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+
+
+    var ctx2 = document.getElementById("chart-line").getContext("2d");
+
+    new Chart(ctx2, {
+      type: "line",
+      data: {
+        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        datasets: [{
+          label: "Mobile apps",
+          tension: 0,
+          borderWidth: 0,
+          pointRadius: 5,
+          pointBackgroundColor: "rgba(255, 255, 255, .8)",
+          pointBorderColor: "transparent",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderWidth: 4,
+          backgroundColor: "transparent",
+          fill: true,
+          data: [50, 40, 300, 320, 500, 350, 200, 230, 500],
+          maxBarThickness: 6
+
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+
+    var ctx3 = document.getElementById("chart-line-tasks").getContext("2d");
+
+    new Chart(ctx3, {
+      type: "line",
+      data: {
+        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        datasets: [{
+          label: "Mobile apps",
+          tension: 0,
+          borderWidth: 0,
+          pointRadius: 5,
+          pointBackgroundColor: "rgba(255, 255, 255, .8)",
+          pointBorderColor: "transparent",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderWidth: 4,
+          backgroundColor: "transparent",
+          fill: true,
+          data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
+          maxBarThickness: 6
+
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              padding: 10,
+              color: '#f8f9fa',
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+  </script>
+  <script>
+                window.document.onkeydown = function () {
+                        startRefocus();
+                }
+                function startRefocus(event) {
+                        event = event || window.event;
+                        //if (!event.ctrlKey) return;
+                        var key = event.keyCode;
+                        var targetElement = event.target || event.srcElement;
+                        focusMe(targetElement, key);
+                }
+                function focusMe(input, key) {
+                        var needFocusElement = true;
+                        function detectColumn(td) {
+                                var result = 0, x;
+                                while (td = td.previousElementSibling) {
+                                        ++result
+                                }
+                                return result;
+                        }
+                        try {
+                                switch (key) {
+                                        case 37:
+                                                needFocusElement = input.parentNode.previousElementSibling.querySelector("input");
+
+                                                break;
+                                        case 39:
+                                                needFocusElement = input.parentNode.nextElementSibling.querySelector("input");
+                                                break;
+                                        case 38:
+                                                needFocusElement = input.parentNode.parentNode.previousElementSibling.querySelectorAll("td")[detectColumn(input.parentNode)].querySelector("input");
+                                                break;
+                                        case 40:
+                                                needFocusElement = input.parentNode.parentNode.nextElementSibling.querySelectorAll("td")[detectColumn(input.parentNode)].querySelector("input");
+                        break;
+                    default:
+                        needFocusElement = false;
+                                }
+                        } catch (e) {
+                                needFocusElement = false;
+                        }
+
+                        if (!needFocusElement) return;
+                        needFocusElement.focus();
+                }
+        </script>
+  <script>
+  const input = document.querySelector('input');
+
+  input.addEventListener('keydown', function(event) {
+    // Разрешаем вводить только цифры и символы "ВНМБОД"
+    if (!/^[0-9ВНМБОД]+$/i.test(event.key)) {
+      event.preventDefault();
+    }
+  });
+  </script>
+  <script>
+    function myFunction() {
+      // Объявить переменные
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+
+      // Перебирайте все строки таблицы и скрывайте тех, кто не соответствует поисковому запросу
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+  </script>
+  {% if error_d %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const dialog = document.getElementById("DayError");
+      dialog.showModal();
+    });
+  </script>
+  {% endif %}
+  {% if error_s %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const dialog = document.getElementById("SalaryError");
+      dialog.showModal();
+    });
+  </script>
+  {% endif %}
+  <script>
+    function checkDayInOtherTable(id, ids, day) {
+        var blurInput = document.getElementById(id + 'd' + day);
+        var value = blurInput.value;
+        SaveInputTabel(id, day, value);
+    }
+    function CheckAuto(id) {
+        var list = document.getElementsByName("csrfmiddlewaretoken");
+        var csrftoken = list[0].value
+        var blurInput = document.getElementById('auto' + id);
+        var value = blurInput.value;
+        if (value.trim() !== '') {
+          SaveAuto(id, value);
+        }
+    }
+  </script>
+  <script>
+    function SaveInputTabel(id, day, value) {
+        var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Получаем CSRF токен
+        var type = 'g'
+        $.ajax({
+            url: '/save_input/',
+            type: 'POST',
+            headers: { 'X-CSRFToken': csrftoken },
+            data: {
+                'id': id,
+                'day': day,
+                'value': value,
+                'type': type
+            },
+            success: function(response) {
+                console.log('Данные успешно сохранены');
+                // Дополнительные действия при успешном сохранении данных
+            },
+            error: function(error) {
+                console.log('Произошла ошибка при сохранении данных');
+                // Дополнительные действия в случае ошибки
+
+                var blurInput = document.getElementById(id + 'd' + day);
+                blurInput.setAttribute('value','')
+                blurInput.blur();
+                var other = error.responseJSON.other;
+                if (other) {
+                  var modalInput = document.getElementById('SaveErrorInput');
+                  var modal = document.getElementById('SaveError');
+                  if (modal) {
+                    modalInput.setAttribute('value', other);
+                    setTimeout(function() {
+                      modal.showModal();
+                    }, 0);
+                  } else {
+                    console.error('Элемент с id "OtherTabel" не найден на странице или не был правильно инициализирован.');
+                  }
+                }
+            }
+        });
+    }
+    function SaveAuto(id, value) {
+        var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Получаем CSRF токен
+        $.ajax({
+            url: '/save_auto/',
+            type: 'POST',
+            headers: { 'X-CSRFToken': csrftoken },
+            data: {
+                'id': id,
+                'value': value,
+            },
+            success: function(response) {
+                console.log('Данные успешно сохранены');
+                // Дополнительные действия при успешном сохранении данных
+            },
+            error: function(error) {
+                console.log('Произошла ошибка при сохранении данных');
+                // Дополнительные действия в случае ошибки
+            }
+        });
+    }
+  </script>
+  <script>
+    // Функция для изменения цвета фона input и td
+    function changeColor(inputElement) {
+        var value = inputElement.value.toUpperCase();
+        var parentTd = inputElement.parentElement; // Получаем родительский элемент <td>
+
+        var color = ''; // Переменная для хранения цвета
+
+        // Устанавливаем цвет в зависимости от содержимого в input
+        switch(value) {
+            case 'Б':
+            case 'Д':
+            case 'ВВ':
+            case 'О':
+                color = '#F2E93F'; // Желтый
+                break;
+            case 'В':
+            case 'У':
+                color = '#FA5555'; // Красный
+                break;
+            case 'М':
+                color = '#FFA812'; // Оранжевый
+                break;
+            case 'Н':
+                color = '#808080'; // Серый
+                break;
+            case '11':
+            case '12':
+            case '13':
+            case '14':
+            case '15':
+            case '16':
+            case '17':
+            case '18':
+            case '19':
+            case '20':
+                color = '#8bf878'; // Серый
+                break;
+            default:
+                color = ''; // По умолчанию
+        }
+
+        // Устанавливаем цвет фона для <input> и его родительского <td>
+        inputElement.style.backgroundColor = color;
+        if (parentTd) {
+            parentTd.style.backgroundColor = color;
+        }
+    }
+
+    // Получаем все элементы <input>
+    var inputElements = document.querySelectorAll('input');
+
+    // Изменяем цвет фона при загрузке страницы
+    inputElements.forEach(function(inputElement) {
+        changeColor(inputElement);
+    });
+
+    // Добавляем обработчик события потери фокуса для каждого элемента <input>
+    inputElements.forEach(function(inputElement) {
+        inputElement.addEventListener('blur', function() {
+            changeColor(inputElement);
+        });
+    });
+  </script>
+  <script>
+  // Получаем все элементы <input> с классом 'day'
+  var inputElements = document.querySelectorAll('.days');
+
+  // Добавляем обработчик события input для каждого элемента <input>
+  inputElements.forEach(function(inputElement) {
+      inputElement.addEventListener('input', function() {
+          // Проверяем введенное значение по заданному шаблону
+          if (!inputElement.value.match(/[БВДУМНО0-9]*/)) {
+              // Очищаем значение от недопустимых символов
+              inputElement.value = inputElement.value.replace(/[^БВДУМНО0-9]/g, '');
+          }
+      });
+  });
+  </script>
+  <script>
+    function SaveInputGaz(id, value) {
+        var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Получаем CSRF токен
+        $.ajax({
+            url: '/save_gaz/',
+            type: 'POST',
+            headers: { 'X-CSRFToken': csrftoken },
+            data: {
+                'id': id,
+                'value': value,
+            },
+            success: function(response) {
+                console.log('Данные успешно сохранены');
+                // Дополнительные действия при успешном сохранении данных
+                // location.reload();
+            },
+            error: function(error) {
+                console.log('Произошла ошибка при сохранении данных');
+                // Дополнительные действия в случае ошибки
+            }
+        });
+    }
+
+    function Gaz(id) {
+        var blurInput = document.getElementById('Gaz_Input');
+        var value = blurInput.value;
+        SaveInputGaz(id, value);
+    }
+  </script>
+
+
+{% endblock javascripts %}

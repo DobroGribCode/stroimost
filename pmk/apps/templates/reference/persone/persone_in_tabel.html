@@ -1,0 +1,574 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Отчет по работающим {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<style>
+  tbody tr:hover {
+    background: #d2daff;
+  }
+</style>
+<style>
+  td:focus-within {
+    background: #f5f5f5;
+  }
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+  {% load mathfilters %}
+  {% if user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or user.username == 'AlisoltanovaG' or user.is_superuser %}
+  {% csrf_token %}
+    <div class="container-fluid card py-4">
+      <div class="row mb-12">
+        <div class="col-lg-12 col-md-6 mb-md-0 mb-4">
+          <div class="">
+            <div class="card-header pb-0" style="padding: 0.1rem 0.1rem;">
+              <div class="row">
+                <div class="col-lg-12 col-7">
+                  <form autocomplete="off"  method="POST"> {% csrf_token %}
+                  <h6><table cellspacing=0px class="table align-items-center ">
+                    <thead>
+                      <tr>
+                        <th class="col-lg-1">
+                          <a href="/persones">❮</a>
+                        </th>
+                        <th class="col-lg-2">
+                          <input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+                        </th>
+                        <th class="col-lg-2">
+                          <input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+                        </th>
+                        <th class="col-lg-2">
+                          <button class="btn-info" type="submit">Применить период</button>
+                        </th>
+                        <th class="col-lg-2">
+                          <a class="btn-info" href="/hexp_pit/{{ start_date|date:'Y-m-d' }}/{{ end_date|date:'Y-m-d' }}/Отчет по работающим" type="button">Отчет</a>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="5">
+                          <div class="avatar-group text-center mt-2">
+                            Отчет по работающим
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="5">
+                          <div>
+                            <input class="form-control" type="text" id="myInput" ondrag="myFunction()" oninput="myFunction()" oncopy="myFunction()" onchange="myFunction()" onkeyup="myFunction()" onkeypress="myFunction()" placeholder="Поиск по ФИО..">
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table></h6>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class="card-body" style="padding: 0.1rem 0.1rem;">
+                <div class="row col-lg-12" style="min-width: 90%;max-width: 100%;">
+                  <div style="overflow-x: auto !important; overflow-y: hidden;" class="wrap col-lg-12">
+                    <table id="myTable" cellspacing=0px style="width:100%" class="tabel table align-items-center mb-0">
+                      <thead style="" class="tabel_header">
+                        <tr>
+                          <th style="border-bottom: none; border-right: none;border-color: black; background:#168de2; font-size: 14px; padding:0.1rem 0.1rem;"  class="tabel_header text-center">№</th>
+                          <th style=" border-bottom: none; border-right: none; background:#168de2;  font-size: 14px; padding: 0;"  class=" text-centerps-2">ФИО</th>
+                          <th style=" border-bottom: none; border-right: none; background:#168de2;  font-size: 14px; padding: 0;"  class=" text-centerps-2">Орг.</th>
+                          <th style=" border-bottom: none; border-right: none; background:#168de2;  font-size: 14px; padding: 0;"  class=" text-centerps-2">Заметки</th>
+                          <th style=" border-bottom: none; border-right: none; background:#168de2;  font-size: 14px; padding: 0;"  class=" text-centerps-2">Должность</th>
+                          <th style=" border-bottom: none; border-right: none; background:#168de2;  font-size: 14px; padding: 0;"  class=" text-centerps-2">Дата приема</th>
+                          <th style=" border-bottom: none; border-right: none; background:#168de2;  font-size: 14px; padding: 0;"  class=" text-centerps-2">Статус</th>
+                          <th style=" border-bottom: none; border-right: none; background:#168de2;  font-size: 14px; padding: 0;"  class=" text-centerps-2">Телефон</th>
+                          <th style=" border-bottom: none; border-right: none; background:#168de2;  font-size: 14px; padding: 0;"  class=" text-centerps-2">Гражданство</th>
+                          <th style=" border-bottom: none; border-right: none; background:#168de2;  font-size: 14px; padding: 0;"  class=" text-centerps-2">Образование</th>
+
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% with fors=0 %}
+                        {% for t in persones %}
+                            <tr style="" class=" col-lg-11">
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding:0.1rem 0.1rem; border-color: #a1a1a1; width: 15px;" class=" align-middle text-center"><a href="/search/{{ t.id }}"></a></td>
+                              <td title="{{ t.position }} | {% if t.company == 1 %}ПМК{% else %}неоформ{% endif %}" style="border-bottom: none; border-right: none;font-size: 14px; padding: 0; border-color: #a1a1a1;"   class="   "><a href="/view_persone/{{ t.id }}">{{ t.full_name }}</a></td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0px; border-color: #a1a1a1;" class=" text-center">{% if t.company == 1 %}ПМК{% else %}неоформ{% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0px; border-color: #a1a1a1;" class=" text-center"><input id="idea{{ t.id }}" class="form-control" value="{{ t.idea|default:'' }}" oninput="CheckIdea({{ t.id }})"></td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0px; border-color: #a1a1a1;" class=" text-center">{{ t.position }}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0px; border-color: #a1a1a1;" class=" text-center">{{ t.date_accept }}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0px; border-color: #a1a1a1;" class=" text-center">{% if t.leaved == 0 %}Работает{% else %} Уволен {% endif %}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0px; border-color: #a1a1a1;" class=" text-center">{{ t.phone_number }}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0px; border-color: #a1a1a1;" class=" text-center">{{ t.resident }}</td>
+                              <td style="border-bottom: none; border-right: none;font-size: 14px; padding: 0px; border-color: #a1a1a1;" class=" text-center">{{ t.education }}</td>
+                            </tr>
+                        {% endfor %}
+                      {% endwith %}
+                        <tr style="">
+                          <td colspan="40" style="font-weight: bold;; background:#f1f1f1; font-size: 14px; padding: 0; border-right-style: groove;border-left-style: groove;padding: 0.1rem 0.1rem" class="align-middle text-center">{{ g }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <br>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-10">
+                  </div>
+                  <div class="col-lg-2">
+                    <br>
+                    <a hidden class="btn bg-gradient-dark px-4 mb-3" href="/hexp_tabel/{{ per.id }}/Табель {{ per.obj }} от {{ per.date|date:'F Y' }}">Эскпорт</a>
+                  </div>
+                </div>
+              {% if perms.reference.change_period  %}</form>{% endif %}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {% include 'includes/footer.html' %}
+    </div>
+  {% endif %}
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+  <script src="/static/bsmodals/bsmodals.js"></script>
+  <script src="/static/bsmodals/restapi.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var scrollbar = document.body.clientWidth - window.innerWidth + 'px';
+      console.log(scrollbar);
+      document.querySelector('[href="#openModal"]').addEventListener('click', function () {
+        document.body.style.overflow = 'hidden';
+        document.querySelector('#openModal').style.marginLeft = scrollbar;
+      });
+      document.querySelector('[href="#close"]').addEventListener('click', function () {
+        document.body.style.overflow = 'visible';
+        document.querySelector('#openModal').style.marginLeft = '0px';
+      });
+    });
+  </script>
+
+  <script src="/static/bsmodals/bsmodals.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="/static/bsmodals/restapi.js"></script>
+  <script src="{{ ASSETS_ROOT }}/js/plugins/chartjs.min.js"></script>
+  <script>
+    var ctx = document.getElementById("chart-bars").getContext("2d");
+
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["M", "T", "W", "T", "F", "S", "S"],
+        datasets: [{
+          label: "Sales",
+          tension: 0.4,
+          borderWidth: 0,
+          borderRadius: 4,
+          borderSkipped: false,
+          backgroundColor: "rgba(255, 255, 255, .8)",
+          data: [50, 20, 10, 22, 50, 10, 40],
+          maxBarThickness: 6
+        }, ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              suggestedMin: 0,
+              suggestedMax: 500,
+              beginAtZero: true,
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+              color: "#fff"
+            },
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+
+
+    var ctx2 = document.getElementById("chart-line").getContext("2d");
+
+    new Chart(ctx2, {
+      type: "line",
+      data: {
+        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        datasets: [{
+          label: "Mobile apps",
+          tension: 0,
+          borderWidth: 0,
+          pointRadius: 5,
+          pointBackgroundColor: "rgba(255, 255, 255, .8)",
+          pointBorderColor: "transparent",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderWidth: 4,
+          backgroundColor: "transparent",
+          fill: true,
+          data: [50, 40, 300, 320, 500, 350, 200, 230, 500],
+          maxBarThickness: 6
+
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+
+    var ctx3 = document.getElementById("chart-line-tasks").getContext("2d");
+
+    new Chart(ctx3, {
+      type: "line",
+      data: {
+        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        datasets: [{
+          label: "Mobile apps",
+          tension: 0,
+          borderWidth: 0,
+          pointRadius: 5,
+          pointBackgroundColor: "rgba(255, 255, 255, .8)",
+          pointBorderColor: "transparent",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderWidth: 4,
+          backgroundColor: "transparent",
+          fill: true,
+          data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
+          maxBarThickness: 6
+
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              padding: 10,
+              color: '#f8f9fa',
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+  </script>
+  <script>
+                window.document.onkeydown = function () {
+                        startRefocus();
+                }
+                function startRefocus(event) {
+                        event = event || window.event;
+                        //if (!event.ctrlKey) return;
+                        var key = event.keyCode;
+                        var targetElement = event.target || event.srcElement;
+                        focusMe(targetElement, key);
+                }
+                function focusMe(input, key) {
+                        var needFocusElement = true;
+                        function detectColumn(td) {
+                                var result = 0, x;
+                                while (td = td.previousElementSibling) {
+                                        ++result
+                                }
+                                return result;
+                        }
+                        try {
+                                switch (key) {
+                                        case 37:
+                                                needFocusElement = input.parentNode.previousElementSibling.querySelector("input");
+
+                                                break;
+                                        case 39:
+                                                needFocusElement = input.parentNode.nextElementSibling.querySelector("input");
+                                                break;
+                                        case 38:
+                                                needFocusElement = input.parentNode.parentNode.previousElementSibling.querySelectorAll("td")[detectColumn(input.parentNode)].querySelector("input");
+                                                break;
+                                        case 40:
+                                                needFocusElement = input.parentNode.parentNode.nextElementSibling.querySelectorAll("td")[detectColumn(input.parentNode)].querySelector("input");
+                        break;
+                    default:
+                        needFocusElement = false;
+                                }
+                        } catch (e) {
+                                needFocusElement = false;
+                        }
+
+                        if (!needFocusElement) return;
+                        needFocusElement.focus();
+                }
+        </script>
+  <script>
+  function removeHide(){{% for g in groups %}{% for t in tabs %}{% if t.group == g %}
+          document.getElementById("g{{ g.id }}").removeAttribute("hidden"){% endif %}{% endfor %}{% endfor %}};
+  window.onload = removeHide();
+  </script>
+  <script>
+    function myFunction() {
+      // Объявить переменные
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+
+      // Перебирайте все строки таблицы и скрывайте тех, кто не соответствует поисковому запросу
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[1];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+  </script>
+  {% if error_d %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const dialog = document.getElementById("DayError");
+      dialog.showModal();
+    });
+  </script>
+  {% endif %}
+  <script>
+    function CheckIdea(id) {
+        var list = document.getElementsByName("csrfmiddlewaretoken");
+        var csrftoken = list[0].value
+        var blurInput = document.getElementById('idea' + id);
+        var value = blurInput.value;
+        if (value.trim() !== '') {
+          SaveIdea(id, value);
+        }
+    }
+
+    function SaveIdea(id, value) {
+        var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Получаем CSRF токен
+        $.ajax({
+            url: '/save_idea/',
+            type: 'POST',
+            headers: { 'X-CSRFToken': csrftoken },
+            data: {
+                'id': id,
+                'value': value,
+            },
+            success: function(response) {
+                console.log('Данные успешно сохранены');
+                // Дополнительные действия при успешном сохранении данных
+            },
+            error: function(error) {
+                console.log('Произошла ошибка при сохранении данных');
+                // Дополнительные действия в случае ошибки
+            }
+        });
+    }
+  </script>
+<script>
+  // Получаем все строки таблицы
+var table = document.getElementById('myTable');
+var rows = table.getElementsByTagName('tr');
+
+// Создаем объект для хранения уникальных значений из второго столбца
+var uniqueValues = {};
+
+// Проходим по каждой строке таблицы, начиная с 1, так как 0 строка обычно содержит заголовки
+for (var i = 1; i < rows.length; i++) {
+    var cells = rows[i].getElementsByTagName('td');
+    var secondColumnValue = cells[1].textContent; // Получаем значение второго столбца
+
+    // Проверяем, есть ли уже такое значение в объекте uniqueValues
+    if (uniqueValues[secondColumnValue]) {
+        // Если значение уже существует, удаляем строку
+        table.deleteRow(i);
+        i--; // Уменьшаем счетчик, чтобы не пропустить следующую строку
+    } else {
+        // Если значение уникальное, сохраняем его в объекте uniqueValues
+        uniqueValues[secondColumnValue] = true;
+    }
+}
+
+
+</script>
+<script>
+  // Получаем все строки таблицы
+var table = document.getElementById('myTable');
+var rows = table.getElementsByTagName('tr');
+
+// Проходим по каждой строке таблицы, начиная с 0
+for (var i = 1; i < rows.length; i++) {
+    var cell = document.createElement('td'); // Создаем новую ячейку для номера строки
+
+    var link = document.createElement('a'); // Создаем элемент <a> для ссылки
+    link.textContent = '' + (i); // Текст ссылки
+
+    cell.appendChild(link); // Добавляем ссылку в ячейку
+    rows[i].insertBefore(cell, rows[i].firstChild); // Вставляем ячейку в начало строки
+}
+</script>
+<script>
+  var table = document.getElementById('myTable');
+  var rows = table.getElementsByTagName('tr');
+
+  for (var i = 0; i < rows.length; i++) {
+      var cells = rows[i].getElementsByTagName('td'); // Получаем все ячейки в текущей строке
+
+      if (cells.length >= 2) { // Проверяем, что есть хотя бы две ячейки
+          rows[i].removeChild(cells[1]); // Удаляем вторую ячейку (индекс 1)
+      }
+  }
+</script>
+{% endblock javascripts %}

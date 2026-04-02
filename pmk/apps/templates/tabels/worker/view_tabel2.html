@@ -1,0 +1,788 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Просмотр табеля персонала за {{ per.date|date:"F Y" }} {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<style>
+  tbody tr:hover {
+    background: #fafafa;
+  }
+</style>
+<style>
+  td:focus-within {
+    background: #f5f5f5;
+  }
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+  {% load mathfilters %}
+  {% if perms.reference.view_period  %}
+    <div class="container-fluid py-4">
+      <div class="row mb-12">
+        <div class="col-lg-12 col-md-6 mb-md-0 mb-4">
+          <div class="card">
+            <div class="card-header pb-0">
+              <div class="row">
+                <div class="col-lg-12 col-7">
+                  <h6><table class="table align-items-center ">
+                    <thead>
+                      <tr>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="col-lg-11">
+                        <td>
+                          <div class="avatar-group text-center mt-2">
+                            Табель {{ per.obj }} от {{ per.date|date:"F Y" }}
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table></h6>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              {% if perms.reference.change_period  %}<form method="POST"> {% csrf_token %}{% endif %}
+                <div class="row">
+                  <div style="overflow-x: scroll; overflow-y: hidden;" class="wrap col-lg-11">
+                    <table cellspacing=0px style="width:50%" class="tabel table align-items-center mb-0">
+                      <thead style="position: sticky; top: 0;" class="tabel_header">
+                        <tr>
+                          <th rowspan="2" style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-size: 14px; padding: 0;"  class="col-lg-1 tabel_header text-center">№</th>
+                          <th colspan="2" rowspan="2" style=" border-bottom: 1px solid #000000; background:#e4e4e4;  font-size: 14px; padding: 0;"  class=" text-centerps-2">ФИО</th>
+                          <th rowspan="2" style=" border-bottom: 1px solid #000000; background:#e4e4e4;  font-size: 14px; padding: 0;"  class=" text-centerps-2">Орг.</th>
+                          <th {% with i=per.dw1|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw1|date:"D" }}</th>
+                          <th {% with i=per.dw2|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw2|date:"D" }}</th>
+                          <th {% with i=per.dw3|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw3|date:"D" }}</th>
+                          <th {% with i=per.dw4|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw4|date:"D" }}</th>
+                          <th {% with i=per.dw5|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw5|date:"D" }}</th>
+                          <th {% with i=per.dw6|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw6|date:"D" }}</th>
+                          <th {% with i=per.dw7|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw7|date:"D" }}</th>
+                          <th {% with i=per.dw8|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw8|date:"D" }}</th>
+                          <th {% with i=per.dw9|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw9|date:"D" }}</th>
+                          <th {% with i=per.dw10|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw10|date:"D" }}</th>
+                          <th {% with i=per.dw11|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw11|date:"D" }}</th>
+                          <th {% with i=per.dw12|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw12|date:"D" }}</th>
+                          <th {% with i=per.dw13|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw13|date:"D" }}</th>
+                          <th {% with i=per.dw14|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw14|date:"D" }}</th>
+                          <th {% with i=per.dw15|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw15|date:"D" }}</th>
+                          <th {% with i=per.dw16|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw16|date:"D" }}</th>
+                          <th {% with i=per.dw17|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw17|date:"D" }}</th>
+                          <th {% with i=per.dw18|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw18|date:"D" }}</th>
+                          <th {% with i=per.dw19|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw19|date:"D" }}</th>
+                          <th {% with i=per.dw20|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw20|date:"D" }}</th>
+                          <th {% with i=per.dw21|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw21|date:"D" }}</th>
+                          <th {% with i=per.dw22|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw22|date:"D" }}</th>
+                          <th {% with i=per.dw23|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw23|date:"D" }}</th>
+                          <th {% with i=per.dw24|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw24|date:"D" }}</th>
+                          <th {% with i=per.dw25|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw25|date:"D" }}</th>
+                          <th {% with i=per.dw26|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw26|date:"D" }}</th>
+                          <th {% with i=per.dw27|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw27|date:"D" }}</th>
+                          <th {% with i=per.dw28|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw28|date:"D" }}</th>
+                          {% if per.date.month == 2 %}
+                            {% if per.date.year == 2024 %}
+                              <th {% with i=per.dw29|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw29|date:"D" }}</th>
+                            {% endif %}
+                          {% else %}
+                              <th {% with i=per.dw29|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw29|date:"D" }}</th>
+                              <th {% with i=per.dw30|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw30|date:"D" }}</th>
+                            {% if per.month == 12 or per.month == 1 or per.month == 3 or per.month == 5 or per.month == 7 or per.month == 9 or per.month == 11 %}
+                              <th {% with i=per.dw31|date:'w'  %} {{ i }} class="th_header tabs text-center" style="border-left-style: none;border-right-style: inherit;{% if i == '0' or i == '6' %} color:red {% else %} color: rgb(51, 51, 51); {% endif %}" {% endwith %}/>{{ per.dw31|date:"D" }}</th>
+                            {% endif %}
+                          {% endif %}
+                          <th rowspan="2" style="border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding:0.1rem 0.1rem;"  class=" text-centerps-2"><a type="button" onclick="window.workdays.showModal();">Дни</a></th>
+                          <th rowspan="2" style="border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding:0.1rem 0.5rem;"  class=" text-centerps-2">Сумма</th>
+                          <th rowspan="2" style="border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding:0.1rem 0.1rem;"  class=" text-centerps-2">Штраф</th>
+                          <th rowspan="2" style="border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding:0.1rem 0.1rem;"  class=" text-centerps-2">Премия</th>
+                          <th rowspan="2" style="border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding:0.1rem 0.8rem;"  class=" text-centerps-2">Итог</th>
+                          <th rowspan="2" style="border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding:0.1rem 1.1rem;"  class=" text-centerps-2"></th>
+                        </tr>
+                        <tr>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.2rem 0.637rem;"  class="text-center"><a type="button" onclick="window.approve1.showModal();">1</a></th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.2rem 0.637rem;"  class="text-center"><a type="button" onclick="window.approve2.showModal();">2</a></th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.2rem 0.637rem;"  class="text-center"><a type="button" onclick="window.approve3.showModal();">3</a></th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.2rem 0.637rem;"  class="text-center"><a type="button" onclick="window.approve4.showModal();">4</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.2rem 0.637rem;"  class="text-center"><a type="button" onclick="window.approve5.showModal();">5</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.2rem 0.637rem;"  class="text-center"><a type="button" onclick="window.approve6.showModal();">6</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.2rem 0.637rem;"  class="text-center"><a type="button" onclick="window.approve7.showModal();">7</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.2rem 0.637rem;"  class="text-center"><a type="button" onclick="window.approve8.showModal();">8</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.2rem 0.637rem;"  class="text-center"><a type="button" onclick="window.approve9.showModal();">9</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve10.showModal();">10</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve11.showModal();">11</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve12.showModal();">12</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve13.showModal();">13</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve14.showModal();">14</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve15.showModal();">15</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve16.showModal();">16</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve17.showModal();">17</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve18.showModal();">18</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve19.showModal();">19</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve20.showModal();">20</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve21.showModal();">21</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve22.showModal();">22</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve23.showModal();">23</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve24.showModal();">24</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve25.showModal();">25</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve26.showModal();">26</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve27.showModal();">27</a> </th>
+                          <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve28.showModal();">28</a> </th>
+                          {% if per.date.month == 2 %}
+                            {% if per.date.year == 2024 %}
+                                <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve29.showModal();">29</a> </th>
+                            {% endif %}
+                          {% else %}
+                              <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve29.showModal();">29</a> </th>
+                              <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve30.showModal();">30</a> </th>
+                            {% if per.month == 12 or per.month == 1 or per.month == 3 or per.month == 5 or per.month == 7 or per.month == 9 or per.month == 11 %}
+                              <th style="border-left-style: none;border-right-style: inherit;border-bottom: 1px solid #000000; background:#e4e4e4; font-weight: bold; padding: 0.1rem 0.35rem"  class="text-center"><a type="button" onclick="window.approve31.showModal();">31</a> </th>
+                            {% endif %}
+                          {% endif %}
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% with fors=0 %}
+                      {% for g in groups %}
+                                <tr style="outline: thin solid">
+                                  <td hidden id="g{{ g.id }}" namme="g{{ g.id }}" colspan="40" style="background:#f1f1f1; font-size: 14px; padding: 0; border: none; border-right-style: groove;border-left-style: groove;padding:0.6rem 0.5rem;" class="align-middle text-center">{{ g }}</td>
+                                </tr>
+                        {% for t in tabs %}
+                          {% if t.group == g %}
+                            <tr style="outline: thin solid" class=" col-lg-11">
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; width: 15px;" class=" align-middle text-center">{{ forloop.counter }}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit;" class="align-middle text-center"><a type="button" onclick="window.comment{{ t.id }}.showModal();"><i {% if t.comment %}style="color:blue;"{% endif %} class="material-icons opacity-10">comment</i></a></td>
+                              <td title="{{ t.persone.position }} | {% if t.persone.company == 1 %}ООО 'ПМК'{% else %}Не оформлен{% endif %}" style="font-size: 14px; padding: 0; border: none; border-right-style: inherit;"   class=" text-center  "><a href="/view_persone/{{ t.persone.id }}">{{ t.persone.full_name }}</a></td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit;" class=" text-center">{% if t.persone.company == 1 %}ООО 'ПМК'{% else %}Не оформлен{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d1c }}" class="align-middle text-center">{% if per.db1 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d1" placeholder="" id="{{ t.id }}d1" class="days input-block form-control text-center" value="{{ t.d1|default:''}}">{% else %} {{ t.d1|default:''}}{% endif %}  </td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d2c }}" class="align-middle text-center">{% if per.db2 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d2" placeholder="" id="{{ t.id }}d2" class="days input-block form-control text-center" value="{{ t.d2|default:''}}">{% else %} {{ t.d2|default:''}}{% endif %} </td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d3c }}" class="align-middle text-center">{% if per.db3 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d3" placeholder="" id="{{ t.id }}d3" class="days input-block form-control text-center" value="{{ t.d3|default:''}}">{% else %} {{ t.d3|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d4c }}" class="align-middle text-center">{% if per.db4 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d4" placeholder="" id="{{ t.id }}d4" class="days input-block form-control text-center" value="{{ t.d4|default:''}}">{% else %} {{ t.d4|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d5c }}" class="align-middle text-center">{% if per.db5 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d5" placeholder="" id="{{ t.id }}d5" class="days input-block form-control text-center" value="{{ t.d5|default:''}}">{% else %} {{ t.d5|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d6c }}" class="align-middle text-center">{% if per.db6 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d6" placeholder="" id="{{ t.id }}d6" class="days input-block form-control text-center" value="{{ t.d6|default:''}}">{% else %} {{ t.d6|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d7c }}" class="align-middle text-center">{% if per.db7 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d7" placeholder="" id="{{ t.id }}d7" class="days input-block form-control text-center" value="{{ t.d7|default:''}}">{% else %} {{ t.d7|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d8c }}" class="align-middle text-center">{% if per.db8 != 1 %} <input maxlength="2" style="width: 100%;height: 100%; " name="{{ t.id }}d8" placeholder="" id="{{ t.id }}d8" class="days input-block form-control text-center" value="{{ t.d8|default:''}}">{% else %} {{ t.d8|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d9c }}" class="align-middle text-center">{% if per.db9 != 1 %} <input maxlength="2" style="width: 100%;height: 100%; " name="{{ t.id }}d9" placeholder="" id="{{ t.id }}d9" class="days input-block form-control text-center" value="{{ t.d9|default:''}}">{% else %} {{ t.d9|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d10c }}" class="align-middle text-center">{% if per.db10 != 1 %} <input maxlength="2" style="width: 100%;height: 100%; " name="{{ t.id }}d10" placeholder="" id="{{ t.id }}d10" class="days input-block form-control text-center" value="{{ t.d10|default:''}}">{% else %} {{ t.d10|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d11c }}" class="align-middle text-center">{% if per.db11 != 1 %} <input maxlength="2" style="width: 100%;height: 100%; " name="{{ t.id }}d11" placeholder="" id="{{ t.id }}d11" class="days input-block form-control text-center" value="{{ t.d11|default:''}}">{% else %} {{ t.d11|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d12c }}" class="align-middle text-center">{% if per.db12 != 1 %} <input maxlength="2" style="width: 100%;height: 100%; " name="{{ t.id }}d12" placeholder="" id="{{ t.id }}d12" class="days input-block form-control text-center" value="{{ t.d12|default:''}}">{% else %} {{ t.d12|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d13c }}" class="align-middle text-center">{% if per.db13 != 1 %} <input maxlength="2" style="width: 100%;height: 100%; " name="{{ t.id }}d13" placeholder="" id="{{ t.id }}d13" class="days input-block form-control text-center" value="{{ t.d13|default:''}}">{% else %} {{ t.d13|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d14c }}" class="align-middle text-center">{% if per.db14 != 1 %} <input maxlength="2" style="width: 100%;height: 100%; " name="{{ t.id }}d14" placeholder="" id="{{ t.id }}d14" class="days input-block form-control text-center" value="{{ t.d14|default:''}}">{% else %} {{ t.d14|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d15c }}" class="align-middle text-center">{% if per.db15 != 1 %} <input maxlength="2" style="width: 100%;height: 100%; " name="{{ t.id }}d15" placeholder="" id="{{ t.id }}d15" class="days input-block form-control text-center" value="{{ t.d15|default:''}}">{% else %} {{ t.d15|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d16c }}" class="align-middle text-center">{% if per.db16 != 1 %} <input maxlength="2" style="width: 100%;height: 100%; " name="{{ t.id }}d16" placeholder="" id="{{ t.id }}d16" class="days input-block form-control text-center" value="{{ t.d16|default:''}}">{% else %} {{ t.d16|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d17c }}" class="align-middle text-center">{% if per.db17 != 1 %} <input maxlength="2" style="width: 100%;height: 100%; " name="{{ t.id }}d17" placeholder="" id="{{ t.id }}d17" class="days input-block form-control text-center" value="{{ t.d17|default:''}}">{% else %} {{ t.d17|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d18c }}" class="align-middle text-center">{% if per.db18 != 1 %} <input maxlength="2" style="width: 100%;height: 100%; " name="{{ t.id }}d18" placeholder="" id="{{ t.id }}d18" class="days input-block form-control text-center" value="{{ t.d18|default:''}}">{% else %} {{ t.d18|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d19c }}" class="align-middle text-center">{% if per.db19 != 1 %} <input maxlength="2" style="width: 100%;height: 100%; " name="{{ t.id }}d19" placeholder="" id="{{ t.id }}d19" class="days input-block form-control text-center" value="{{ t.d19|default:''}}">{% else %} {{ t.d19|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d20c }}" class="align-middle text-center">{% if per.db20 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d20" placeholder="" id="{{ t.id }}d20" class="days input-block form-control text-center" value="{{ t.d20|default:''}}">{% else %} {{ t.d20|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d21c }}" class="align-middle text-center">{% if per.db21 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d21" placeholder="" id="{{ t.id }}d21" class="days input-block form-control text-center" value="{{ t.d21|default:''}}">{% else %} {{ t.d21|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d22c }}" class="align-middle text-center">{% if per.db22 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d22" placeholder="" id="{{ t.id }}d22" class="days input-block form-control text-center" value="{{ t.d22|default:''}}">{% else %} {{ t.d22|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d23c }}" class="align-middle text-center">{% if per.db23 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d23" placeholder="" id="{{ t.id }}d23" class="days input-block form-control text-center" value="{{ t.d23|default:''}}">{% else %} {{ t.d23|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d24c }}" class="align-middle text-center">{% if per.db24 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d24" placeholder="" id="{{ t.id }}d24" class="days input-block form-control text-center" value="{{ t.d24|default:''}}">{% else %} {{ t.d24|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d25c }}" class="align-middle text-center">{% if per.db25 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d25" placeholder="" id="{{ t.id }}d25" class="days input-block form-control text-center" value="{{ t.d25|default:''}}">{% else %} {{ t.d25|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d26c }}" class="align-middle text-center">{% if per.db26 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d26" placeholder="" id="{{ t.id }}d26" class="days input-block form-control text-center" value="{{ t.d26|default:''}}">{% else %} {{ t.d26|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d27c }}" class="align-middle text-center">{% if per.db27 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d27" placeholder="" id="{{ t.id }}d27" class="days input-block form-control text-center" value="{{ t.d27|default:''}}">{% else %} {{ t.d27|default:''}}{% endif %}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d28c }}" class="align-middle text-center">{% if per.db28 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d28" placeholder="" id="{{ t.id }}d28" class="days input-block form-control text-center" value="{{ t.d28|default:''}}">{% else %} {{ t.d28|default:''}}{% endif %}</td>
+                              {% if per.date.month == 2 %}
+                                {% if per.date.year == 2024 %}
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d29c }}" class="align-middle text-center">{% if per.db29 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d29" placeholder="" id="{{ t.id }}d29" class="days input-block form-control text-center" value="{{ t.d29|default:''}}">{% else %} {{ t.d29|default:''}}{% endif %}</td>
+                                {% endif %}
+                              {% else %}
+                                <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d29c }}" class="align-middle text-center">{% if per.db29 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d29" placeholder="" id="{{ t.id }}d29" class="days input-block form-control text-center" value="{{ t.d29|default:''}}">{% else %} {{ t.d29|default:''}}{% endif %}</td>
+                                <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d30c }}" class="align-middle text-center">{% if per.db30 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d30" placeholder="" id="{{ t.id }}d30" class="days input-block form-control text-center" value="{{ t.d30|default:''}}">{% else %} {{ t.d30|default:''}}{% endif %}</td>
+                                {% if per.month == 12 or per.month == 1 or per.month == 3 or per.month == 5 or per.month == 7 or per.month == 9 or per.month == 11 %}
+                                <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit; background:{{ t.d31c }}" class="align-middle text-center">{% if per.db31 != 1 %} <input maxlength="2" style="" name="{{ t.id }}d31" placeholder="" id="{{ t.id }}d31" class="days input-block form-control text-center" value="{{ t.d31|default:''}}">{% else %} {{ t.d31|default:''}}{% endif %}</td>
+                                {% endif %}
+                              {% endif %}
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit;" class="align-middle text-center">{{ t.days }}</td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit;" class="align-middle text-center"><input style="" name="{{ t.id }}sum" placeholder="" id="{{ t.id }}sum" class="form-control text-center" value="{{ t.sum|default:''}}"></td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit;" class="align-middle text-center"><input style="" name="{{ t.id }}fine" placeholder="" id="{{ t.id }}fine" class="form-control text-center" value="{{ t.fine|default:''}}"></td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit;" class="align-middle text-center"><input style="" name="{{ t.id }}add" placeholder="" id="{{ t.id }}add" class="form-control text-center" value="{{ t.add|default:''}}"></td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit;" class="align-middle text-center"><input style="" name="{{ t.id }}salary" placeholder="" id="{{ t.id }}salary" class=" form-control text-center" value="{{ t.salary|default:'' }}"></td>
+                              <td style="font-size: 14px; padding: 0; border: none; border-right-style: inherit;" class="align-middle text-center">
+                                <div class="dropdown text-center">
+                                  <a class="cursor-pointer" id="dropdownTable{{ t.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-ellipsis-v text-secondary"></i>
+                                  </a>
+                                  <ul class="dropdown-menu text-center" aria-labelledby="dropdownTable">
+                                    <li><a type="button" onclick="window.move{{ t.id }}.showModal();">Переместить</a></li>
+                                    <li><a class="dropdown-item text-center border-radius-md" href="/del_tabl/{{ t.id }}/{{ per.id }}">Удалить</a></li>
+                                  </ul>
+                                </div>
+                              </td>
+                            </tr>
+                          {% endif %}
+                        {% endfor %}
+                      {% endfor %}
+                      {% endwith %}
+                      </tbody>
+                    </table>
+                    <br>
+                  </div>
+                </div>
+                    {% for t in tabs %}
+                    <dialog id="move{{ t.id }}" class="modal-body col-lg-4" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                      <div>
+                        <div class="modal-dialog">
+                          <div>
+                            <div class="modal-header">
+                              <table class="table table-align">
+                                <thead>
+                                  <tr>
+                                    <th>Наименование группы</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for g in groups %}
+                                  <tr>
+                                    <td>
+                                      <a href="/move_worker/{{ t.id }}/{{per.id}}/{{ g.id }}">{{ g.name }}</a>
+                                    </td>
+                                  </tr>
+                                  {% endfor %}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-9">
+                          </div>
+                          <div class="col-lg-3">
+                            <button class="btn" type="button" onclick="window.move{{ t.id }}.close();">Закрыть</button>
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+                    {% endfor %}
+                    {% for t in tabs %}
+                    <dialog id="comment{{ t.id }}" class="modal-body col-lg-7" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                      <div>
+                        <div class="modal-dialog">
+                          <div class="row">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Комментарий по {{ t.persone.full_name }}</h5>
+                            </div>
+                            <div class="wrap col-lg-12 modal-body">
+                              <textarea disabled class="col-lg-12 form-conrtol" style="height: 300px">{{ t.comment|default:'' }}</textarea>
+                              <br>
+                              <table title="Введите текст и нажмите Enter" style="width:40%; border-color: #363636;" class="table col-lg-5">
+                                <tbody>
+                                  <tr>
+                                    <td>
+                                      <input name="com{{ t.id }}" id="com{{ t.id }}" placeholder="Ввод комментария" class="form-control" >
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-9">
+                          <button class="btn" type="button" onclick="window.comment{{ t.id }}.close();">Закрыть</button>
+                          </div>
+                          <div class="col-lg-3">
+                          <button href="#close" title="Close" class="btn">Сохранить</button>
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+                    {% endfor %}
+                    <dialog id="workdays" class="modal-body col-lg-5" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                      <div>
+                        <div class="modal-dialog">
+                          <div class="">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Количество рабочих дней</h5>
+                            </div>
+                            <div class="wrap col-lg-12 modal-body">
+                              <input style="" name="wd" placeholder="" id="wd" class=" form-control text-center" value="{{ per.workdays }}">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-9">
+                          <button class="btn" type="button" onclick="window.workdays.close();">Закрыть</button>
+                          </div>
+                          <div class="col-lg-3">
+                          {% if perms.reference.change_period  %}<button class="btn bg-gradient-dark px-4 mb-3" type="submit">Сохранить</button>{% endif %}
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+                    <dialog id="AddPersone" class="modal-body col-lg-6" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                      <div>
+                        <div class="modal-dialog">
+                          <div>
+                            <div class="modal-header">
+                              <input class="form-control" type="text" id="myInput" onkeypress="myFunction()" placeholder="Поиск по ФИО..">
+                            </div>
+                            <div class="">
+                              <table id="myTable" class="table table-align">
+                                <thead>
+                                  <tr class="header">
+                                    <th>ФИО</th>
+                                    <th>Группа</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for p in persones %}
+                                  <tr>
+                                    <td>
+                                      <a href="/AddPersone/{{p.id}}/{{per.id}}">{{ p.full_name }}</a>
+                                    </td>
+                                    <td>
+                                      <a href="/AddPersone/{{p.id}}/{{per.id}}">{{ p.group }}</a>
+                                    </td>
+                                  </tr>
+                                  {% endfor %}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-9">
+                          </div>
+                          <div class="col-lg-3">
+                            <button class="btn" type="button" onclick="window.AddPersone.close();">Закрыть</button>
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+                    <dialog id="GMT" class="modal-body col-lg-6" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                      <div>
+                        <div class="modal-dialog">
+                          <div>
+                            <div class="">
+                              <table class="table table-align">
+                                <thead>
+                                  <tr class="header">
+                                    <th>Табели персонала</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for p in pers %}
+                                  {% if p != per %}
+                                  <tr>
+                                    <td>
+                                      <a href="/group_move_tabel/{{p.id}}/{{per.id}}">Табель {{ p.type }} {{ p.obj }} от {{ p.date|date:"F Y" }}</a>
+                                    </td>
+                                  </tr>
+                                  {% endif %}
+                                  {% endfor %}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-9">
+                          </div>
+                          <div class="col-lg-3">
+                            <button class="btn" type="button" onclick="window.GMT.close();">Закрыть</button>
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+                  {% for p in persones %}
+                    {% if forloop.counter < 32 %}{% with i=forloop.counter %}
+                    <dialog id="approve{{ i }}" class="modal-body col-lg-5" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                      <div>
+                        <div class="modal-dialog">
+                          <div class="">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Проверили {{ i }} {{ per.date|date:"F Y" }}</h5>
+                            </div>
+                            <div class="wrap col-lg-12 modal-body">
+                              {% for a in approvers %}
+                                {% if a.day == i %}
+                                  <p>{{ a.approver }}: проверил в {{ a.time }}</p>
+                                {% endif %}
+                              {% endfor %}
+                              <br>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-9">
+                          <button class="btn" type="button" onclick="window.approve{{ i }}.close();">Закрыть</button>
+                          </div>
+                          <div class="col-lg-3">
+                          <a  href="/approve_table/{{ i }}/{{per.id}}" title="" class="btn">Проверил</a>
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+                    {% endwith %}{% else %}
+                    {% endif %}
+                  {% endfor %}
+                <div class="row">
+                  <div class="col-lg-10">
+                    <br><br><br><br>
+                  </div>
+                  <div class="col-lg-2">
+                    <br><br><br>
+                    <a class="btn bg-gradient-dark px-4 mb-3" type="button" onclick="window.AddPersone.showModal();">Добавить сотрудника</a>
+                    <a class="btn bg-gradient-dark px-4 mb-3" type="button" onclick="window.GMT.showModal();">Перенести сотрудников</a>
+                    <a class="btn bg-gradient-dark px-4 mb-3" href="/hexp_tabel/Табель {{ per.obj }} от {{ per.date|date:'F Y' }}/{{ per.id }}">Эскпорт</a>
+                      {% if perms.reference.change_period  %}<button class="btn bg-gradient-dark px-4 mb-3" type="submit">Сохранить</button>{% endif %}
+                  </div>
+                </div>
+              {% if perms.reference.change_period  %}</form>{% endif %}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {% include 'includes/footer.html' %}
+    </div>
+  {% endif %}
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+  <script src="/static/bsmodals/bsmodals.js"></script>
+  <script src="/static/bsmodals/restapi.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var scrollbar = document.body.clientWidth - window.innerWidth + 'px';
+      console.log(scrollbar);
+      document.querySelector('[href="#openModal"]').addEventListener('click', function () {
+        document.body.style.overflow = 'hidden';
+        document.querySelector('#openModal').style.marginLeft = scrollbar;
+      });
+      document.querySelector('[href="#close"]').addEventListener('click', function () {
+        document.body.style.overflow = 'visible';
+        document.querySelector('#openModal').style.marginLeft = '0px';
+      });
+    });
+  </script>
+  <script src="{{ ASSETS_ROOT }}/js/plugins/chartjs.min.js"></script>
+
+  <script>
+    var ctx = document.getElementById("chart-bars").getContext("2d");
+
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["M", "T", "W", "T", "F", "S", "S"],
+        datasets: [{
+          label: "Sales",
+          tension: 0.4,
+          borderWidth: 0,
+          borderRadius: 4,
+          borderSkipped: false,
+          backgroundColor: "rgba(255, 255, 255, .8)",
+          data: [50, 20, 10, 22, 50, 10, 40],
+          maxBarThickness: 6
+        }, ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              suggestedMin: 0,
+              suggestedMax: 500,
+              beginAtZero: true,
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+              color: "#fff"
+            },
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+
+
+    var ctx2 = document.getElementById("chart-line").getContext("2d");
+
+    new Chart(ctx2, {
+      type: "line",
+      data: {
+        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        datasets: [{
+          label: "Mobile apps",
+          tension: 0,
+          borderWidth: 0,
+          pointRadius: 5,
+          pointBackgroundColor: "rgba(255, 255, 255, .8)",
+          pointBorderColor: "transparent",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderWidth: 4,
+          backgroundColor: "transparent",
+          fill: true,
+          data: [50, 40, 300, 320, 500, 350, 200, 230, 500],
+          maxBarThickness: 6
+
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+
+    var ctx3 = document.getElementById("chart-line-tasks").getContext("2d");
+
+    new Chart(ctx3, {
+      type: "line",
+      data: {
+        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        datasets: [{
+          label: "Mobile apps",
+          tension: 0,
+          borderWidth: 0,
+          pointRadius: 5,
+          pointBackgroundColor: "rgba(255, 255, 255, .8)",
+          pointBorderColor: "transparent",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderWidth: 4,
+          backgroundColor: "transparent",
+          fill: true,
+          data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
+          maxBarThickness: 6
+
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              padding: 10,
+              color: '#f8f9fa',
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+  </script>
+  <script>
+                window.document.onkeydown = function () {
+                        startRefocus();
+                }
+                function startRefocus(event) {
+                        event = event || window.event;
+                        //if (!event.ctrlKey) return;
+                        var key = event.keyCode;
+                        var targetElement = event.target || event.srcElement;
+                        focusMe(targetElement, key);
+                }
+                function focusMe(input, key) {
+                        var needFocusElement = true;
+                        function detectColumn(td) {
+                                var result = 0, x;
+                                while (td = td.previousElementSibling) {
+                                        ++result
+                                }
+                                return result;
+                        }
+                        try {
+                                switch (key) {
+                                        case 37:
+                                                needFocusElement = input.parentNode.previousElementSibling.querySelector("input");
+
+                                                break;
+                                        case 39:
+                                                needFocusElement = input.parentNode.nextElementSibling.querySelector("input");
+                                                break;
+                                        case 38:
+                                                needFocusElement = input.parentNode.parentNode.previousElementSibling.querySelectorAll("td")[detectColumn(input.parentNode)].querySelector("input");
+                                                break;
+                                        case 40:
+                                                needFocusElement = input.parentNode.parentNode.nextElementSibling.querySelectorAll("td")[detectColumn(input.parentNode)].querySelector("input");
+                        break;
+                    default:
+                        needFocusElement = false;
+                                }
+                        } catch (e) {
+                                needFocusElement = false;
+                        }
+
+                        if (!needFocusElement) return;
+                        needFocusElement.focus();
+                }
+        </script>
+  <script>
+  function removeHide(){{% for g in groups %}{% for t in tabs %}{% if t.group == g %}
+          document.getElementById("g{{ g.id }}").removeAttribute("hidden"){% endif %}{% endfor %}{% endfor %}};
+  window.onload = removeHide();
+  </script>
+  <script>
+    function myFunction() {
+      // Объявить переменные
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+
+      // Перебирайте все строки таблицы и скрывайте тех, кто не соответствует поисковому запросу
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+  </script>
+
+
+{% endblock javascripts %}

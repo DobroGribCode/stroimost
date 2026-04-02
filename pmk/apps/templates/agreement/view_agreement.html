@@ -1,0 +1,558 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Просмотр согласования {{ agreem.name }} {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<style>
+  tbody tr:hover {
+    background: #fafafa;
+  }
+</style>
+<style>
+  td:focus-within {
+    background: #f5f5f5;
+  }
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+  {% if perms.reference.view_agreement  %}
+    <div class="container-fluid py-4">
+      <div class="row mb-12">
+        <form method="POST"> {% csrf_token %}
+        <div class="col-lg-12 col-md-6 mb-md-0 mb-4">
+          <div class="card">
+            <div class="card-header pb-0">
+              <div class="row">
+                <div class="col-lg-12 col-7">
+                    <table class="table align-items-center ">
+                      <thead>
+                            <H4 class="text-center">Согласование {{ agreem.name }}</H4>
+                        <tr>
+                          <th class="text-center text-centerps-2">
+                            Инициализатор
+                          </th>
+                          <th class="text-center text-centerps-2">
+                            Статус
+                          </th>
+                          <th class="text-center text-centerps-2">
+                            Дата создания
+                          </th>
+                          <th class="text-center text-centerps-2">
+                            Файл
+                          </th>
+                          {% if agreem.to_correct %}
+                          <th class="text-center">
+                            Отклонивший
+                          </th>
+                          {% endif %}
+                          <th>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="col-lg-11">
+                          <td>
+                            <div class=" text-center mt-2">
+                              {{ agreem.creator }}
+                            </div>
+                          </td>
+                          <td>
+                            <select style="{% if agreem.status == 'На проверке' %} background-color: none; {% elif agreem.status == 'На согласование' %} background-color:#f1f029; {% elif agreem.status == 'На корректировке' %} background-color:#f70d32; {% else %}background-color: #19c719; {% endif %}" {% if agreem.closed == 1 %} disabled {% endif %} name="status" id="status" class="form-control text-center">
+                              <option {% if agreem.status == "На проверке" %} selected="selected" {% endif %}>
+                                На проверке
+                              </option>
+                              <option {% if agreem.status == "На согласование" %} selected="selected" {% endif %}>
+                                На согласование
+                              </option>
+                              <option {% if agreem.status == "На корректировке" %} selected="selected" {% endif %}>
+                                На корректировке
+                              </option>
+                              <option {% if agreem.status == "Завершен" %} selected="selected" {% endif %}>
+                                Завершен
+                              </option>
+                            </select>
+                          </td>
+                          <td>
+                            <div class=" text-center mt-2">
+                              {{ agreem.date_create }}
+                            </div>
+                          </td>
+                          <td>
+                            <div class=" text-center mt-2">
+                              <a href="/agreement_file/{{ agreem.id }}" target="_blank" rel="noopener noreferrer">{{ agreem.file.name|slice:"17:" }}</a>
+                            </div>
+                          </td>
+                          {% if agreem.to_correct %}
+                          <td>
+                            <div class=" text-center mt-2">
+                              {{ agreem.to_correct|default:'' }}
+                            </div>
+                          </td>
+                          {% endif %}
+                          <td style="{% if agreem.closed == 1 %} background-color: #e5e5e5; {% endif %}">
+                            <div class="d-flex px-2 py-1">
+                              <div class="d-flex flex-column justify-content-center">
+                                <dialog id="comment" class="modal-body col-lg-7" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                                  <div>
+                                    <div class="modal-dialog">
+                                      <div class="row">
+                                        <div class="modal-header">
+                                          <h5 class="modal-title">Комментарий</h5>
+                                        </div>
+                                        <div class="wrap col-lg-12 modal-body">
+                                          <textarea disabled class="col-lg-12 form-conrtol" style="height: 300px">{{ agreem.comment|default:'' }}</textarea>
+                                          <br>
+                                          <table title="Введите текст и нажмите Enter" style="width:40%; border-color: #363636;" class="table col-lg-5">
+                                            <tbody>
+                                              <tr>
+                                                <td>
+                                                  <input name="com" id="com" placeholder="Ввод комментария" class="form-control" >
+                                                </td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="row">
+                                      <div class="col-lg-9">
+                                      <button class="btn" type="button" onclick="window.comment.close();">Закрыть</button>
+                                      </div>
+                                      <div class="col-lg-3">
+                                      <button href="#close" title="Close" class="btn">Сохранить</button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </dialog>
+                                <a type="button" onclick="window.comment.showModal();"><i {% if agreem.comment %}style="color:blue;"{% endif %} class="material-icons opacity-10">comment</i></a>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    {% for s in steps %}
+                    <table class="table align-items-center ">
+                      <thead>
+                        <tr>
+                          <th colspan="5" class="text-center">
+                            {{ s.step }}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th>
+                            Пользователь
+                          </th>
+
+                          {% if s.step == 'Корректировка' %}
+                          <th>
+                            Внесение нового файла
+                          </th>
+                          {% else %}
+                          <th>
+                            Принятие
+                          </th>
+                            {% if s.step != 'Завершение' %}
+                            <th>
+                              Отклонение
+                            </th>
+                            {% endif %}
+                          {% endif %}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for a in accepters %}
+                        {% if a.accepting == s %}
+                        <tr style="outline: thin solid">
+                          <td class="text-center" style="border: none; border-right-style: inherit;">
+                            {{ a.user }}
+                          </td>
+                          {% if s.step == 'Корректировка' %}
+                          <td class="text-center" style="border: none; border-right-style: inherit;">
+                            {% if a.accept != 1 %}
+                            <a href="/new_file_agreement/{{ agreem.id }}/{{ s.id }}/{{ a.id }}">
+                              <span>Добавление файла</span>
+                            </a>
+                            {% else %}
+                            ...
+                            {% endif %}
+                          </td>
+                          {% else %}
+                          <td class="text-center" style="border: none; border-right-style: inherit;">
+                            {% if a.accept == 0 %}
+                              {% if s.accepted == s.need %}
+                              ...
+                              {% elif s.step == 'Согласование' %}
+                              <a href="/agreemented/{{ agreem.id }}/{{ s.id}}/{{ a.id }}">
+                                <span>Принять</span>
+                              </a>
+                              {% elif s.step == 'Завершение' %}
+                              <a href="/close_agreement/{{ agreem.id }}/{{ s.id }}/{{ a.id }}">
+                                <span>Закрыть</span>
+                              </a>
+                              {% else %}
+                              <a href="/accept_agreement/{{ agreem.id }}/{{ s.id}}/{{ a.id }}">
+                                <span>Принять</span>
+                              </a>
+                              {% endif %}
+                            {% else %}
+                            ...
+                            {% endif %}
+                          </td>
+                            {% if s.step != 'Завершение' %}
+                            <td class="text-center" style="border: none; border-right-style: inherit;">
+                              {% if a.accept == 0 %}
+                                {% if s.accepted == s.need %}
+                                ...
+                                {% else %}<a href="/correct_agreement/{{ agreem.id }}/{{ s.id }}/{{ a.id }}">
+                                  <span>Отклонить</span>
+                                </a>
+                                {%endif%}
+                              {% else %}
+                              ...
+                              {% endif %}
+                            </td>
+                            {% endif %}
+                          {% endif %}
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    {% endfor %}
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-lg-10">
+                  <br><br><br><br>
+                </div>
+                <div class="col-lg-2">
+                  <br><br><br>
+                  {% if agreem.closed != 1 %}<button class="btn bg-gradient-dark px-4 mb-3" type="submit">Сохранить</button> {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="{{ ASSETS_ROOT }}/js/plugins/chartjs.min.js"></script>
+  <script>
+    var ctx = document.getElementById("chart-bars").getContext("2d");
+
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["M", "T", "W", "T", "F", "S", "S"],
+        datasets: [{
+          label: "Sales",
+          tension: 0.4,
+          borderWidth: 0,
+          borderRadius: 4,
+          borderSkipped: false,
+          backgroundColor: "rgba(255, 255, 255, .8)",
+          data: [50, 20, 10, 22, 50, 10, 40],
+          maxBarThickness: 6
+        }, ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              suggestedMin: 0,
+              suggestedMax: 500,
+              beginAtZero: true,
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+              color: "#fff"
+            },
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+
+
+    var ctx2 = document.getElementById("chart-line").getContext("2d");
+
+    new Chart(ctx2, {
+      type: "line",
+      data: {
+        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        datasets: [{
+          label: "Mobile apps",
+          tension: 0,
+          borderWidth: 0,
+          pointRadius: 5,
+          pointBackgroundColor: "rgba(255, 255, 255, .8)",
+          pointBorderColor: "transparent",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderWidth: 4,
+          backgroundColor: "transparent",
+          fill: true,
+          data: [50, 40, 300, 320, 500, 350, 200, 230, 500],
+          maxBarThickness: 6
+
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+
+    var ctx3 = document.getElementById("chart-line-tasks").getContext("2d");
+
+    new Chart(ctx3, {
+      type: "line",
+      data: {
+        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        datasets: [{
+          label: "Mobile apps",
+          tension: 0,
+          borderWidth: 0,
+          pointRadius: 5,
+          pointBackgroundColor: "rgba(255, 255, 255, .8)",
+          pointBorderColor: "transparent",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderWidth: 4,
+          backgroundColor: "transparent",
+          fill: true,
+          data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
+          maxBarThickness: 6
+
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              padding: 10,
+              color: '#f8f9fa',
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+  </script>
+  <script>
+                window.document.onkeydown = function () {
+                        startRefocus();
+                }
+                function startRefocus(event) {
+                        event = event || window.event;
+                        //if (!event.ctrlKey) return;
+                        var key = event.keyCode;
+                        var targetElement = event.target || event.srcElement;
+                        focusMe(targetElement, key);
+                }
+                function focusMe(input, key) {
+                        var needFocusElement = true;
+                        function detectColumn(td) {
+                                var result = 0, x;
+                                while (td = td.previousElementSibling) {
+                                        ++result
+                                }
+                                return result;
+                        }
+                        try {
+                                switch (key) {
+                                        case 37:
+                                                needFocusElement = input.parentNode.previousElementSibling.querySelector("input");
+
+                                                break;
+                                        case 39:
+                                                needFocusElement = input.parentNode.nextElementSibling.querySelector("input");
+                                                break;
+                                        case 38:
+                                                needFocusElement = input.parentNode.parentNode.previousElementSibling.querySelectorAll("td")[detectColumn(input.parentNode)].querySelector("input");
+                                                break;
+                                        case 40:
+                                                needFocusElement = input.parentNode.parentNode.nextElementSibling.querySelectorAll("td")[detectColumn(input.parentNode)].querySelector("input");
+                        break;
+                    default:
+                        needFocusElement = false;
+                                }
+                        } catch (e) {
+                                needFocusElement = false;
+                        }
+
+                        if (!needFocusElement) return;
+                        needFocusElement.focus();
+                }
+        </script>
+  <script>
+    const tx = document.getElementsByTagName("textarea");
+    for (let i = 0; i < tx.length; i++) {
+      tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+      tx[i].addEventListener("input", OnInput, false);
+    }
+
+    function OnInput() {
+      this.style.height = 0;
+      this.style.height = (this.scrollHeight) + "px";
+    }
+  </script>
+
+
+{% endblock javascripts %}

@@ -1,0 +1,177 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Создание заявки {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    {% if perms.reference.add_task_head %}
+        <script>
+            var n = 1
+        </script>
+        <div style="width:99.99%" class="row">
+          <div class="col-md-12">
+            <div class="card card-plain">
+              <div class="col-md-12">
+                <div class="card ">
+                  <div class="card-header">
+                    <h4 class="card-title"> Редактирование заявки {{ error }}
+                      <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
+                      </div>
+                    </h4>
+                  </div>
+                  <div class="card-body">
+                    <div>
+                        <div class="form-group">
+                          <form method="POST">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div>
+                                    <table class="table align-items-center mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th style="color: #000000;background:#168de2;">
+                                                    Вид заявки
+                                                </th>
+                                                <th style="color: #000000;background:#168de2;">
+                                                    Объект
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <select id="name" name="name" class="form-control">
+                                                        <option>
+                                                            Выберите вид заявки
+                                                        </option>
+                                                        <option {% if th.type == 'Наличные' %} selected {% endif %} value="Наличные">
+                                                            Наличные
+                                                        </option>
+                                                        <option {% if th.type == 'Проектные' %} selected {% endif %} value="Проектные">
+                                                            Проектные
+                                                        </option>
+                                                        <option {% if th.type == 'Расходники' %} selected {% endif %} value="Расходники">
+                                                            Расходники
+                                                        </option>
+                                                        <option {% if th.type == 'Прочие' %} selected {% endif %} value="Прочие">
+                                                            Прочие
+                                                        </option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    {{ th.obj }}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                              <input hidden id="tbn" class="tbn" name="tbn" value="0">
+                            <div class="row">
+                                <table style="" class="table align-items-center mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th style="background:#168de2;">
+                                                <div class="col-md-12 px-md-1">
+                                                    <div class="form-group">
+                                                      <label style="color: #000000;" class="text-center"> Наименование </label>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                            <th style="background:#168de2;">
+                                                <label style="color: #000000;" class="text-center"> Количество </label>
+                                            </th>
+                                            <th style="background:#168de2;">
+                                                <label style="color: #000000;" class="text-center"> Ед.измер. </label>
+                                            </th>
+                                            <th style=" background:#168de2;">
+                                                <label style="color: #000000;" class="text-center"> Срок до </label>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody >
+                                        {% for t in tb %}
+                                            <tr>
+                                                <td class="text-center">
+                                                    <input id="name{{t.id}}" name="name{{t.id}}" placeholder="Наименование запроса" value="{{ t.name }}" class="form-control">
+                                                </td>
+                                                <td class="text-center">
+                                                    <input id="number{{t.id}}" name="number{{t.id}}" placeholder="Необходимое количество" value="{{ t.number }}" class="form-control">
+                                                </td>
+                                                <td class="text-center">
+                                                    <input id="ci{{t.id}}" name="ci{{t.id}}" placeholder="Еденица измерения" value="{{ t.ci }}" class="form-control">
+                                                </td>
+                                                <td class="text-center">
+                                                    <input id="need_date{{t.id}}" name="need_date{{t.id}}" type="date" class="form-control" value="{{ t.need_date|date:'Y-m-d' }}">
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tbody id="fetch">
+                                    </tbody>
+                                </table>
+                                <div class="col-md-3 px-md-1">
+                                    <div class="">
+                                        <button onclick="CreateTable()" class="add form-control btn btn-info" type="button">Добавить</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 px-md-1">
+                                    <div class="">
+                                        <button onclick="deleteRows()" class="remove form-control btn btn-info" type="button">Удалить</button>
+                                    </div>
+                                </div>
+                            </div>
+                              <div>
+                                  <p></p>
+                                  <a href="#">
+                                    <button class="btn btn-info" type="submit">Сохранить</button>
+                                  </a>
+                                  <a class="btn btn-info" href="/view_task/{{ th.id }}">
+                                    вернуться
+                                  </a>
+                              </div>
+                          </form>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+        </div>
+    {% endif %}
+{% endblock content %}
+
+{% block javascripts %}
+
+    <script type="text/javascript">
+        function CreateTable(){
+            var table = document.getElementById("fetch");
+            var n = table.rows.length
+            var row = table.insertRow(-1);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var cell4 = row.insertCell(3);
+            cell1.innerHTML = '<input placeholder="Наименование запроса" id="tn' + n +'" name="tn' + n +'" class="form-control">';
+            cell2.innerHTML = '<input placeholder="Необходимое количество" id="tc' + n +'" name="tc' + n +'" class="form-control">';
+            cell3.innerHTML = '<input placeholder="Еденица измерения" id="te' + n +'" name="te' + n +'" class="form-control">';
+            cell4.innerHTML = '<input id="td' + n +'" name="td' + n +'" type="date" class="form-control">';
+            var element = document.getElementById("tbn")
+            num = n + 1
+            element.value = num
+        }
+        function deleteRows(){
+            var table = document.getElementById('fetch');
+            var n = table.rows.length
+            var rowCount = table.rows.length;
+            var row = table.deleteRow(rowCount-1);
+            rowCount--;
+            var element = document.getElementById("tbn")
+            num = n - 1
+            element.value = num
+        }
+    </script>
+{% endblock javascripts %}

@@ -1,0 +1,424 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Утверждения {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+  {% if perms.reference.view_period  %}
+    <div class="container-fluid py-4">
+      <div class="row mb-12">
+        <div class="col-lg-12 col-md-6 mb-md-0 mb-4">
+          <div class="card">
+            <div class="card-header pb-0">
+              <div class="row">
+                <div class="col-lg-11 col-7 ">
+                  <h6 class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Утверждения </h6>
+                </div>
+                <div class="col-lg-1 col-7">
+                  <a class="text-white" href="new_agreement"><button class="btn bg-gradient-dark px-3 mb-2" data-class="bg-gradient-dark">Создать</button></a>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="wrap col-lg-12">
+                  <table class="table table_sort align-items-center mb-0">
+                    <thead>
+                      <tr>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">№</th>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Наименования</th>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Инициализатор</th>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Дата создания</th>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Статус</th>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Файл</th>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Комментарий</th>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for t in agreements %}
+                      <tr class="col-lg-11" >
+                        <td style="{% if t.closed == 1 %} background-color: #e5e5e5; {% endif %}">
+                          <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                              <a href="view_agreement/{{ t.id }}">{{ t.id }}</a>
+                            </div>
+                          </div>
+                        </td>
+                        <td style="{% if t.closed == 1 %} background-color: #e5e5e5; {% endif %}">
+                          <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                              <a href="view_agreement/{{ t.id }}">{{ t.name }} </a>
+                            </div>
+                          </div>
+                        </td>
+                        <td style="{% if t.closed == 1 %} background-color: #e5e5e5; {% endif %}">
+                          <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                              <a href="view_agreement/{{ t.id }}">{{ t.creator }} </a>
+                            </div>
+                          </div>
+                        </td>
+                        <td style="{% if t.closed == 1 %} background-color: #e5e5e5; {% endif %}">
+                          <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                              <a href="view_agreement/{{ t.id }}">{{ t.date_create }} </a>
+                            </div>
+                          </div>
+                        </td>
+                        <td style="">
+                          <div style="border:1px; color:black;" class="d-flex">
+                            <div  class="d-flex flex-column justify-content-center">
+                              <a href="view_agreement/{{ t.id }}">{{ t.status }} </a>
+                            </div>
+                          </div>
+                        </td>
+                        <td style="{% if t.closed == 1 %} background-color: #e5e5e5; {% endif %}">
+                          <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                              <a href="agreement_file/{{ t.id }}" target="_blank" rel="noopener noreferrer">{{ t.file.name|slice:"17:" }}</a>
+                            </div>
+                          </div>
+                        </td>
+                        <td style="{% if t.closed == 1 %} background-color: #e5e5e5; {% endif %}">
+                          <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                              <dialog id="comment{{ t.id }}" class="modal-body col-lg-7" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                                <div>
+                                  <div class="modal-dialog">
+                                    <div class="row">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title">Комментарий по {{ t.persone.full_name }}</h5>
+                                      </div>
+                                      <div class="wrap col-lg-12 modal-body">
+                                        <textarea disabled class="col-lg-12 form-conrtol" style="height: 300px">{{ t.comment|default:'' }}</textarea>
+                                        <br>
+                                        <table title="Введите текст и нажмите Enter" style="width:40%; border-color: #363636;" class="table col-lg-5">
+                                          <tbody>
+                                            <tr>
+                                              <td>
+                                                <input name="com{{ t.id }}" id="com{{ t.id }}" placeholder="Ввод комментария" class="form-control" >
+                                              </td>
+                                            </tr>
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-lg-9">
+                                    <button class="btn" type="button" onclick="window.comment{{ t.id }}.close();">Закрыть</button>
+                                    </div>
+                                    <div class="col-lg-3">
+                                    <button href="#close" title="Close" class="btn">Сохранить</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </dialog>
+                              <a type="button" onclick="window.comment{{ t.id }}.showModal();"><i {% if t.comment %}style="color:blue;"{% endif %} class="material-icons opacity-10">comment</i></a>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="align-middle text-center">
+                          <div class="dropdown text-center">
+                            <a class="cursor-pointer" id="dropdownTable{{ t.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="fa fa-ellipsis-v text-secondary"></i>
+                            </a>
+                            <ul class="dropdown-menu text-center" aria-labelledby="dropdownTable">
+                              <li><a class="dropdown-item text-center border-radius-md" href="view_agreement/{{ t.id }}">Открыть</a></li>
+                              {% if t.closed == 1 %}{% else %}<li><a class="dropdown-item text-center border-radius-md" href="close_agreement/{{ t.id }}">Закрыть заявку</a></li>{% endif %}
+                              <li><a class="dropdown-item text-center border-radius-md" href="del_agreement/{{ t.id }}">Удалить</a></li>
+                            </ul>
+                          </div>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                  <br><br><br><br><br>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  {% endif %}
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="{{ ASSETS_ROOT }}/js/plugins/chartjs.min.js"></script>
+  <script>
+    var ctx = document.getElementById("chart-bars").getContext("2d");
+
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["M", "T", "W", "T", "F", "S", "S"],
+        datasets: [{
+          label: "Sales",
+          tension: 0.4,
+          borderWidth: 0,
+          borderRadius: 4,
+          borderSkipped: false,
+          backgroundColor: "rgba(255, 255, 255, .8)",
+          data: [50, 20, 10, 22, 50, 10, 40],
+          maxBarThickness: 6
+        }, ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              suggestedMin: 0,
+              suggestedMax: 500,
+              beginAtZero: true,
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+              color: "#fff"
+            },
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+    var ctx2 = document.getElementById("chart-line").getContext("2d");
+    new Chart(ctx2, {
+      type: "line",
+      data: {
+        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        datasets: [{
+          label: "Mobile apps",
+          tension: 0,
+          borderWidth: 0,
+          pointRadius: 5,
+          pointBackgroundColor: "rgba(255, 255, 255, .8)",
+          pointBorderColor: "transparent",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderWidth: 4,
+          backgroundColor: "transparent",
+          fill: true,
+          data: [50, 40, 300, 320, 500, 350, 200, 230, 500],
+          maxBarThickness: 6
+
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+
+    var ctx3 = document.getElementById("chart-line-tasks").getContext("2d");
+
+    new Chart(ctx3, {
+      type: "line",
+      data: {
+        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        datasets: [{
+          label: "Mobile apps",
+          tension: 0,
+          borderWidth: 0,
+          pointRadius: 5,
+          pointBackgroundColor: "rgba(255, 255, 255, .8)",
+          pointBorderColor: "transparent",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderWidth: 4,
+          backgroundColor: "transparent",
+          fill: true,
+          data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
+          maxBarThickness: 6
+
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              padding: 10,
+              color: '#f8f9fa',
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const getSort = ({ target }) => {
+            const order = (target.dataset.order = -(target.dataset.order || -1));
+            const index = [...target.parentNode.cells].indexOf(target);
+            const collator = new Intl.Collator(['en', 'ru'], { numeric: true });
+            const comparator = (index, order) => (a, b) => order * collator.compare(
+                a.children[index].innerHTML,
+                b.children[index].innerHTML
+            );
+
+            for(const tBody of target.closest('table').tBodies)
+                tBody.append(...[...tBody.rows].sort(comparator(index, order)));
+
+            for(const cell of target.parentNode.cells)
+                cell.classList.toggle('sorted', cell === target);
+        };
+
+        document.querySelectorAll('.table_sort thead').forEach(tableTH => tableTH.addEventListener('click', () => getSort(event)));
+
+    });
+  </script>
+
+{% endblock javascripts %}

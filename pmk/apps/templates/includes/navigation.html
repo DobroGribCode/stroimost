@@ -1,0 +1,55 @@
+<!-- Navbar -->
+    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
+      <div class="container-fluid py-1 px-3">
+        <nav id="on" style="opacity: 1;" aria-label="breadcrumb">
+          <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
+              <i onclick="openNav()" class="material-icons opacity-10">home</i>
+          </a>
+        </nav>
+        <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+          <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+            <!--<div class="input-group input-group-outline">
+              <label class="form-label">Поиск</label>
+              <input type="text" class="form-control">
+            </div> -->
+          </div>
+          <ul class="navbar-nav  justify-content-end">
+            <li class="nav-item d-flex align-items-center">
+              <a href="{% url 'logout' %}" class="nav-link text-body font-weight-bold px-0">
+                <i class="fa fa-sign-out me-sm-1"></i>
+                <span class="d-sm-inline d-none">Выход</span>
+              </a>
+            </li>
+            <li class="nav-item px-3 d-flex align-items-center">
+              <a href="javascript:;" class="nav-link text-body p-0">
+                <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
+              </a>
+            </li>
+            <li class="nav-item d-flex align-items-center">
+                <button id="btnOpenModal" class="nav-link text-body font-weight-bold px-0" style="border:none;"><i class="fa fa-bell me-sm-1"></i></button>
+                  <dialog id="myModal" class="modal-body col-lg-6" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
+                    <div>
+                      <div class="modal-dialog">
+                        <div>
+                          <div class="modal-header">
+                            <div class="col-lg-9">
+                            </div>
+                            <div class="col-lg-3">
+                              <button class="btn" type="button" id="closeModal">Закрыть</button>
+                            </div>
+                          </div>
+                          <div class="">
+                            <ul id="notificationList">
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </dialog>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- End Navbar -->
+    

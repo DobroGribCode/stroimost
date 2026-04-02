@@ -1,0 +1,189 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Создание заявки {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+{% if perms.reference.add_task_head %}
+<script>
+    var n = 1
+</script>
+<div style="width:99.99%" class="row">
+  <div class="col-md-12">
+    <div class="card card-plain">
+      <div class="col-md-12">
+        <div class="card ">
+          <div class="card-header">
+            <h4 class="card-title"> Создание заявки {{ error }}
+              <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
+              </div>
+            </h4>
+          </div>
+          <div class="card-body">
+            <div>
+                <div class="form-group">
+                  <form method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div>
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="color: #000000;background:#168de2;">
+                                            Вид заявки
+                                        </th>
+                                        <th style="color: #000000;background:#168de2;">
+                                            Объект
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            {{ forms.type }}
+                                        </td>
+                                        <td>
+                                            {{ forms.obj }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                      <input hidden id="tbn" class="tbn" name="tbn" value="0">
+                    <div class="row">
+                        <table style="" class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="background:#168de2;">
+                                        <div class="col-md-12 px-md-1">
+                                            <div class="form-group">
+                                              <label style="color: #000000;" class="text-center"> Наименование </label>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th style="background:#168de2;">
+                                        <label style="color: #000000;" class="text-center"> Количество </label>
+                                    </th>
+                                    <th style="background:#168de2;">
+                                        <label style="color: #000000;" class="text-center"> Ед.измер. </label>
+                                    </th>
+                                    <th style=" background:#168de2;">
+                                        <label style="color: #000000;" class="text-center"> Срок до </label>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="fetch">
+                                <tr>
+                                    <td class="text-center">
+                                        <input placeholder="Наименование запроса" id="tn0" name="tn0" class="form-control">
+                                    </td>
+                                    <td class="text-center">
+                                        <input placeholder="Необходимое количество" id="tc0" name="tc0" class="form-control">
+                                    </td>
+                                    <td class="text-center">
+                                        <input placeholder="Еденица измерения" id="te0" name="te0" class="form-control">
+                                    </td>
+                                    <td class="text-center">
+                                        <input id="td0" name="td0" type="date" class="form-control">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="col-md-3 px-md-1">
+                            <div class="">
+                                <button onclick="CreateTable()" class="add form-control btn btn-info" type="button">Добавить</button>
+                            </div>
+                        </div>
+                        <div class="col-md-3 px-md-1">
+                            <div class="">
+                                <button onclick="deleteRows()" class="remove form-control btn btn-info" type="button">Удалить</button>
+                            </div>
+                        </div>
+                    </div>
+                      <div>
+                          <p></p>
+                          <a href="#">
+                            <button id="create" disabled="disabled" name="create" class="btn btn-info" type="submit">Создать</button>
+                          </a>
+                      </div>
+                  </form>
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endif %}
+{% endblock content %}
+
+{% block javascripts %}
+
+    <script type="text/javascript">
+        function CreateTable(){
+            var table = document.getElementById("fetch");
+            var n = table.rows.length
+            var row = table.insertRow(-1);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var cell4 = row.insertCell(3);
+            cell1.innerHTML = '<input placeholder="Наименование запроса" id="tn' + n +'" name="tn' + n +'" class="form-control">';
+            cell2.innerHTML = '<input placeholder="Необходимое количество" id="tc' + n +'" name="tc' + n +'" class="form-control">';
+            cell3.innerHTML = '<input placeholder="Еденица измерения" id="te' + n +'" name="te' + n +'" class="form-control">';
+            cell4.innerHTML = '<input id="td' + n +'" name="td' + n +'" type="date" class="form-control">';
+            var element = document.getElementById("tbn")
+            num = n + 1
+            element.value = num
+        }
+        function deleteRows(){
+            var table = document.getElementById('fetch');
+            var rowCount = table.rows.length;
+            if(rowCount > '1'){
+                var row = table.deleteRow(rowCount-1);
+                rowCount--;
+            }
+            else{
+                alert('Нельзя удалить последнюю строку.');
+            }
+        }
+    </script>
+    <script>
+        function validateSelection() {
+            var id_type = document.getElementById('id_type').value; // Получаем значение выбранного элемента в select с id 'id_type'
+            var id_obj = document.getElementById('id_obj').value; // Получаем значение выбранного элемента в select с id 'id_obj'
+
+            if (id_type === '' && id_obj === '') {
+                alert('Пожалуйста, выберите значение в обоих полях');
+                return false; // Останавливаем отправку формы, так как не все поля заполнены
+            }
+            return true; // Продолжаем отправку формы, так как оба поля заполнены
+        }
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const select = document.getElementById('id_type');
+        const button = document.getElementById('create');
+        const select2 = document.getElementById('id_obj');
+        
+        select.addEventListener('change', function() {
+            if (select.value !== '' && select2.value !== '') {
+                button.removeAttribute('disabled');
+            } else {
+                button.setAttribute('disabled', 'disabled');
+            }
+        });
+		select2.addEventListener('change', function() {
+            if (select.value !== '' && select2.value !== '') {
+                button.removeAttribute('disabled');
+            } else {
+                button.setAttribute('disabled', 'disabled');
+            }
+        });
+    });
+</script>
+{% endblock javascripts %}
