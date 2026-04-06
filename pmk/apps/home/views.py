@@ -30,6 +30,8 @@ from random import randrange
 from datetime import date
 from calendar import monthrange
 
+from django.core.paginator import Paginator
+from django.db.models import Q
 from django import template
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
@@ -41,8 +43,8 @@ from django.db.models import Count
 from django.utils import timezone
 from django.http import HttpResponse, Http404
 from openpyxl.styles import PatternFill, Border
-from ..reference.forms import GazForm, TabForm, ObjsForm, TaskForm, AutoForm, GroupForm,PersoneForm, DriverForm, AgreementForm, TempFileForm
-from ..reference.models import gazolin,gaz_input,gaz_tabel_head,gaz_tabel_body,task_number,driver_tax_lagacy, notifications,notificated,persone_salary,driver_tax,temp_file,tabel_group, category, dayapprove,dayapproved,persone, period,tabel_list, objs,task_head, task_body, group, automobile, driver, driver_list, agreement, agreement_accepter,agreement_step,accepter_list,agreementer_list, ender_list
+from ..reference.forms import TabForm, ObjsForm, AutoForm, GroupForm,PersoneForm, DriverForm, AgreementForm, TempFileForm
+from ..reference.models import driver_tax_lagacy, notifications,notificated,persone_salary,driver_tax,temp_file,tabel_group, category, dayapprove,dayapproved,persone, period,tabel_list, objs, group, automobile, driver, driver_list, agreement, agreement_accepter,agreement_step,accepter_list,agreementer_list, ender_list
 from django.contrib.auth.models import User
 
 @login_required(login_url="/login/")
@@ -1139,7 +1141,7 @@ class tab:
         html_template = loader.get_template('tabels/worker/view_tabel.html')
         today = datetime.date.today()
         next_month = today.replace(day=1) + datetime.timedelta(days=32)
-        if per.date.month == today.month or next_month.month == per.date.month or request.user.username == 'KaratovaMadina' or request.user.username == 'DjavathanovaP':
+        if per.date.month == today.month or next_month.month == per.date.month or request.user.profile.open_tp_edit or per.obj.prorab == request.user or request.user.is_superuser:
             for t in tabs:
                 if t.company:
                     if t.company != t.persone.company:
@@ -1414,7 +1416,7 @@ class tab:
         html_template = loader.get_template('tabels/worker/view_tabel.html')
         today = datetime.date.today()
         next_month = today.replace(day=1) + datetime.timedelta(days=32)
-        if per.date.month == today.month or next_month.month == per.date.month or request.user.username == 'KaratovaMadina' or request.user.username == 'DjavathanovaP':
+        if per.date.month == today.month or next_month.month == per.date.month or request.user.profile.open_tp_edit or per.obj.prorab == request.user or request.user.is_superuser:
             for t in tabs:
                 if t.company:
                     if t.company != t.persone.company:
@@ -1843,7 +1845,7 @@ class tab:
             if t.d30:sheet["AK" + str(i)].value = ""+str(t.d30)
             if t.d31:sheet["AL" + str(i)].value = ""+str(t.d31)
             sheet["AM" + str(i)].value = "" + str(t.days)
-            if request.user.has_perm('reference.view_temp_file'):
+            if request.user.profile.open_tp_finance:
                 if t.fine:sheet["AN" + str(i)].value = "" + str(int(float(t.fine)))
                 if t.add:sheet["AO" + str(i)].value = "" + str(int(float(t.add)))
                 if t.salary:sheet["AP" + str(i)].value = "" + str(int(float(t.salary)))
@@ -1887,7 +1889,7 @@ class tab:
                 sheet["AQ6"].border = None
                 sheet["AQ7"].border = None
             if t.comment: sheet["AQ" + str(i)].value = "" + str(t.d31)
-            if request.user.username == 'KaratovaMadina' or request.user.username == 'DjavathanovaP' or request.user.is_superuser:
+            if request.user.profile.open_tp_finance or request.user.is_superuser:
                 sheet["AR6"].value = "Заметки"
                 if t.persone.idea:sheet["AR" + str(i)].value = str(t.persone.idea)
             i+=1
@@ -1956,7 +1958,7 @@ class tab:
             if t.d30:sheet["AJ" + str(i)].value = ""+str(t.d30)
             if t.d31:sheet["AK" + str(i)].value = ""+str(t.d31)
             sheet["AL" + str(i)].value = "" + str(t.days)
-            if request.user.has_perm('reference.view_temp_file'):
+            if request.user.profile.open_tp_finance:
                 if t.salary:sheet["AO" + str(i)].value = "" + str(int(float(t.salary)))
             else:
                 sheet["AP5"].value = None
@@ -2012,180 +2014,6 @@ class tab:
             return JsonResponse({'message': 'Значение успешно сохранено'})
         else:
             return JsonResponse({'message': 'Недопустимый запрос'}, status=400)
-    class gaz:
-
-        def save_gaz(request):
-            if request.method == 'POST':
-                id = request.POST.get('id')
-                value = int(request.POST.get('value'))
-                p = gaz_tabel_head.objects.get(id=id)
-                try:
-                    gaz_input(
-                        gaz_obj=p.gaz,
-                        gaz_add=float(value),
-                        date=datetime.date.today()
-                    ).save()
-                    ids = p.gaz.id
-                    gaz = gazolin.objects.get(id=ids)
-                    gaz.sum = gaz.sum + float(value)
-                    gaz.save()
-                    return JsonResponse({'message': 'Данные успешно сохранены'})
-                except:
-                    return JsonResponse({'error': 'Недопустимое значение для поля Value'}, status=400)
-            else:
-                return JsonResponse({'error': 'Метод не поддерживается'}, status=405)
-
-        @login_required(login_url="/login/")
-        def AddPersoneG(request, id, ids):
-            per = gaz_tabel_head.objects.get(id=ids)
-            p = persone.objects.get(id=id)
-            gaz_tabel_body(
-                tabel=per,
-                persone=p,
-                company=p.company,
-                full_name=p.full_name,
-                position=p.position,
-            ).save()
-            return redirect('/view_gaz/' + str(ids))
-
-        @login_required(login_url="/login/")
-        def gaz(request):
-            persones = persone.objects.all()
-            per = gaz_tabel_head.objects.all()
-            groups = tabel_group.objects.all()
-            if groups:
-                pass
-            else:
-                groups
-            context = {'per': per, 'segment': 'gaz', 'groups': groups, 'persones': persones}
-            html_template = loader.get_template('tabels/gaz/gaz.html')
-            return HttpResponse(html_template.render(context, request))
-
-        @login_required(login_url="/login/")
-        def view_gaz(request, id):
-            per = gaz_tabel_head.objects.get(id=id)
-            pers = gaz_tabel_head.objects.all()
-            persones = persone.objects.all().filter(date_leave=None).order_by('full_name')
-            all = persone.objects.all().filter(date_leave=None).order_by('full_name')
-            tabs = gaz_tabel_body.objects.all().filter(tabel=per).order_by('full_name')
-            autos = automobile.objects.all().order_by('name')
-            html_template = loader.get_template('tabels/gaz/view_gaz.html')
-            if per:
-                s_minus = 0
-                for t in tabs:
-                    minus = 0
-                    for i in range(1, 32):  # Проходим по диапазону от 1 до 31
-                        attr_name = 'd' + str(i)  # Формируем название атрибута
-                        if hasattr(t, attr_name) and getattr(t,
-                                                             attr_name) is not None:  # Проверяем, существует ли атрибут и не является ли он None
-                            try:
-                                minus += float(
-                                    getattr(t, attr_name))  # Пытаемся преобразовать значение в число и добавить к сумме
-                            except (TypeError, ValueError):
-                                print(f"Ошибка при преобразовании значения {attr_name} в число")
-
-                    t.sum = minus
-                    t.save()
-                    s_minus += minus
-                per.gaz_minus = s_minus
-                per.save()
-                sum_minus = 0
-                for p in pers:
-                    if p.gaz_minus:
-                        sum_minus += p.gaz_minus
-                gaz = gazolin.objects.get(id=per.gaz.id)
-                gaz.gaz_sum = gaz.sum - sum_minus
-                gaz.save()
-            if request.method == 'POST':
-                for t in tabs:
-                    if t:
-                        for i in range(1, 32):
-                            if getattr(t, f'd{i}'):
-                                t.auto_block = 1
-                        t.save()
-                    auto = request.POST.get(str(t.id) + 'auto')
-                    try:
-                        t.auto = automobile.objects.get(id=int(auto))
-                    except:
-                        pass
-                    comment = request.POST.get("com" + str(t.id))
-                    if comment == '':
-                        pass
-                    else:
-                        if t.comment == None:
-                            t.comment = ''
-                            t.save()
-                            comment = str(t.comment) + str(comment) + ': ' + str(request.user.last_name) + ' ' + str(
-                                request.user.first_name) + ' ' + str(
-                                datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
-                            t.comment = comment
-                            t.save()
-                        else:
-                            comment = str(t.comment) + str(comment) + ': ' + str(request.user.last_name) + ' ' + str(
-                                request.user.first_name) + ' ' + str(
-                                datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
-                            t.comment = comment
-                            t.save()
-                    t.save()
-                return redirect('/view_gaz/' + str(id))
-            else:
-                context = {
-                    'autos': autos,
-                    'persones': persones,
-                    'per': per,
-                    'segment': 'driver',
-                    'tabs': tabs,
-                    'pers': pers,
-                    'all': all,
-                }
-                return HttpResponse(html_template.render(context, request))
-
-        @login_required(login_url="/login/")
-        def new_gaz(request):
-            per = gaz_tabel_head.objects.all()
-            form = GazForm
-            persones = persone.objects.all().filter(date_leave=None).order_by('full_name')
-            if request.method == 'POST':
-                year = request.POST.get("ye")
-                month = request.POST.get("mo")
-                da = year + '-' + month + '-' + '01'
-                gaz = gazolin.objects.get(id=int(request.POST.get('gaz')))
-                gaz_tabel_head(
-                    gaz = gaz,
-                    date = da
-                ).save()
-                post = gaz_tabel_head.objects.last()
-                da = date(int(year), int(month), 1)
-                for i in range(1, 32):
-                    try:
-                        day_attr = f"dw{i}"
-                        day_value = i
-                        da = da.replace(day=day_value)
-                        setattr(post, day_attr, da)
-                    except:
-                        pass
-                post.save()
-                return redirect('gaz')
-                # else:
-                #     error = 'Неправильно'
-                #     context = {
-                #         'error': error,
-                #         'segment': 'tabel',
-                #         'persones': persones,
-                #         'per': per,
-                #         'form': form,
-                #     }
-                #     html_template = loader.get_template('tabels/gaz/new_gaz.html')
-                #     return HttpResponse(html_template.render(context, request))
-            else:
-                context = {
-                    'segment': 'tabel',
-                    'persones': persones,
-                    'per': per,
-                    'form': form,
-                }
-                html_template = loader.get_template('tabels/gaz/new_gaz.html')
-                return HttpResponse(html_template.render(context, request))
 
 
 class reference:
@@ -2394,29 +2222,27 @@ class reference:
 
     @login_required(login_url="/login/")
     def persones(request):
-        pers = persone.objects.all().order_by('-id')
-        groups = group.objects.all()
-        today = datetime.date.today()
-        if misc.is_last_day_of_month(today):
-            pre_month = datetime.date(day=31,month=today.month,year=today.year)
-            for p in pers:
-                persone_salary(
-                    persone=p,
-                    date=pre_month,
-                    salary=p.salary,
-                    grade=p.grade,
-                ).save()
-                try:
-                    tax = driver_tax.objects.get(driver=p)
-                    if tax:
-                        driver_tax_lagacy(
-                            driver=tax.driver,
-                            tax=tax.tax,
-                            date=pre_month
-                        ).save()
-                except:
-                    pass
-        context = {'pers': pers,'groups': groups, 'segment': 'ref'}
+        # 1. Получаем поисковой запрос из URL (если он есть)
+        search_query = request.GET.get('search', '')
+
+        # 2. Получаем базовый список сотрудников (сортировка обязательна для пагинации)
+        pers_list = persone.objects.all().order_by('full_name')
+
+        # 3. Если есть поиск, фильтруем по ФИО
+        if search_query:
+            pers_list = pers_list.filter(full_name__icontains=search_query)
+
+        # 4. Настраиваем пагинатор (50 сотрудников на страницу)
+        paginator = Paginator(pers_list, 50)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        context = {
+            'pers': page_obj,  # Для сохранения совместимости со старым циклом for
+            'page_obj': page_obj,  # Для отрисовки кнопок пагинации
+            'search_query': search_query,  # Чтобы строка поиска не сбрасывалась
+            'segment': 'ref'
+        }
         html_template = loader.get_template('reference/persone/persones.html')
         return HttpResponse(html_template.render(context, request))
 
@@ -2523,7 +2349,8 @@ class reference:
                 post.workgroup = request.POST.get("workgroup")
                 post.idea = request.POST.get("idea")
                 comments = request.POST.get("comment")
-                comments = comments + ': ' + str(request.user.last_name) + ' ' + str(request.user.first_name) + ' ' + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
+                if comments:
+                    comments = comments + ': ' + str(request.user.last_name) + ' ' + str(request.user.first_name) + ' ' + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
                 post.comment = comments
                 post.save()
                 return redirect('persones')
@@ -2576,7 +2403,7 @@ class reference:
                     comment = str(r.comment) + str(comment) + ': ' + str(request.user.last_name) + ' ' + str(request.user.first_name) + ' ' + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
                     r.comment = comment
                     r.save()
-            if request.user.username == 'AhmedovMagomed' or request.user.username == 'IdrisovA' or request.user.is_superuser:
+            if request.user.profile.edit_tax_personal or request.user.is_superuser:
                 try:
                     taxs = request.POST.get("tax")
                     if taxs:
@@ -3028,439 +2855,6 @@ class reference:
             html_template = loader.get_template('reference/persone/view_persone.html')
             return HttpResponse(html_template.render(context, request))
 
-class task:
-    @login_required(login_url="/login/")
-    def task_main(request):
-        tasks = task_head.objects.all()
-        context = {'segment': 'task', 'tasks': tasks}
-        html_template = loader.get_template('task/task_main.html')
-        return HttpResponse(html_template.render(context, request))
-
-    @login_required(login_url="/login/")
-    def new_task(request):
-        tb = task_body.objects.all()
-        obj = objs.objects.all()
-        forms = TaskForm
-        if request.method == 'POST':
-            forms = TaskForm(request.POST)
-            if forms.is_valid():
-                post = forms.save(commit=False)
-                post.date_create = datetime.datetime.now()
-                post.creator = request.user
-                n = int(request.POST.get('tbn'))
-                i = 0
-                post.obj = objs.objects.get(id=int(request.POST.get('obj')))
-                try:
-                    number = task_number.objects.get(obj=post.obj)
-                except:
-                    task_number(
-                        obj=objs.objects.get(id=int(request.POST.get('obj'))),
-                        number=1
-                    ).save()
-                    number = task_number.objects.all().filter(obj=post.obj).last()
-                post.id_name = str(post.obj.name) + '_' + str(number.number)
-                number.number += 1
-                number.save()
-                post.save()
-                if n == 0:
-                    tn = request.POST.get('tn' + str(i))
-                    if tn == '':
-                        tn = 'Не заполнено'
-                    tc = request.POST.get('tc' + str(i))
-                    if tc == '':
-                        tc = 'Не заполнено'
-                    te = request.POST.get('te' + str(i))
-                    if te == '':
-                        te = 'Не заполнено'
-                    td = request.POST.get('td' + str(i))
-                    if td == '':
-                        td = datetime.date.today() + datetime.timedelta(days=5)
-                    task_body(
-                        head=post,
-                        name=tn,
-                        number=tc,
-                        ci=te,
-                        need_date=td
-                    ).save()
-                    post.body = 1
-                else:
-                    n = n-1
-                    while i <= n:
-                        tn = request.POST.get('tn' + str(i))
-                        if tn == '':
-                            tn = 'Не заполнено'
-                        tc = request.POST.get('tc' + str(i))
-                        if tc == '':
-                            tc = 'Не заполнено'
-                        te = request.POST.get('te' + str(i))
-                        if te == '':
-                            te = 'Не заполнено'
-                        td = request.POST.get('td' + str(i))
-                        if td == '':
-                            td = datetime.date.today()+datetime.timedelta(days=5)
-                        task_body(
-                            head=post,
-                            name=tn,
-                            number=tc,
-                            ci=te,
-                            need_date=td
-                        ).save()
-                        i=i+1
-                        post.body = i
-                post.save()
-                return redirect('task_main')
-            else:
-                error = 'Некорректные данные'
-                context = {'segment': 'task', 'forms': forms,'error': error}
-                html_template = loader.get_template('task/new_task.html')
-                return HttpResponse(html_template.render(context, request))
-        context = {'segment': 'task', 'forms':forms, 'obj':obj}
-        html_template = loader.get_template('task/new_task.html')
-        return HttpResponse(html_template.render(context, request))
-
-    @login_required(login_url="/login/")
-    def view_task(request, id):
-        th = task_head.objects.get(id=id)
-        tb = task_body.objects.all().filter(head=th)
-        if request.method == 'POST':
-            try:
-                stat = request.POST.get('status')
-                if stat:
-                    if th.status != stat:
-                        th.status = stat
-                        th.status_changer = request.user
-                    th.save()
-            except:
-                pass
-            s = th.status
-            comment = request.POST.get('comm')
-            if comment != '':
-                if th.comment == None:
-                    th.comment = ' '
-                    th.save()
-                comment = str(th.comment) + str(comment)+ ': ' + str(request.user.last_name)+' '+ str(request.user.first_name) + ' ' + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M"))+' '+ '\r\n'
-                th.comment = comment
-                th.status = s
-                th.save()
-            try:
-                ph = 0
-                i = 0
-                for t in tb:
-                    tch = request.POST.get('tch' + str(t.id))
-                    tac = request.POST.get('tac' + str(t.id))
-                    tag = request.POST.get('tagreem'+str(t.id))
-                    if tag:
-                        tag = int(tag)
-                        if tag == 1:
-                            t.agreem = 2
-                            t.agreemer = None
-                            comment = str(th.comment) + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + ' Cистема: ' + str(request.user.last_name)+' '+ str(request.user.first_name) + ' изменил статус одобрения запроса "' + str(t.name) + '" - "На рассмотрение"' + '\r\n'
-                            th.comment = comment
-                            th.save()
-                        if tag == 2:
-                            t.agreem = 1
-                            t.agreemer = request.user
-                            t.save()
-                            comment = str(th.comment) + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + ' Cистема: ' + str(request.user.last_name)+' '+ str(request.user.first_name) + ' изменил статус одобрения запроса "' + str(t.name) + '" - "Одобрено"' + '\r\n'
-                            th.comment = comment
-                            th.save()
-                    else:
-                        if t.agreem == 1:
-                            t.agreem = 2
-                            t.agreemer = None
-                            comment = str(th.comment) + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + ' Cистема: ' + str(request.user.last_name)+' '+ str(request.user.first_name) + ' изменил статус одобрения запроса "' + str(t.name) + '" - "На рассмотрение"' + '\r\n'
-                            th.comment = comment
-                            th.save()
-                    if tch:
-                        t.change = int(tch)
-                    else:
-                        t.change = None
-                    try:
-                        if tac:
-                            tac = int(tac)
-                            if tac == 1:
-                                t.accept = 2
-                                comment = str(th.comment) + str(
-                                    datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + ' Cистема: ' + str(request.user.last_name) + ' ' + str(request.user.first_name) + ' изменил статус приемки "' + str(
-                                    t.name) + '" - "В ожидании"' + '\r\n'
-                                th.comment = comment
-                                th.save()
-                            if tac == 2:
-                                t.accept = 1
-                                t.save()
-                                comment = str(th.comment) + str(
-                                    datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + ' Cистема: ' + str(request.user.last_name) + ' ' + str(request.user.first_name) + ' изменил статус приемки "' + str(
-                                    t.name) + '" - "Получено"' + '\r\n'
-                                th.comment = comment
-                                th.save()
-                        else:
-                            if t.accept == 1:
-                                t.accept = 2
-                                comment = str(th.comment) + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + ' Cистема: ' + str(request.user.last_name) + ' ' + str(request.user.first_name) + ' изменил статус приемки "' + str(
-                                    t.name) + '" - "В ожидании"' + '\r\n'
-                                th.comment = comment
-                                th.save()
-                    except:
-                        pass
-                    try:
-                        if t.procent <= 99:
-                            TestDay = datetime.date.today()
-                            if TestDay >= t.need_date:
-                                t.expired = 1
-                                th.expired = 1
-                                t.save()
-                    except:
-                        pass
-                    t.save()
-                    ph = ph + t.procent
-                    i +=1
-                endph = 0
-                for t in tb:
-                    if t.procent <= 100:
-                        endph=endph + t.procent
-                    else:
-                        endph=endph + 1000
-                th.procent = endph/int(th.body)
-                th.save()
-            except:
-                pass
-            return redirect('/view_task/'+str(id))
-        else:
-            context = {'segment': 'task', 'tb':tb, 'th': th}
-            html_template = loader.get_template('task/view_task.html')
-            return HttpResponse(html_template.render(context, request))
-
-    @login_required(login_url="/login/")
-    def edit_task(request, id):
-        th = task_head.objects.get(id=id)
-        tb = task_body.objects.all().filter(head=th).order_by('id')
-        context = {'segment': 'task', 'tb': tb, 'th': th}
-        if request.method == 'POST':
-            n = int(request.POST.get('tbn'))
-            i = 0
-            for t in tb:
-                name = request.POST.get('name'+str(t.id))
-                number = request.POST.get('number'+str(t.id))
-                ci = request.POST.get('ci'+str(t.id))
-                need_date = request.POST.get('need_date'+str(t.id))
-                t.name = name
-                t.number = number
-                t.ci = ci
-                t.need_date = need_date
-                t.save()
-            if int(n)!=0:
-                n = n - 1
-                while i <= n:
-                    tn = request.POST.get('tn' + str(i))
-                    if tn == '':
-                        tn = 'Не заполнено'
-                    tc = request.POST.get('tc' + str(i))
-                    if tc == '':
-                        tc = 'Не заполнено'
-                    te = request.POST.get('te' + str(i))
-                    if te == '':
-                        te = 'Не заполнено'
-                    td = request.POST.get('td' + str(i))
-                    if td == '':
-                        td = datetime.date.today() + datetime.timedelta(days=5)
-                    task_body(
-                        head=th,
-                        name=tn,
-                        number=tc,
-                        ci=te,
-                        need_date=td
-                    ).save()
-                    i+=1
-            name = request.POST.get('name')
-            if name != th.type:
-                if name:
-                    th.type = name
-            th.body = th.body + i
-            th.save()
-            return redirect('/edit_task/'+str(id))
-        html_template = loader.get_template('task/edit_task.html')
-        return HttpResponse(html_template.render(context, request))
-
-    @login_required(login_url="/login/")
-    def del_tb(request, id,ids):
-        tb = task_body.objects.get(id=id)
-        tb.delete()
-        response = redirect('/view_task/'+str(ids))
-        return response
-
-
-    @login_required(login_url="/login/")
-    def del_task(request, id):
-        th = task_head.objects.get(id=id)
-        tb = task_body.objects.all().filter(head=th)
-        for t in tb:
-            t.delete()
-        th.delete()
-        response = redirect('task_main')
-        return response
-
-    @login_required(login_url="/login/")
-    def close_task(request, id):
-        th = task_head.objects.get(id=id)
-        th.closed = 1
-        th.system += ' Заявка закрыта ' + str() + '- ' + str(request.user.last_name) + ' ' + str(request.user.first_name) + '. ' + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
-        th.save()
-        response = redirect('task_main')
-        return response
-
-    @login_required(login_url="/login/")
-    def open_task(request, id):
-        th = task_head.objects.get(id=id)
-        th.closed = None
-        th.system += ' Заявка открыта ' + str() + '- ' + str(request.user.last_name) + ' ' + str(request.user.first_name) + '. ' + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
-        th.save()
-        response = redirect('task_main')
-        return response
-
-    @login_required(login_url="/login/")
-    def accept_save(request):
-        if request.method == 'POST':
-            id = request.POST.get('id')
-            value = request.POST.get('value')
-            taskb = task_body.objects.get(id=int(id))
-            taskh = task_head.objects.get(id=taskb.head.id)
-            if value:
-                taskb.accept = int(value)
-                if value == '2':
-                    stage = 'Закрыто'
-                elif value == '1':
-                    stage = 'Мой склад'
-                elif value == '0':
-                    stage = 'В процессе'
-                if taskh.system is None:
-                    taskh.system = ''
-                taskh.system +=' Стадия заявки - ' + str(stage) + '- ' + str(request.user.last_name) + ' ' + str(request.user.first_name) + '. ' + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) +  '\r\n'
-                taskh.save()
-                taskb.save()
-                return JsonResponse({'message': 'Данные успешно сохранены'})
-            elif value == '':
-                return JsonResponse({'error': 'Null Недопустимое значение для поля Value'}, status=400)
-            else:
-                return JsonResponse({'error': 'Недопустимое значение для поля Value'}, status=400)
-        else:
-            return JsonResponse({'error': 'Метод не поддерживается'}, status=405)
-
-    @login_required(login_url="/login/")
-    def change_save(request):
-        if request.method == 'POST':
-            id = request.POST.get('id')
-            value = request.POST.get('value')
-            taskb = task_body.objects.get(id=int(id))
-            taskh = task_head.objects.get(id=taskb.head.id)
-            if value:
-                taskb.change = int(value)
-                taskb.status_changer = request.user
-                taskb.save()
-                taskh.system += str(taskh.system) +'Изменение кол-ва - ' + str(request.user.last_name)+' '+ str(request.user.first_name) + '. ' + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) +   '\r\n'
-                taskh.save()
-                user = ''
-                if taskb.status_changer.last_name:
-                    user += taskb.status_changer.last_name
-                    if taskb.status_changer.first_name:
-                        user += ' '
-                        user += taskb.status_changer.first_name
-                elif taskb.status_changer.first_name:
-                        user += taskb.status_changer.first_name
-                else:
-                    user +=  taskb.status_changer
-                return JsonResponse({'message': 'Данные успешно сохранены', 'user': user})
-            elif value == '':
-                return JsonResponse({'error': 'Null Недопустимое значение для поля Value'}, status=400)
-            else:
-                return JsonResponse({'error': 'Недопустимое значение для поля Value'}, status=400)
-        else:
-            return JsonResponse({'error': 'Метод не поддерживается'}, status=405)
-
-    def agreem_save(request):
-        if request.method == 'POST':
-            id = request.POST.get('id')
-            value = request.POST.get('value')
-            taskh = task_head.objects.get(id=int(id))
-            if value:
-                taskh.status = value
-                if taskh.system:
-                    taskh.system += 'Статус изменен на - '+ str(value)+ ': ' + str(request.user.last_name)+' '+ str(request.user.first_name) + ' ' + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
-                else:
-                    taskh.system = ''
-                    taskh.system += 'Статус изменен на - '+ str(value)+ ': ' + str(request.user.last_name)+' '+ str(request.user.first_name) + ' ' + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
-                taskh.status_changer = request.user
-                taskh.save()
-                return JsonResponse({'message': 'Данные успешно сохранены'})
-            elif value == '':
-                return JsonResponse({'error': 'Null Недопустимое значение для поля Value'}, status=400)
-            else:
-                return JsonResponse({'error': 'Недопустимое значение для поля Value'}, status=400)
-        else:
-            return JsonResponse({'error': 'Метод не поддерживается'}, status=405)
-
-    def control_save(request):
-        if request.method == 'POST':
-            id = request.POST.get('id')
-            value = request.POST.get('value')
-            taskh = task_head.objects.get(id=int(id))
-            if value:
-                taskh.control = value
-                if taskh.system:
-                    taskh.system += 'Контроль изменен на - '+ str(value)+ ': ' + str(request.user.last_name)+' '+ str(request.user.first_name) + ' ' + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
-                else:
-                    taskh.system = ''
-                    taskh.system += 'Контроль изменен на - '+ str(value)+ ': ' + str(request.user.last_name)+' '+ str(request.user.first_name) + ' ' + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
-                taskh.control_changer = request.user
-                taskh.save()
-                return JsonResponse({'message': 'Данные успешно сохранены'})
-            elif value == '':
-                return JsonResponse({'error': 'Null Недопустимое значение для поля Value'}, status=400)
-            else:
-                return JsonResponse({'error': 'Недопустимое значение для поля Value'}, status=400)
-        else:
-            return JsonResponse({'error': 'Метод не поддерживается'}, status=405)
-    @login_required(login_url="/login/")
-    def taskexport(request, obj, name):
-        obj_s = objs.objects.get(name=obj)
-        th = task_head.objects.all().filter(obj=obj_s)
-        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = 'attachment;  filename=%s' % str(name)
-        book = openpyxl.load_workbook('taskexp.xlsx')
-        t_list: worksheet = book.worksheets[0]
-        i = 3
-        fill = PatternFill(start_color="bc5d58", end_color="bc5d58", fill_type="solid")
-        for p in th:
-            n = 1
-            tbs = task_body.objects.all().filter(head=p).order_by('name')
-            t_list.insert_rows(i)
-            t_list["A" + str(i)].fill = fill
-            t_list["B" + str(i)].fill = fill
-            t_list["C" + str(i)].fill = fill
-            t_list["D" + str(i)].fill = fill
-            t_list["A" + str(i)].value = "" + str(p.type)
-            t_list["B" + str(i)].value = "" + str(p.creator.last_name)+" "+str(p.creator.first_name)
-            t_list["C" + str(i)].value = "" + str(p.date_create)
-            t_list["D" + str(i)].value = "" + str(p.status)
-            i+=1
-            for t in tbs:
-                t_list.insert_rows(i)
-                t_list["A" + str(i)].value = "" + str(n)
-                t_list["B" + str(i)].value = "" + str(t.name)
-                t_list["C" + str(i)].value = "" + str(t.number)
-                t_list["D" + str(i)].value = "" + str(t.ci)
-                i += 1
-                n+=1
-        book.title = 'Отчет общий'
-        book.save(response)
-        return response
-        return redirect('/task_main/')
-
-
-
-
-
-
-
 
 
 
@@ -3740,7 +3134,7 @@ class misc:
                 if t.fine: t_list["AQ" + str(i)].value = "" + str(round(t.fine))
                 if t.sum: t_list["AR" + str(i)].value = "" + str(round(t.sum))
                 if t.comment: t_list["AS" + str(i)].value = "" + str(t.comment)
-                if request.user.username == 'KaratovaMadina' or request.user.username == 'DjavathanovaP' or request.user.is_superuser:
+                if request.user.profile.open_tp_finance or request.user.is_superuser:
                     t_list["AT6"].value = "Заметки"
                     if t.persone.idea: t_list["AT" + str(i)].value = str(t.persone.idea)
                 i += 1
@@ -3762,7 +3156,7 @@ class misc:
         html_template = loader.get_template('tabels/worker/view_tabel_half.html')
         today = datetime.date.today()
         next_month = today.replace(day=1) + datetime.timedelta(days=16)
-        if per.date.month == today.month or next_month.month == per.date.month or request.user.username == 'KaratovaMadina' or request.user.username == 'DjavathanovaP':
+        if per.date.month == today.month or next_month.month == per.date.month or request.user.profile.open_tp_edit or per.obj.prorab == request.user or request.user.is_superuser:
             for t in tabs:
                 if t.company:
                     if t.company != t.persone.company:
@@ -4251,7 +3645,7 @@ class misc:
                 if t.fine: t_list["AR" + str(i)].value = "" + str(round(t.fine))
                 if t.salary: t_list["AS" + str(i)].value = "" + str(round(t.salary))
                 if t.comment: t_list["AT" + str(i)].value = "" + str(t.comment)
-                if request.user.username == 'KaratovaMadina' or request.user.username == 'DjavathanovaP' or request.user.is_superuser:
+                if request.user.profile.open_tp_finance or request.user.is_superuser:
                     t_list["AU6"].value = "Заметки"
                     if t.persone.idea: t_list["AU" + str(i)].value = str(t.persone.idea)
                 i += 1
@@ -4344,7 +3738,7 @@ class misc:
                     if t.fine: t_list["AR" + str(i)].value = "" + str(round(t.fine))
                     if t.salary: t_list["AS" + str(i)].value = "" + str(round(t.salary))
                     if t.comment: t_list["AT" + str(i)].value = "" + str(t.comment)
-                    if request.user.username == 'KaratovaMadina' or request.user.username == 'DjavathanovaP' or request.user.is_superuser:
+                    if request.user.profile.open_td_finance or request.user.is_superuser:
                         t_list["AU6"].value = "Заметки"
                         if t.persone.idea: t_list["AT" + str(i)].value = str(t.persone.idea)
                     i += 1

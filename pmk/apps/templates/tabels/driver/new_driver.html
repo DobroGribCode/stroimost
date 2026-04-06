@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} Создание табели {% endblock %}
+{% block title %} Создание табеля водителей {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
@@ -36,6 +36,7 @@ position: fixed; /* чтобы страница "не подпрыгивала" 
 display: none;
 }
 </style>
+{% if request.user.profile.td_add or request.user.is_superuser %}
     <div class="container-fluid py-4">
       <div class="row mb-12">
         <div class="col-lg-11 col-md-6 mb-md-0 mb-4">
@@ -85,9 +86,10 @@ display: none;
                           <div class="text-center d-flex px-2 py-1">
                             <div class="d-flex flex-column justify-content-center">
                               <select name="ye" id="ye" class="form-control">
-                                <option value="2024">2024</option>
-                                <option value="2025">2025</option>
-                                <option value="2026">2026</option>
+                                  <option value="2026">2026</option>
+                                  <option value="2026">2027</option>
+                                  <option value="2026">2028</option>
+                                  <option value="2026">2029</option>
                               </select>
                             </div>
                           </div>
@@ -124,7 +126,7 @@ display: none;
       </div>
       {% include 'includes/footer.html' %}
     </div>
-
+{% endif %}
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->

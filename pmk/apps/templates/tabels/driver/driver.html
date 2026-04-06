@@ -12,7 +12,7 @@
 {% endblock stylesheets %}
 
 {% block content %}
-  {% if perms.reference.view_period  %}
+  {% if request.user.profile.td_menu %}
     <div class="container-fluid py-4">
       <div class="row mb-12">
         <div class="col-lg-11 col-md-6 mb-md-0 mb-4">
@@ -22,7 +22,7 @@
                 <div class="col-lg-11 col-7">
                   <h6 class="text-center">Табели водителей</h6>
                 </div>
-                  {% if perms.reference.add_driver  %}
+                  {% if request.user.profile.td_add  %}
                 <div class="col-lg-1 col-7">
                   <a class="text-white" href="{% url 'new_driver' %}"><button class="btn bg-gradient-dark px-3 mb-2" data-class="bg-gradient-dark">Создать</button></a>
                   <button class="btn bg-gradient-dark px-3 mb-2" onclick="window.AddPersone.showModal();" data-class="bg-gradient-dark">Найти</button>
@@ -55,39 +55,7 @@
                       </tr>
                       {% for p in per %}
                       {% if g.date == p.date %}
-                      {% if p.obj.prorab == request.user or request.user.username == 'AsadulaevM' or request.user.username == 'RahmatylaevIS' or request.user.username == "DjavathanovaP" or request.user.username == 'AhmedovMagomed' or request.user.username == 'IdrisovA' or request.user.username == 'RamazanovSh' or request.user.username == 'TagaevAA' or request.user.username == 'GadjievAM' or request.user.username == 'KamalydinovR' or request.user.is_superuser %}
-                      {% if request.user.username == 'TagaevAA' or request.user.username == 'AhmedovMagomed' or request.user.username == 'IdrisovA' or request.user.username == 'KamalydinovR'  or request.user.username == 'RamazanovSh'  %}
-                        {% if p.obj.name == "Офис_Махачкала" or p.obj.name == "Офис_Саратов" %}
-                        {% else %}
-                        <tr class="col-lg-11">
-                          <td hidden>
-                            <div class="d-flex px-2 py-1">
-                              <div class="d-flex flex-column justify-content-center">
-                                <a href="view_driver/{{ p.id }}">{{ p.id }}</a>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="avatar-group text-center mt-2">
-                              <a href="view_driver/{{ p.id }}">{{ p.obj }} </a>
-                            </div>
-                          </td>
-
-                          <td class="align-middle text-center">
-                            <div class="dropdown text-center">
-                              <a class="cursor-pointer" id="dropdownTable{{ d.id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa fa-ellipsis-v text-secondary"></i>
-                              </a>
-                              <ul class="dropdown-menu text-center" aria-labelledby="dropdownTable">
-                                <li><a class="dropdown-item text-center border-radius-md" href="view_driver/{{ p.id }}">Открыть</a></li>
-                                <li><a class="dropdown-item text-center border-radius-md" href="hexp_driver/{{ p.id }}">Эскпорт</a></li>
-                                {% if perms.reference.delete_period  %}<li><a class="dropdown-item text-center border-radius-md" href="del_driver/{{ p.id }}">Удалить</a></li>{% endif %}
-                              </ul>
-                            </div>
-                          </td>
-                        </tr>
-                        {% endif %}
-                      {% else %}
+                      {% if p.obj.prorab == request.user or request.user.profile.td_view or p.obj.watch1 or p.obj.watch2 or request.user.is_superuser %}
                       <tr class="col-lg-11">
                         <td hidden>
                           <div class="d-flex px-2 py-1">
@@ -109,64 +77,17 @@
                             <ul class="dropdown-menu text-center" aria-labelledby="dropdownTable">
                               <li><a class="dropdown-item text-center border-radius-md" href="view_driver/{{ p.id }}">Открыть</a></li>
                               <li><a class="dropdown-item text-center border-radius-md" href="hexp_driver/{{ p.id }}/Табель {{ p.obj }} от {{ p.date|date:'F Y' }}">Эскпорт</a></li>
-                              {% if perms.reference.delete_period  %}<li><a class="dropdown-item text-center border-radius-md" href="del_driver/{{ p.id }}">Удалить</a></li>{% endif %}
+                              {% if request.user.profile.td_delete  %}<li><a class="dropdown-item text-center border-radius-md" href="del_driver/{{ p.id }}">Удалить</a></li>{% endif %}
                             </ul>
                           </div>
                         </td>
                       </tr>
-                      {% endif %}
                       {% endif %}
                     {% endif %}
                     {% endfor %}
                     </tbody>
                   </table>
                   {% endfor %}
-                  <dialog id="AddPersone" class="modal-body col-lg-6" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
-                    <div>
-                      <div class="modal-dialog">
-                        <div>
-                          <div class="modal-header">
-                            <div class="col-lg-9">
-                              <input class="form-control" type="text" id="myInput" ondrag="myFunction()" oninput="myFunction()" oncopy="myFunction()" onchange="myFunction()" onkeyup="myFunction()" onkeypress="myFunction()" placeholder="Поиск по ФИО..">
-
-                            </div>
-                            <div class="col-lg-3">
-                              <button class="btn" type="button" onclick="window.AddPersone.close();">Закрыть</button>
-                            </div>
-                          </div>
-                          <div class="">
-                            <table id="myTable" class="table table-align">
-                              <thead>
-                              <tr class="header">
-                                <th>ФИО</th>
-                                <th>Группа</th>
-                              </tr>
-                              </thead>
-                              <tbody>
-                              {% for p in persones %}
-                              <tr>
-                                <td>
-                                  <a href="/search/{{p.id}}">{{ p.full_name }}</a>
-                                </td>
-                                <td>
-                                  <a href="/search/{{p.id}}">{{ p.group }}</a>
-                                </td>
-                              </tr>
-                              {% endfor %}
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-lg-9">
-                        </div>
-                        <div class="col-lg-3">
-                          <button class="btn" type="button" onclick="window.AddPersone.close();">Закрыть</button>
-                        </div>
-                      </div>
-                    </div>
-                  </dialog>
                   <br><br><br><br><br>
                 </div>
               </div>

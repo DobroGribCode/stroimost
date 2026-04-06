@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import gazolin,gaz_input,gaz_tabel_head,gaz_tabel_body,task_number,notificated,notifications,driver_tax_lagacy, persone_salary, category,driver_tax,tabel_group,dayapprove,dayapproved,persone, period, tabel_list, temp_file, objs,task_body,task_head,ender_list , group, driver_list,driver, automobile,agreement, agreement_step,accepter_list,agreementer_list,agreement_accepter
+from .models import notificated,notifications,driver_tax_lagacy, persone_salary, category,driver_tax,tabel_group,dayapprove,dayapproved,persone, period, tabel_list, temp_file, objs,ender_list , group, driver_list,driver, automobile,agreement, agreement_step,accepter_list,agreementer_list,agreement_accepter
 
 # Register your models here
 admin.site.register(category)
@@ -15,8 +15,6 @@ admin.site.register(tabel_list)
 admin.site.register(driver)
 admin.site.register(driver_list)
 admin.site.register(objs)
-admin.site.register(task_body)
-admin.site.register(task_head)
 admin.site.register(automobile)
 admin.site.register(group)
 admin.site.register(persone)
@@ -28,9 +26,5 @@ admin.site.register(driver_tax_lagacy)
 admin.site.register(persone_salary)
 admin.site.register(notificated)
 admin.site.register(notifications)
-admin.site.register(task_number)
-admin.site.register(gazolin)
-admin.site.register(gaz_input)
-admin.site.register(gaz_tabel_head)
-admin.site.register(gaz_tabel_body)
+
 

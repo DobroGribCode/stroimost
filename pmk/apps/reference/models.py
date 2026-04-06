@@ -47,7 +47,7 @@ class category(models.Model):
 
 class automobile(models.Model):
     name = models.CharField('Наименование модели', max_length=125)
-    owner = models.CharField('Собственник', max_length=125, default='ООО "ПМК"')
+    owner = models.CharField('Собственник', max_length=125, default='Компания')
     comment = models.CharField('Комментарий',max_length=5000, blank=True,null=True)
     number = models.CharField('Гос. номер', max_length=125, blank=True, null=True)
     def __str__(self):
@@ -60,7 +60,7 @@ class automobile(models.Model):
 # Табели
 class persone(models.Model):
     org_c = (
-        (1, 'ПМК'),
+        (1, 'Оформлен'),
         (2, 'Неоформ'),
     )
     country_c = (
@@ -81,8 +81,8 @@ class persone(models.Model):
     grade = models.CharField('Разряд', max_length=15, blank=True,null=True)
     driver = models.IntegerField('Водитель?',default=0, choices=d)
     salary = models.FloatField('Оклад', max_length=9,default=0, null=True, blank=True)
-    exception = models.IntegerField('Исключение', max_length=1, default=0)
-    sum_method = models.IntegerField('Метод расчета', max_length=1, default=0)
+    exception = models.IntegerField('Исключение', default=0)
+    sum_method = models.IntegerField('Метод расчета', default=0)
     graphic = models.IntegerField('График',default='1',choices=g, null=True, blank=True)
     output = models.IntegerField('Выходные',default=1,blank=True, null=True)
     date_accept = models.DateField('Дата приема', blank=True, null=True)
@@ -266,13 +266,13 @@ class driver_list(models.Model):
     fine = models.FloatField('Штраф', max_length=8, blank=True,null=True)
     add = models.FloatField('Премия', max_length=8, blank=True,null=True)
     auto = models.ForeignKey(automobile, verbose_name='Т/С', on_delete=models.PROTECT, blank=True, null=True)
-    salaryedit = models.IntegerField('Изменение итога', max_length=1, default=0)
+    salaryedit = models.IntegerField('Изменение итога', default=0)
     salared = models.FloatField('Начисленно', max_length=15, blank=True,null=True)
     block = models.IntegerField('Открытые дни', default=3)
     days = models.IntegerField('Сумма дней', default=0)
     hours = models.IntegerField('Часы работы', default=0)
     used = models.IntegerField('Использованно выходных',blank=True,null=True,default=0)
-    output = models.IntegerField('Выходные',max_length=1,default=1,blank=True,null=True)
+    output = models.IntegerField('Выходные',default=1,blank=True,null=True)
     auto_block = models.IntegerField('Блокировка Т\С', blank=True, null=True)
     d1 = models.CharField('День', max_length=5, blank=True, null=True)
     d1c = models.CharField('Цвет фона', max_length=15, blank=True, null=True)
@@ -412,7 +412,7 @@ class period(models.Model):
     t = ((1, 'Геодезия'),(2,'ПТО'), (3, 'Рабочие'), (4, 'АУП'), (5, 'Кухня'))
     type = models.IntegerField('Тип табеля', default=1,choices=t)
     date = models.DateField('Период', blank=True, null=True)
-    graphic = models.IntegerField('График', max_length=1, blank=True, null=True, choices=g)
+    graphic = models.IntegerField('График', blank=True, null=True, choices=g)
     obj = models.ForeignKey(objs, verbose_name='Объект', on_delete=models.PROTECT, blank=True,null=True, default=1)
     workdays = models.IntegerField('Количество рабочих дней', blank=True, default=30)
     workdays5 = models.IntegerField('Количество рабочих дней графика 5/2', blank=True, default=22)
@@ -654,72 +654,6 @@ class tabel_list(models.Model):
         verbose_name = 'Список персонала в табели персонала'
         verbose_name_plural = 'Списки персонала в табелях персонала'
 
-class task_number(models.Model):
-    obj = models.ForeignKey(objs, verbose_name='Объект', on_delete=models.PROTECT, blank=True, null=True, default=1)
-    number = models.IntegerField('Номер',blank=True,null=True, default=1)
-
-class task_head(models.Model):
-    type_c = (('Наличные','Наличные'),('Проектные ','Проектные '),('Расходники ','Расходники '),('Прочие','Прочие'))
-    status = (('На рассмотрение', 'На рассмотрение'), ('Одобрен', 'Одобрен'), ('Отклонен', 'Отклонен'))
-    control = (('Не пройден', 'Не пройден'), ('Пройден', 'Пройден'),('На редактирование','На редактирование'))
-    type = models.CharField('Вид заявки',choices=type_c, max_length=50,blank=True,null=True,default='Прочие')
-    name = models.CharField('Наименование', max_length=50,blank=True,null=True)
-    id_name = models.CharField('Номер', max_length=50,blank=True,null=True)
-    date_create = models.DateTimeField('Дата и время создания')
-    closed = models.IntegerField('Закртие', blank=True, null=True)
-    creator = models.ForeignKey(User, verbose_name='Автор',related_name='Автор' ,on_delete=models.PROTECT, blank=True, null=True)
-    obj = models.ForeignKey(objs, verbose_name='Объект', on_delete=models.PROTECT, blank=True,null=True, default=1)
-    control = models.CharField('Контроль', max_length=55, choices=control, default='Не пройден', null=True, blank=True)
-    control_changer = models.ForeignKey(User, verbose_name='Кто проверил',related_name='Проверяющий', on_delete=models.PROTECT, blank=True,null=True)
-    status = models.CharField('Статус', max_length=55, choices=status, default='На рассмотрение', null=True, blank=True)
-    status_changer = models.ForeignKey(User, verbose_name='Кем установлен статус',related_name='Ответсвенный', on_delete=models.PROTECT, blank=True,null=True)
-    comment = models.CharField('Комментарий', max_length=5650, blank=True,null=True,default=' ')
-    system = models.CharField('Системная информация', max_length=5650, blank=True,null=True,default=' ')
-    procent = models.IntegerField('Процент выполнения', blank=True,null=True, default=0)
-    expired = models.IntegerField('Просрочено', default=0)
-    body = models.IntegerField('Кол-во запросов', default=0)
-
-    def __str__(self):
-        return str(self.name)
-    class Meta:
-        ordering = ['-date_create', ]
-        verbose_name = 'Заявка'
-        verbose_name_plural = 'Заявки'
-
-class task_head_control(models.Model):
-    jff = models.CharField('jff',default='jff',max_length=10)
-    def __str__(self):
-        return str(self.jff)
-    class Meta:
-        verbose_name = 'Контроль заявки'
-        verbose_name_plural = 'Контроль Заявок'
-
-class task_body(models.Model):
-    procent = models.IntegerField('Процент выполнения', blank=True, null=True, default=0)
-    date = datetime.date.today()+datetime.timedelta(days=10)
-    head = models.ForeignKey(task_head ,verbose_name='Заявка' ,on_delete=models.PROTECT, blank=True, null=True)
-    name = models.CharField('Наименование позиции', max_length=150, blank=True, null=True)
-    number = models.CharField('Количество', max_length=50,blank=True,null=True)
-    ci = models.CharField('Единицы измерения', max_length=50,blank=True,null=True)
-    need_date = models.DateField('Срок до', default=date,blank=True,null=True)
-    change = models.IntegerField('Изменения от руководства',blank=True,null=True)
-    status_changer = models.ForeignKey(User, verbose_name='Кем изменен',related_name='Изменивший', on_delete=models.PROTECT, blank=True,null=True)
-    agreem = models.IntegerField('Согласован с руководителем', blank=True, null=True)
-    agreemer = models.ForeignKey(User, verbose_name='Кем одобренно', related_name='Одобритель',blank=True,null=True,on_delete=models.CASCADE)
-    sent = models.IntegerField('Отправили на объект',blank=True,null=True)
-    accept = models.IntegerField('Получили на объекте',blank=True,null=True)
-    expired = models.IntegerField('Просроченно', default=0)
-
-    def __str__(self):
-        try:
-            name = str(self.head.type)
-        except:
-            name = str(self.head.name)
-        return str(name + ': ' + self.name)
-    class Meta:
-        verbose_name = 'Запрос по заявке'
-        verbose_name_plural = 'Запрос по заявкам'
-
 class agreement(models.Model):
     status = (('На проверке', 'На проверке'), ('На согласование', 'На согласование'), ('На корректировке', 'На корректировке'),('Завершен','Завершен'))
     name = models.CharField('Наименование', max_length=50,blank=True,null=True)
@@ -833,110 +767,3 @@ class notifications(models.Model):
         verbose_name = 'Уведомление'
         verbose_name_plural = 'Уведомления'
 
-
-class gazolin(models.Model):
-    sum = models.FloatField('Топливо принятое в сумме',max_length=9,default=0)
-    obj = models.ForeignKey(objs, verbose_name='Объект', on_delete=models.PROTECT, blank=True,null=True)
-    gaz_sum = models.FloatField('Остаток объекта', max_length=9, default=0)
-
-    def __str__(self):
-        return str(self.obj)
-    class Meta:
-        verbose_name = 'Остаток топлива'
-        verbose_name_plural = 'Остатки топлива'
-
-class gaz_input(models.Model):
-    gaz_obj = models.ForeignKey(gazolin, verbose_name='Объект прихода', on_delete=models.PROTECT)
-    gaz_add = models.FloatField('Количество',max_length=9,default=0)
-    date = models.DateTimeField('Время прихода', default=datetime.datetime.today())
-    def __str__(self):
-        return str(self.gaz_obj)+str(self.date)
-    class Meta:
-        verbose_name = 'Приход топлива'
-        verbose_name_plural = 'Приходы топлива'
-
-class gaz_tabel_head(models.Model):
-    gaz_minus = models.FloatField('Расход топлива', max_length=9, default=0)
-    gaz = models.ForeignKey(gazolin, verbose_name='Топливный объект', on_delete=models.PROTECT)
-    date = models.DateField('Период табеля', default=datetime.date.today())
-    dw1 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw2 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw3 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw4 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw5 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw6 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw7 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw8 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw9 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw10 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw11 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw12 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw13 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw14 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw15 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw16 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw17 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw18 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw19 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw20 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw21 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw22 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw23 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw24 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw25 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw26 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw27 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw28 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw29 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw30 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    dw31 = models.DateField('День недели', max_length=5, blank=True, null=True)
-    def __str__(self):
-        date_str = str(self.date)
-        return str(date_str +' '+self.gaz.obj.name)
-    class Meta:
-        verbose_name = 'Табель топлива'
-        verbose_name_plural = 'Табели топлива'
-
-class gaz_tabel_body(models.Model):
-    tabel = models.ForeignKey(gaz_tabel_head, verbose_name='Табель топлива', on_delete=models.PROTECT)
-    persone = models.ForeignKey(persone, verbose_name='Сотрудник', on_delete=models.PROTECT)
-    company = models.CharField('Организация', max_length=15, blank=True, null=True)
-    full_name = models.CharField('ФИО', max_length=55, blank=True, null=True)
-    position = models.CharField('Должность', max_length=55, blank=True, null=True)
-    sum = models.FloatField('Суммарный расход', max_length=55,default=0)
-    d1 = models.CharField('День 1', max_length=5, blank=True, null=True)
-    d2 = models.CharField('День 2', max_length=5, blank=True, null=True)
-    d3 = models.CharField('День 3', max_length=5, blank=True, null=True)
-    d4 = models.CharField('День 4', max_length=5, blank=True, null=True)
-    d5 = models.CharField('День 5', max_length=5, blank=True, null=True)
-    d6 = models.CharField('День 6', max_length=5, blank=True, null=True)
-    d7 = models.CharField('День 7', max_length=5, blank=True, null=True)
-    d8 = models.CharField('День 8', max_length=5, blank=True, null=True)
-    d9 = models.CharField('День 9', max_length=5, blank=True, null=True)
-    d10 = models.CharField('День 10', max_length=5, blank=True, null=True)
-    d11 = models.CharField('День 11', max_length=5, blank=True, null=True)
-    d12 = models.CharField('День 12', max_length=5, blank=True, null=True)
-    d13 = models.CharField('День 13', max_length=5, blank=True, null=True)
-    d14 = models.CharField('День 14', max_length=5, blank=True, null=True)
-    d15 = models.CharField('День 15', max_length=5, blank=True, null=True)
-    d16 = models.CharField('День 16', max_length=5, blank=True, null=True)
-    d17 = models.CharField('День 17', max_length=5, blank=True, null=True)
-    d18 = models.CharField('День 18', max_length=5, blank=True, null=True)
-    d19 = models.CharField('День 19', max_length=5, blank=True, null=True)
-    d20 = models.CharField('День 20', max_length=5, blank=True, null=True)
-    d21 = models.CharField('День 21', max_length=5, blank=True, null=True)
-    d22 = models.CharField('День 22', max_length=5, blank=True, null=True)
-    d23 = models.CharField('День 23', max_length=5, blank=True, null=True)
-    d24 = models.CharField('День 24', max_length=5, blank=True, null=True)
-    d25 = models.CharField('День 25', max_length=5, blank=True, null=True)
-    d26 = models.CharField('День 26', max_length=5, blank=True, null=True)
-    d27 = models.CharField('День 27', max_length=5, blank=True, null=True)
-    d28 = models.CharField('День 28', max_length=5, blank=True, null=True)
-    d29 = models.CharField('День 29', max_length=5, blank=True, null=True)
-    d30 = models.CharField('День 30', max_length=5, blank=True, null=True)
-    d31 = models.CharField('День 31', max_length=5, blank=True, null=True)
-    def __str__(self):
-        return str(self.persone) + str(self.tabel.gaz.obj)
-    class Meta:
-        verbose_name = 'Список в табеле топлива'
-        verbose_name_plural = 'Списки в табелях топлива'

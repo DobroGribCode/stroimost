@@ -42,10 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mathfilters',
+    'apps.authentication',
     'apps.home',  # Enable the inner home (home)
     'apps.reference', # Enable the iiner reference\
-    'apps.task', # Enable the iiner tasks
-
 ]
 
 MIDDLEWARE = [
@@ -149,6 +148,6 @@ STATICFILES_DIRS = (
     os.path.join(CORE_DIR, 'apps/static'),
 )
 
-
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #############################################################
 #############################################################

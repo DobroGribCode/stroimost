@@ -1,22 +1,9 @@
-from .models import gazolin,gaz_input,gaz_tabel_head,gaz_tabel_body, period,objs, task_head, automobile, persone, group, driver, agreement, temp_file
+from .models import period,objs, automobile, persone, group, driver, agreement, temp_file
 from django.forms import ModelForm, Textarea, Select, modelformset_factory, TextInput,DateInput, FileField
 from django.contrib.auth.models import User
 from django import forms
 
 
-class GazForm(ModelForm):
-    class Meta:
-        model = gaz_tabel_head
-        fields = ['gaz']
-        widgets ={
-            'gaz': Select(attrs={
-                'type': 'text',
-                'class': 'form-control',
-                'placeholder': 'Объект',
-                'color': '#fff',
-                'background': '#369',
-            })
-        }
 class TabForm(ModelForm):
     class Meta:
         model = period
@@ -122,24 +109,6 @@ class AutoForm(ModelForm):
             }),
         }
 
-class TaskForm(ModelForm):
-    class Meta:
-        model = task_head
-        fields = ['type','obj']
-        widgets = {
-            'type': Select(attrs={
-                'type': 'text',
-                'class': 'form-control text-center',
-                'placeholder': 'Вид заявки'
-            }),
-            'obj': Select(attrs={
-                'type': 'text',
-                'class': 'form-control text-center',
-                'placeholder': 'Количество',
-                'color': '#fff',
-                'background': '#369',
-            }),
-        }
 
 class PersoneForm(ModelForm):
     class Meta:

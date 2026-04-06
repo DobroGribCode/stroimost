@@ -23,7 +23,8 @@ from datetime import date
 from wsgiref.util import FileWrapper
 import mimetypes
 import os, os.path
-
+from django.core.paginator import Paginator
+from django.db.models import Q
 from django.core.files.base import File
 from django import template
 from django.http import HttpResponse, HttpResponseRedirect
@@ -39,8 +40,8 @@ from openpyxl.worksheet import worksheet
 from django.conf import settings
 from django.http import HttpResponse, Http404
 
-from ..reference.forms import TabForm, ObjsForm, TaskForm, AutoForm, GroupForm,PersoneForm, DriverForm, AgreementForm, TempFileForm
-from ..reference.models import persone, period,tabel_list, objs,task_head, task_body, group, automobile, driver, driver_list, agreement, agreement_accepter,agreement_step,accepter_list,agreementer_list, ender_list
+from ..reference.forms import TabForm, ObjsForm, AutoForm, GroupForm,PersoneForm, DriverForm, AgreementForm, TempFileForm
+from ..reference.models import persone, period,tabel_list, objs, group, automobile, driver, driver_list, agreement, agreement_accepter,agreement_step,accepter_list,agreementer_list, ender_list
 from django.contrib.auth.models import User
 
 # Create your views here.

@@ -21,7 +21,7 @@
 {% endblock stylesheets %}
 
 {% block content %}
-  {% if perms.reference.view_period  %}
+  {% if request.user.profile.tp_menu  %}
     <div class="container-fluid py-4">
       <div class="row mb-12">
         <div class="col-lg-12 col-md-6 mb-md-0 mb-4">
@@ -31,7 +31,7 @@
                 <div class="col-lg-11 col-7">
                   <h6 class="text-center">Табели персонала</h6>
                 </div>
-                  {% if perms.reference.add_period  %}
+                  {% if request.user.profile.tp_add  %}
                 <div class="col-lg-1 col-7">
                   <a class="text-white" href="{% url 'new_tabel' %}"><button class="btn bg-gradient-dark px-3 mb-2" data-class="bg-gradient-dark">Создать</button></a>
                   <button class="btn bg-gradient-dark px-3 mb-2" onclick="window.AddPersone.showModal();" data-class="bg-gradient-dark">Найти</button>
@@ -43,107 +43,68 @@
               <div class="row">
                 <div class="wrap col-lg-12">
                   {% for g in groups %}
-                  <br id="all{{ g.id }}"/>
-                  <table id="myTable1" class="demotable table align-items-center mb-0">
-                    <thead>
-                      <tr>
-                        <td style="border-right: none;" class="col-lg-2" style="">
-                        </td>
-                        <td style="border-left: none;" class="col-lg-8" ><a href="#close">{{ g.date|date:"F Y" }}</a><a href="#all{{ g.id }}">{{ g.date|date:"F Y" }}</a>
-                        </td>
-                        <td  class="col-lg-1">
-                        </td>
-                        <td  class="col-lg-1">
-                          <a class="text-white" href="month_info/{{ g.date|date:'Y' }}/{{ g.date|date:'m'}}/Объединенный отчет за {{ g.date|date:'F Y' }}"><button class="btn bg-gradient-dark px-3 mb-2" data-class="bg-gradient-dark">Отчет</button></a>
-                        </td>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th style="border-right: none;background:#9fc6ff; color:black;" class=""></th>
-                        <th style="border-left: none; background:#9fc6ff; color:black;" class="">Объект</th>
-                        <th style="background:#9fc6ff; color:black;" class="">Ответственный</th>
-                        <th style="background:#9fc6ff; color:black;" class=""></th>
-                      </tr>
-                      {% for p in per %}
-                      {% if g.date == p.date %}
-                      {% if p.obj.watch1 == request.user or p.obj.watch2 == request.user or p.obj.prorab == request.user or request.user.username == 'RahmatylaevIS' or request.user.username == 'TagaevAA' or request.user.username == 'GadjievAM' or request.user.is_superuser or perms.reference.view_temp_file %}
-                      {% if request.user.username == 'TagaevAA' %}
-                        {% if p.obj.name == "Офис_Махачкала" or p.obj.name == "Офис_Саратов" or p.obj.name == "Администрация" %}
-                        {% else %}
-                        <tr class="col-lg-11">
-                          <td href="view_tabel/{{ p.id }}" hidden>
-                            <div class="d-flex px-2 py-1">
-                              <div class="d-flex flex-column justify-content-center">
-                                <a href="view_tabel/{{ p.id }}">{{ p.id }}</a>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="avatar-group text-center">
-                              <a href="view_tabel/{{ p.id }}">{{ p.obj }} </a>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="d-flex px-2 py-1">
-                              <div class="d-flex flex-column justify-content-center">
-                                <a href="view_tabel/{{ p.id }}">{{ p.obj.prorab }} </a>
-                              </div>
-                            </div>
-                          </td>
-                          <td class="align-middle text-center">
-                            <div class="dropdown text-center">
-                              <a class="cursor-pointer" id="dropdownTable{{ d.id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa fa-ellipsis-v text-secondary"></i>
-                              </a>
-                              <ul class="dropdown-menu text-center" aria-labelledby="dropdownTable">
-                                <li><a class="dropdown-item text-center border-radius-md" href="view_tabel/{{ p.id }}">Открыть</a></li>
-                                <li><a class="dropdown-item text-center border-radius-md" href="hexp_tabel/{{ p.id }}">Эскпорт</a></li>
-                                {% if perms.reference.delete_period  %}<li><a class="dropdown-item text-center border-radius-md" href="del_tabel/{{ p.id }}">Удалить</a></li>{% endif %}
-                              </ul>
-                            </div>
-                          </td>
-                        </tr>
-                        {% endif %}
-                      {% else %}
-                      <tr class="col-lg-11">
-                        <td style="border-right: none;">
-                          <div class="">
-                            <div class="">
-                            </div>
-                          </div>
-                        </td>
-                        <td style="border-left: none; text-align:left;">
-                          <div class="">
-                            <a href="view_tabel/{{ p.id }}">{{ p.obj }} </a>
-                          </div>
-                        </td>
-                        <td >
-                          <div class="">
-                            <div class="">
-                              <a href="view_tabel/{{ p.id }}">{{ p.obj.prorab.last_name }} {{ p.obj.prorab.first_name }} </a>
-                            </div>
-                          </div>
-                        </td>
-                        <td class="align-middle text-center">
-                          <div class="dropdown text-center">
-                            <a class="cursor-pointer" id="dropdownTable{{ d.id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                              <i class="fa fa-ellipsis-v text-secondary"></i>
-                            </a>
-                            <ul class="dropdown-menu text-center" aria-labelledby="dropdownTable">
-                              <li><a class="dropdown-item text-center border-radius-md" href="view_tabel/{{ p.id }}">Открыть</a></li>
-                              <li><a class="dropdown-item text-center border-radius-md" href="hexp_tabel/{{ p.id }}/Табель {{ p.obj }} от {{ p.date|date:'F Y' }}">Эскпорт</a></li>
-                              {% if perms.reference.delete_period  %}<li><a class="dropdown-item text-center border-radius-md" href="del_tabel/{{ p.id }}">Удалить</a></li>{% endif %}
-                            </ul>
-                          </div>
-                        </td>
-                      </tr>
-                      {% endif %}
-                      {% endif %}
-                    {% endif %}
-                    {% endfor %}
-                    </tbody>
-                  </table>
+                    <br id="all{{ g.id }}"/>
+                      <table id="myTable1" class="demotable table align-items-center mb-0">
+                        <thead>
+                          <tr>
+                            <td style="border-right: none;" class="col-lg-2" style="">
+                            </td>
+                            <td style="border-left: none;" class="col-lg-8" ><a href="#close">{{ g.date|date:"F Y" }}</a><a href="#all{{ g.id }}">{{ g.date|date:"F Y" }}</a>
+                            </td>
+                            <td  class="col-lg-1">
+                            </td>
+                            <td  class="col-lg-1">
+                              <a class="text-white" href="month_info/{{ g.date|date:'Y' }}/{{ g.date|date:'m'}}/Объединенный отчет за {{ g.date|date:'F Y' }}"><button class="btn bg-gradient-dark px-3 mb-2" data-class="bg-gradient-dark">Отчет</button></a>
+                            </td>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th style="border-right: none;background:#9fc6ff; color:black;" class=""></th>
+                            <th style="border-left: none; background:#9fc6ff; color:black;" class="">Объект</th>
+                            <th style="background:#9fc6ff; color:black;" class="">Ответственный</th>
+                            <th style="background:#9fc6ff; color:black;" class=""></th>
+                          </tr>
+                          {% for p in per %}
+                              {% if g.date == p.date %}
+                                  {% if p.obj.watch1 == request.user or p.obj.watch2 == request.user or p.obj.prorab == request.user or request.user.profile.tp_view or request.user.profile.can_edit_tabel or request.user.is_superuser %}
+                                      <tr class="col-lg-11">
+                                        <td style="border-right: none;">
+                                          <div class="">
+                                            <div class="">
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td style="border-left: none; text-align:left;">
+                                          <div class="">
+                                            <a href="view_tabel/{{ p.id }}">{{ p.obj }} </a>
+                                          </div>
+                                        </td>
+                                        <td >
+                                          <div class="">
+                                            <div class="">
+                                              <a href="view_tabel/{{ p.id }}">{{ p.obj.prorab.last_name }} {{ p.obj.prorab.first_name }} </a>
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                          <div class="dropdown text-center">
+                                            <a class="cursor-pointer" id="dropdownTable{{ d.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                              <i class="fa fa-ellipsis-v text-secondary"></i>
+                                            </a>
+                                            <ul class="dropdown-menu text-center" aria-labelledby="dropdownTable">
+                                              <li><a class="dropdown-item text-center border-radius-md" href="view_tabel/{{ p.id }}">Открыть</a></li>
+                                              <li><a class="dropdown-item text-center border-radius-md" href="hexp_tabel/{{ p.id }}/Табель {{ p.obj }} от {{ p.date|date:'F Y' }}">Эскпорт</a></li>
+                                              {% if request.user.profile.tp_delete  %}<li><a class="dropdown-item text-center border-radius-md" href="del_tabel/{{ p.id }}">Удалить</a></li>{% endif %}
+                                            </ul>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                  {% endif %}
+                              {% endif %}
+                          {% endfor %}
+                        </tbody>
+                      </table>
                   {% endfor %}
                   <dialog id="AddPersone" class="modal-body col-lg-6" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
                     <div>

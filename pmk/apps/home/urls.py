@@ -61,12 +61,6 @@ urlpatterns = [
     path('group_move_tabel/<int:ids>/<int:id>', views.tab.group_move_tabel, name='group_move_tabel/<int:ids>/<int:id>'),
     path('AddPersone/<int:id>/<int:ids>', views.tab.AddPersone, name='AddPersone/<int:id>/<int:ids>'),
 
-    #Табель топлива
-    path('new_gaz/', views.tab.gaz.new_gaz, name='new_gaz'),
-    path('save_gaz/', views.tab.gaz.save_gaz, name='save_gaz'),
-    path('gaz', views.tab.gaz.gaz, name='gaz'),
-    path('view_gaz/<int:id>', views.tab.gaz.view_gaz, name='view_gaz/<int:id>'),
-    path('AddPersoneG/<int:id>/<int:ids>', views.tab.gaz.AddPersoneG, name='AddPersoneG/<int:id>/<int:ids>'),
 
     # Справочник
     path('ref', views.reference.ref, name='ref'),
@@ -87,21 +81,6 @@ urlpatterns = [
     path('view_persone/<int:id>', views.reference.view_persone, name='view_persone/<int:id>'),
 
 
-    #Заявки
-    path('task_main', views.task.task_main, name='task_main'),
-    path('new_task', views.task.new_task, name='new_task'),
-    path('view_task/<int:id>', views.task.view_task, name='view_task/<int:id>'),
-    path('del_task/<int:id>', views.task.del_task, name='del_task/<int:id>'),
-    path('del_tb/<int:id>/<int:ids>', views.task.del_tb, name='del_tb/<int:id>/<int:ids>'),
-    path('close_task/<int:id>', views.task.close_task, name='close_task/<int:id>'),
-    path('open_task/<int:id>', views.task.open_task, name='open_task/<int:id>'),
-    path('edit_task/<int:id>', views.task.edit_task, name='edit_task/<int:id>'),
-    path('accept_save/', views.task.accept_save, name='accept_save/'),
-    path('agreem_save/', views.task.agreem_save, name='agreem_save/'),
-    path('control_save/', views.task.control_save, name='control_save/'),
-    path('change_save/', views.task.change_save, name='change_save/'),
-
-
     #Утверждения
     path('agreements', views.Agreement.agreement_main, name='agreements'),
     path('agreement_file/<int:id>', views.Agreement.agreement_file, name='agreement_file/<int:id>'),
@@ -112,7 +91,6 @@ urlpatterns = [
     path('agreemented/<int:id>/<int:ids>/<int:ida>', views.Agreement.agreemented, name='agreemented/<int:id>/<int:ids>'),
     path('close_agreement/<int:id>/<int:ids>/<int:ida>', views.Agreement.close_agreement, name='close_agreement/<int:id>/<int:ids>/<int:ida>'),
     path('new_file_agreement/<int:id>/<int:ids>/<int:ida>', views.Agreement.new_file_agreement, name='new_file_agreement/<int:id>/<int:ids>/<int:ida>'),
-    path('taskexport/<str:obj>/<str:name>', views.task.taskexport, name='taskexport/<str:obj>/<str:name>'),
 
 
     #Половина

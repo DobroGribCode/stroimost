@@ -36,7 +36,7 @@ position: fixed; /* чтобы страница "не подпрыгивала" 
 display: none;
 }
 </style>
-  {% if perms.reference.add_automobile  %}
+  {% if request.user.profile.add_ts  %}
 
     <div class="container-fluid py-4">
       <div class="row mb-12">
@@ -117,7 +117,7 @@ display: none;
       </div>
       {% include 'includes/footer.html' %}
     </div>
-
+{% endif %}
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->

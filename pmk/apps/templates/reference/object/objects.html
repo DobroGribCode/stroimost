@@ -6,7 +6,7 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-{% if perms.reference.view_objs  %}
+{% if request.user.profile.view_obj %}
     <div class="container-fluid py-4">
       <div class="row mb-12">
         <div class="col-lg-12 col-md-6 mb-md-0 mb-4">
@@ -16,7 +16,7 @@
                 <div class="col-lg-11 col-7">
                   <h6>Объекты</h6>
                 </div>
-                {% if perms.reference.add_objs  %}<div class="col-lg-1 col-7">
+                {% if request.user.profile.add_obj %}<div class="col-lg-1 col-7">
                   <a class="text-white" href="{% url 'new_object' %}"><button class="btn bg-gradient-dark px-3 mb-2" data-class="bg-gradient-dark">Создать</button></a>
                 </div>{% endif %}
               </div>

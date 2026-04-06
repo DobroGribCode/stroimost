@@ -36,6 +36,7 @@ position: fixed; /* чтобы страница "не подпрыгивала" 
 display: none;
 }
 </style>
+{% if request.user.profile.add_personal %}
     <div class="container-fluid py-4">
       <div class="row mb-12">
         <div class="col-lg-12 col-md-6 mb-md-0 mb-4">
@@ -102,9 +103,6 @@ display: none;
                           </th>
                           <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
                             Группа
-                          </th>
-                          <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
-                            Категория
                           </th>
                           <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
                             Должность
@@ -182,11 +180,6 @@ display: none;
                           <td>
                             <div class=" text-center mt-2">
                               {{ forms.group }}
-                            </div>
-                          </td>
-                          <td>
-                            <div class=" text-center mt-2">
-                              {{ forms.category }}
                             </div>
                           </td>
                           <td>
@@ -387,7 +380,7 @@ display: none;
                     <div class="col-lg-12">
                       <div class="row">
                         <div class="col-lg-12">
-                          {% if user.username == 'KaratovaMadina' or user.username == 'DjavathanovaP' or user.username == 'AlisoltanovaG' or user.is_superuser %}
+                          {% if request.user.profile.add_personal or user.is_superuser %}
                           <div class="col-lg-5">
                             <textarea class="col-lg-12 form-conrtol" id="idea" name="idea"placeholder="Заметки">{{ r.idea|default:'' }}</textarea>
                           </div>

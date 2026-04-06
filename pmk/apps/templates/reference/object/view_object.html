@@ -17,10 +17,10 @@
 {% endblock stylesheets %}
 
 {% block content %}
-  {% if perms.reference.view_task_head  %}
+  {% if request.user.profile.view_obj  %}
     <div class="container-fluid py-4">
       <div class="row mb-12">
-        <form method="POST"> {% csrf_token %}
+        {% if request.user.profile.add_obj %}<form method="POST"> {% csrf_token %} {% endif %}
         <div class="col-lg-12 col-md-6 mb-md-0 mb-4">
           <div class="card">
             <div class="card-header pb-0">
@@ -42,11 +42,13 @@
                         <tr class="col-lg-11">
                           <td>
                             <div class=" text-center mt-2">
-                              <input id="name" value="{{ r.name }}" name="name" class="form-control text-center">
+                              {% if request.user.profile.add_obj %}<input id="name" value="{{ r.name }}" name="name" class="form-control text-center">{% else %}{{ r.name }}{% endif %}
+
                             </div>
                           </td>
                           <td>
                             <div class=" text-center mt-2">
+                                {% if request.user.profile.add_obj %}
                               <select style="{% if r.status == 'Консервирован' %} background-color: #f1f029; {% elif r.status == 'Открыт' %} background-color:#19c719; {% else %}background-color: #f70d32; {% endif %}" name="status" id="status" class="form-control text-center">
                                 <option {% if r.status == "Консервирован" %} selected="selected" {% endif %}>
                                   Консервирован
@@ -58,6 +60,9 @@
                                   Завершен
                                 </option>
                               </select>
+                                {% else %}
+                                {{ r.status }}
+                                {% endif %}
                             </div>
                           </td>
                         </tr>
@@ -71,7 +76,7 @@
                   <div class="wrap col-lg-12">
                     <textarea disabled class="col-lg-5 form-conrtol">{{ r.comment|default:'' }}</textarea>
                     <br>
-                    <table title="Введите текст и нажмите Enter" style="width:40%; border-color: #363636;" class="table col-lg-5">
+                    {% if request.user.profile.add_obj %}<table title="Введите текст и нажмите Enter" style="width:40%; border-color: #363636;" class="table col-lg-5">
                       <tbody>
                         <tr>
                           <td>
@@ -79,7 +84,7 @@
                           </td>
                         </tr>
                       </tbody>
-                    </table>
+                    </table> {% endif %}
                   </div>
                 </div>
                 <div class="row">
@@ -88,13 +93,13 @@
                   </div>
                   <div class="col-lg-2">
                     <br><br><br>
-                    <button class="btn bg-gradient-dark px-4 mb-3" type="submit">Сохранить</button>
+                    {% if request.user.profile.add_obj %}<button class="btn bg-gradient-dark px-4 mb-3" type="submit">Сохранить</button>{% endif %}
                   </div>
                 </div>
             </div>
           </div>
         </div>
-        </form>
+        {% if request.user.profile.add_obj %}</form>{% endif %}
       </div>
     </div>
   {% endif %}

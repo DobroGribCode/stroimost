@@ -17,10 +17,10 @@
 {% endblock stylesheets %}
 
 {% block content %}
-  {% if perms.reference.view_automobile  %}
+  {% if request.user.profile.view_ts %}
     <div class="container-fluid py-4">
       <div class="row mb-12">
-          {% if perms.reference.change_automobile  %}<form method="POST"> {% csrf_token %}{% endif %}
+          {% if request.user.profile.add_ts  %}<form method="POST"> {% csrf_token %}{% endif %}
         <div class="col-lg-12 col-md-6 mb-md-0 mb-4">
           <div class="card">
             <div class="card-header pb-0">
@@ -65,7 +65,7 @@
               </div>
             </div>
             <div class="card-body">
-                <div class="row">
+               {% if request.user.profile.add_ts  %} <div class="row">
                   <div class="wrap col-lg-12">
                     <textarea disabled class="col-lg-5 form-conrtol">{{ r.comment|default:'' }}</textarea>
                     <br>
@@ -88,11 +88,11 @@
                     <br><br><br>
                     <button class="btn bg-gradient-dark px-4 mb-3" type="submit">Сохранить</button>
                   </div>
-                </div>
+                </div>{% endif %}
             </div>
           </div>
         </div>
-       {% if perms.reference.change_automobile  %} </form>{% endif %}
+       {% if request.user.profile.add_ts  %} </form>{% endif %}
       </div>
     </div>
   {% endif %}
