@@ -16,7 +16,6 @@ urlpatterns = [
     path('get_notificated_data/', views.get_notificated_data, name='get_notificated_data'),
     path('update_notificated/', views.update_notificated, name='update_notificated'),
     # path('convert4', views.misc.convert4, name='convert4'),
-    path('converts', views.misc.converts, name='converts'),
     #path('convert5', views.misc.convert5, name='convert5'),
     path('convert6', views.misc.convert6, name='convert6'),
     #path('convert8', views.misc.convert8, name='convert8'),
@@ -52,7 +51,6 @@ urlpatterns = [
     path('save_add/', views.tab.save_add, name='save_add'),
     path('save_auto/', views.tab.save_auto, name='save_auto'),
     path('view_tabel/<int:id>', views.tab.view_tabel, name='view_tabel/<int:id>'),
-    path('view_tabel_days/<int:id>', views.tab.view_tabel_days, name='view_tabel_days/<int:id>'),
     path('hexp_tabel/<int:id>/<str:name>', views.tab.hexp_tabel, name='hexp_tabel/<int:id>/<str:name>'),
     path('del_tabel/<int:id>', views.tab.del_tabel, name='del_tabel/<int:id>'),
     path('del_tabl/<int:id>/<int:ids>', views.tab.del_tabl, name='del_tabl/<int:id>/<int:ids>'),
@@ -84,7 +82,7 @@ urlpatterns = [
     path('save_idea/', views.reference.save_idea, name='save_idea'),
     path('new_persone', views.reference.new_persone, name='new_persone'),
     path('view_persone/<int:id>', views.reference.view_persone, name='view_persone/<int:id>'),
-
+    path('get_grades/', views.reference.get_grades_by_position, name='get_grades'),
 
 
     #Утверждения
@@ -100,8 +98,6 @@ urlpatterns = [
 
 
     #Половина
-    path('view_tabel_half/<int:id>', views.misc.view_tabel_half, name='view_tabel_half/<int:id>'),
-    path('month_info_half/<int:years>/<int:month>/<str:name>', views.misc.month_info_half,name='month_info_half/<int:years>/<int:month>/<str:name>'),
     # Открытие любых HTML файлов
     re_path(r'^.*\.*', views.pages, name='pages'),
 ]

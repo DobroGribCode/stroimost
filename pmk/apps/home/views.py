@@ -299,7 +299,7 @@ class tab:
                 period=per,
                 persone=p,
                 full_name=p.full_name,
-                position=p.position,
+                position=p.position.name,
                 salary=p.salary,
                 output=p.output,
             ).save()
@@ -313,7 +313,7 @@ class tab:
             period=per,
             persone=p,
             full_name=p.full_name,
-            position=p.position,
+            position=p.position.name,
             salary=p.salary,
             output=p.output,
         ).save()
@@ -942,7 +942,7 @@ class tab:
                     snils=p.snils,
                     full_name=p.full_name,
                     group=g,
-                    position=p.position,
+                    position=str(p.position.name),
                     salary=p.salary,
                     output=p.output,
                 ).save()
@@ -955,7 +955,7 @@ class tab:
                     snils=p.snils,
                     full_name=p.full_name,
                     group=g,
-                    position=p.position,
+                    position=str(p.position.name),
                     salary=p.salary,
                     output=p.output,
                 ).save()
@@ -968,7 +968,7 @@ class tab:
                 snils=p.snils,
                 full_name=p.full_name,
                 group=g,
-                position=p.position,
+                position=str(p.position.name),
                 salary=p.salary,
                 output=p.output,
             ).save()
@@ -1165,8 +1165,8 @@ class tab:
                         t.group = t.persone.group
                         t.save()
                 if t.position:
-                    if t.position != t.persone.position:
-                        t.position = t.persone.position
+                    if t.position != t.persone.position.name:
+                        t.position = t.persone.position.name
                         t.save()
         if per.date:
             month = datetime.date.today().month
@@ -1267,19 +1267,19 @@ class tab:
                     else:
                         now = datetime.date(day=1,month=2,year=2025)
                         if per.date < now:
-                             if t.persone.grade.salary:
-                                 sal = t.persone.grade.salary
+                             if t.persone.grade:
+                                 sal = int(t.persone.grade.salary)
                              elif t.persone.salary:
                                  sal = int(t.persone.salary)
                              else:
-                                 sal = 0
+                                 sal = 50
                         else:
-                            if t.persone.grade.salary:
-                                sal = t.persone.grade.salary
+                            if t.persone.grade:
+                                sal = int(t.persone.grade.salary)
                             elif t.persone.salary:
                                 sal = int(t.persone.salary)
                             else:
-                                sal = 0
+                                sal = 15
                 else:
                     ps = persone_salary.objects.all().filter(persone=t.persone,date=per.date).order_by('-id').last()
                     if ps.sum_method == 1:
@@ -1288,7 +1288,7 @@ class tab:
                         now = datetime.date(day=1,month=2,year=2025)
                         if per.date < now:
                             if ps.grade.salary:
-                                sal = ps.grade.salary
+                                sal = int(ps.grade.salary)
                             elif ps.salary:
                                 sal = int(ps.salary)
                             else:
@@ -1296,7 +1296,7 @@ class tab:
                         else:
                             try:
                                 if ps.grade == '2':
-                                    sal = ps.grade.salary
+                                    sal = int(ps.grade.salary)
                                 elif ps.salary:
                                     sal = int(ps.salary)
                                 else:
@@ -1334,284 +1334,6 @@ class tab:
             }
             return HttpResponse(html_template.render(context, request))
 
-    @login_required(login_url="/login/")
-    def view_tabel_days(request, id):
-        groups = group.objects.all()
-        per = period.objects.get(id=id)
-        pers = period.objects.all()
-        user = request.user
-        approvers = dayapprove.objects.all().filter(per=per)
-        persones = persone.objects.all().filter().order_by('full_name')
-        tabs = tabel_list.objects.all().filter(period=per).order_by('full_name')
-        html_template = loader.get_template('tabels/worker/view_tabel.html')
-        today = datetime.date.today()
-        next_month = today.replace(day=1) + datetime.timedelta(days=32)
-        if per.date.month == today.month or next_month.month == per.date.month or request.user.profile.open_tp_edit or per.obj.prorab == request.user or request.user.is_superuser:
-            for t in tabs:
-                if t.company:
-                    if t.company != t.persone.company:
-                        t.company = t.persone.company
-                        t.save()
-                if t.snils:
-                    if t.snils != t.persone.snils:
-                        t.snils = t.persone.snils
-                        t.save()
-                if t.full_name:
-                    if t.full_name != t.persone.full_name:
-                        t.full_name = t.persone.full_name
-                        t.save()
-                if t.graphic:
-                    if t.graphic != t.persone.graphic:
-                        t.graphic = t.persone.graphic
-                        t.save()
-                if t.group:
-                    if t.group != t.persone.group:
-                        t.group = t.persone.group
-                        t.save()
-                if t.position:
-                    if t.position != t.persone.position:
-                        t.position = t.persone.position
-                        t.save()
-        if per.date:
-            month = datetime.date.today().month
-            pm = per.date.month
-            if month > pm:
-                if datetime.date.today().year == per.date.year:
-                    per.fullblock = 1
-                    per.save()
-            if per.fullblock != 1:
-                today = datetime.date.today().day - 1
-                for day in range(26, 32):
-                    if today > day:
-                        setattr(per, f'db{day}', 1)
-                        per.save()
-            if per:
-                for day in range(26, 32):
-                    i = 0
-                    for a in approvers:
-                        if a.day == day:
-                            i += 1
-                        if i >= 1:
-                            setattr(per, f'da{day}', 1)
-                            per.save()
-        if request.method == 'POST':
-            for t in tabs:
-                out = 0
-                for i in range(26, 32):
-                    day_key = f'd{i}'
-                    da = request.POST.get(str(t.id) + day_key)
-                    if da:
-                        try:
-                            da = int(da)
-                            if 0 < da <= 23:
-                                setattr(t, day_key, da)
-                        except ValueError:
-                            da = da.upper()
-                            if da in ["ВВ", "Н", "М", "Б", "О", "Д", "В", "У"]:
-                                setattr(t, day_key, da)
-                        t.save()
-                h = 0
-                d = 0
-                for i in range(26, 32):
-                    day_key = f'd{i}'
-                    try:
-                        h_day = int(getattr(t, day_key))
-                        h += h_day
-                        d += 1
-                    except:
-                        if getattr(t, day_key) == "ВВ":
-                            out += 1
-                            if out < 3:
-                                h += int(t.persone.work_hours)
-                                d += 1
-                        elif getattr(t, day_key) == "М":
-                            if str(t.group.name) == "ИТР" or str(t.group.name) == "ПТО":
-                                h += int(t.persone.work_hours)
-                                d += 1
-                t.hours = int(h)
-                t.days = int(d)
-                t.save()
-                comment = request.POST.get("com" + str(t.id))
-                if comment == '':
-                    pass
-                else:
-                    if t.comment == None:
-                        t.comment = ''
-                        t.save()
-                        comment = str(t.comment) + str(comment) + ': ' + str(request.user.last_name) + ' ' + str(
-                            request.user.first_name) + ' ' + str(
-                            datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
-                        t.comment = comment
-                        t.save()
-                    else:
-                        comment = str(t.comment) + str(comment) + ': ' + str(request.user.last_name) + ' ' + str(
-                            request.user.first_name) + ' ' + str(
-                            datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
-                        t.comment = comment
-                        t.save()
-                try:
-                    fine = request.POST.get(str(t.id) + "fine")
-                    if fine:
-                        t.fine = float(fine)
-                    else:
-                        t.fine = 0
-                except:
-                    pass
-                try:
-                    add = request.POST.get(str(t.id) + "add")
-                    if add:
-                        t.add = float(add)
-                    else:
-                        t.add = 0
-                except:
-                    pass
-                f = t.fine
-                a = t.add
-                today = datetime.date.today()
-                sal = 0
-                next_month = today.replace(day=1) + datetime.timedelta(days=32)
-                if per.date.year == today.year and per.date.month == today.month or next_month.month == per.date.month:
-                    if t.persone.sum_method == 1:
-                        sal = int(t.persone.salary)
-                    # else:
-                    #    if str(t.persone.grade) == '2':
-                    #        sal = 60900
-                    #    elif str(t.persone.grade) == '3':
-                    #        sal = 67800
-                    #    elif str(t.persone.grade) == '4':
-                    #        sal = 72700
-                    #    elif str(t.persone.grade) == '5':
-                    #        sal = 80000
-                    #    elif str(t.persone.grade) == '6':
-                    #        sal = 86250
-                    #    elif t.persone.salary:
-                    #        sal = int(t.persone.salary)
-                    #    else:
-                    #        sal = 0
-                    else:
-                        now = datetime.date(day=1, month=2, year=2025)
-                        if per.date < now:
-                            if str(t.persone.grade) == '2':
-                                sal = 60900
-                            elif str(t.persone.grade) == '3':
-                                sal = 67800
-                            elif str(t.persone.grade) == '4':
-                                sal = 72700
-                            elif str(t.persone.grade) == '5':
-                                sal = 80000
-                            elif str(t.persone.grade) == '6':
-                                sal = 86250
-                            elif t.persone.salary:
-                                sal = int(t.persone.salary)
-                            else:
-                                sal = 0
-                        else:
-                            if str(t.persone.grade) == '2':
-                                sal = 80000
-                            elif str(t.persone.grade) == '3':
-                                sal = 87000
-                            elif str(t.persone.grade) == '4':
-                                sal = 92000
-                            elif str(t.persone.grade) == '5':
-                                sal = 100000
-                            elif str(t.persone.grade) == '6':
-                                sal = 106000
-                            elif str(t.persone.grade) == '1':
-                                sal = 60000
-                            elif t.persone.salary:
-                                sal = int(t.persone.salary)
-                            else:
-                                sal = 0
-                    # if per.graphic == 1:
-                    #    t.sum = t.persone.salary / (int(per.workdays) * int(t.persone.work_hours)) * t.hours
-                    # else:
-                    #    t.sum = t.persone.salary / (int(per.workdays) * int(t.persone.work_hours)) * t.hours
-                else:
-                    ps = persone_salary.objects.all().filter(persone=t.persone, date=per.date).order_by('-id').last()
-                    if t.persone.sum_method == 1:
-                        sal = int(ps.salary)
-                    # else:
-                    #    if ps.grade == '2':
-                    #        sal = 60900
-                    #    elif ps.grade == '3':
-                    #        sal = 67800
-                    #    elif ps.grade == '4':
-                    #        sal = 72700
-                    #    elif ps.grade == '5':
-                    #        sal = 80000
-                    #    elif ps.grade == '6':
-                    #        sal = 86250
-                    #    elif ps.salary:
-                    #        sal = int(ps.salary)
-                    #    else:
-                    #        sal = 0
-                    else:
-                        now = datetime.date(day=1, month=2, year=2025)
-                        if per.date < now:
-                            if ps.grade == '2':
-                                sal = 60900
-                            elif ps.grade == '3':
-                                sal = 67800
-                            elif ps.grade == '4':
-                                sal = 72700
-                            elif ps.grade == '5':
-                                sal = 80000
-                            elif ps.grade == '6':
-                                sal = 86250
-                            elif ps.salary:
-                                sal = int(ps.salary)
-                            else:
-                                sal = 0
-                        else:
-                            try:
-                                if ps.grade == '2':
-                                    sal = 80000
-                                elif ps.grade == '3':
-                                    sal = 87000
-                                elif ps.grade == '4':
-                                    sal = 92000
-                                elif ps.grade == '5':
-                                    sal = 100000
-                                elif ps.grade == '6':
-                                    sal = 106000
-                                elif ps.grade == '1':
-                                    sal = 60000
-                                elif ps.salary:
-                                    sal = int(ps.salary)
-                                else:
-                                    sal = 0
-                            except:
-                                sal = 0
-                if t.graphic == 2:
-                    t.sum = sal / int(per.workdays5) * t.days
-                else:
-                    t.sum = sal / int(per.workdays) * t.days
-                if t.persone.exception == 0:
-                    t.salary = t.sum - float(f) + float(a)
-                else:
-                    t.salary = 0
-                t.save()
-            wd = request.POST.get('wd');
-            if int(wd) != per.workdays:
-                per.workdays = int(wd)
-                per.save()
-            wd5 = request.POST.get('wd5');
-            if int(wd5) != per.workdays5:
-                per.workdays5 = int(wd5)
-                per.save()
-            return redirect('/view_tabel/' + str(id))
-        else:
-            context = {
-                'user': user,
-                'approvers': approvers,
-                'persones': persones,
-                'groups': groups,
-                'per': per,
-                'segment': 'tabel',
-                'tabs': tabs,
-                'pers': pers,
-            }
-            return HttpResponse(html_template.render(context, request))
 
     @login_required(login_url="/login/")
     def group_move_tabel(request, ids, id):
@@ -1631,7 +1353,7 @@ class tab:
                 snils=p.snils,
                 full_name=p.full_name,
                 group=p.group,
-                position=p.position,
+                position=p.position.name,
                 salary=p.salary,
                 output=p.output,
             ).save()
@@ -2143,7 +1865,7 @@ class reference:
             else:
                 erorr = 'Некорректные данные'
                 context = {'segment': 'ref',
-                           'position': positions,
+                           'positions': positions,
                            'forms': forms,
                            'erorr': erorr
                            }
@@ -2151,7 +1873,7 @@ class reference:
                 return HttpResponse(html_template.render(context, request))
         else:
             context = {'segment': 'ref',
-                       'position': positions,
+                       'positions': positions,
                        'forms': forms
                        }
             html_template = loader.get_template('reference/position/new_position.html')
@@ -2159,6 +1881,7 @@ class reference:
 
     @login_required(login_url="/login/")
     def view_position(request, id):
+
         r = position.objects.get(id=id)
         context = {'r': r, 'segment': 'ref'}
         html_template = loader.get_template('reference/position/view_position.html')
@@ -2333,6 +2056,8 @@ class reference:
     def new_persone(request):
         pers = persone.objects.all().order_by('full_name')
         groups = group.objects.all().order_by('name')
+        positions = position.objects.all()
+        grades = grade.objects.all()
         forms = PersoneForm
         if request.method == 'POST':
             forms = PersoneForm(request.POST)
@@ -2343,7 +2068,13 @@ class reference:
                     post.id = int(p.id)+1
                 except:
                     pass
-                post.position = request.POST.get("position")
+                try:
+                    p_grade = grade.objects.get(id=int(request.POST.get("id_grade")))
+                    post.grade = p_grade
+                except:
+                    pass
+                pos = position.objects.get(id=int(request.POST.get("position")))
+                post.position = pos
                 post.workgroup = request.POST.get("workgroup")
                 post.idea = request.POST.get("idea")
                 comments = request.POST.get("comment")
@@ -2355,6 +2086,8 @@ class reference:
             else:
                 erorr = 'Некорректные данные'
                 context = {'segment': 'ref',
+                           'grades':grades,
+                           'positions':positions,
                            'pers': pers,
                            'forms': forms,
                            'erorr': erorr,
@@ -2364,12 +2097,22 @@ class reference:
                 return HttpResponse(html_template.render(context, request))
         else:
             context = {'segment': 'ref',
+                       'positions': positions,
+                       'grades': grades,
                        'pers': pers,
                        'forms': forms,
                        'groups': groups
                        }
             html_template = loader.get_template('reference/persone/new_persone.html')
             return HttpResponse(html_template.render(context, request))
+
+    @login_required(login_url="/login/")
+    def get_grades_by_position(request):
+        position_id = request.GET.get('position_id')
+        # Фильтруем разряды, привязанные к выбранной должности
+        grades = grade.objects.filter(position_id=position_id).values('id', 'name', 'salary')
+        return JsonResponse(list(grades), safe=False)
+
 
     @login_required(login_url="/login/")
     def returning(request, id):
@@ -2385,6 +2128,8 @@ class reference:
             tax = driver_tax.objects.get(driver=r)
         groups = group.objects.all().order_by('name')
         persones = persone.objects.all().order_by('-id')
+        positions = position.objects.all()
+        grades = grade.objects.all()
         if request.method == 'POST':
             comment = request.POST.get("comm")
             if comment == '':
@@ -2522,11 +2267,11 @@ class reference:
                     except:
                         pass
                     try:
-                        position = request.POST.get('position')
-                        if position == str(r.position):
+                        p_position = request.POST.get('position')
+                        if p_position == str(r.position):
                             pass
                         else:
-                            r.position = position
+                            r.position = p_position
                             r.save()
                     except:
                         pass
@@ -2555,11 +2300,11 @@ class reference:
                     except:
                         pass
                     try:
-                        grade = request.POST.get('grade')
-                        if grade == str(r.grade):
+                        p_grade = request.POST.get('grade')
+                        if p_grade == str(r.grade):
                             pass
                         else:
-                            r.grade = grade
+                            r.grade = p_grade
                             r.save()
                     except:
                         pass
@@ -2724,11 +2469,11 @@ class reference:
                 except:
                     pass
                 try:
-                    position = request.POST.get('position')
-                    if position == str(r.position):
+                    p_position = request.POST.get('position')
+                    if p_position == str(r.position):
                         pass
                     else:
-                        r.position = position
+                        r.position = p_position
                         r.save()
                 except:
                     pass
@@ -2762,14 +2507,12 @@ class reference:
                 except:
                     pass
                 try:
-                    grade = request.POST.get('grade')
-                    if grade == str(r.grade):
+                    p_grade = request.POST.get('grade')
+                    if p_grade == str(r.grade):
                         pass
                     else:
-                        r.grade = grade
+                        r.grade = p_grade
                         r.save()
-                        ps.grade = r.grade
-                        ps.save()
                 except:
                     pass
                 try:
@@ -2832,7 +2575,7 @@ class reference:
                     pass
             return redirect('/view_persone/'+str(id))
         else:
-            context = {'r': r, 'groups': groups, 'segment': 'ref', 'persones': persones, 'tax': tax, }
+            context = {'r': r, 'groups': groups,'positions': positions,'grades': grades, 'segment': 'ref', 'persones': persones, 'tax': tax, }
             html_template = loader.get_template('reference/persone/view_persone.html')
             return HttpResponse(html_template.render(context, request))
 

@@ -126,13 +126,8 @@ class AutoForm(ModelForm):
 class PersoneForm(ModelForm):
     class Meta:
         model = persone
-        fields = ['education','resident','work_hours','company','phone_number', 'snils', 'full_name', 'group', 'position', 'salary', 'graphic', 'output', 'date_accept','driver']
+        fields = ['resident','company','phone_number', 'snils', 'full_name', 'group', 'position', 'salary', 'graphic', 'output','driver']
         widgets = {
-            'education': TextInput(attrs={
-                'type': 'text',
-                'class': 'form-control',
-                'placeholder': 'Образование'
-            }),
             'resident': Select(attrs={
                 'type': 'text',
                 'class': 'form-control text-center',
@@ -199,16 +194,6 @@ class PersoneForm(ModelForm):
                 'placeholder': 'Организация',
                 'color': '#fff',
                 'background': '#369',
-            }),
-            'date_accept': DateInput(attrs={
-                'type': 'date',
-                'class': 'form-control',
-                'placeholder': 'Дата приёма'
-            }),
-            'work_hours': TextInput(attrs={
-                'type': 'text',
-                'class': 'form-control',
-                'placeholder': 'Часы'
             }),
         }
 

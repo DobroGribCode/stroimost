@@ -61,7 +61,7 @@ class position(models.Model):
 class grade(models.Model):
     position = models.ForeignKey(position, verbose_name='Должность',on_delete=models.PROTECT,blank=True,null=True)
     name = models.CharField('Наименование', max_length=50)
-    salary = models.CharField('Ставка', max_length=50,blank=True,null=True)
+    salary = models.IntegerField('Ставка', max_length=50,blank=True,null=True)
     comment = models.CharField('Комментарий',max_length=5000, blank=True,null=True)
     def __str__(self):
         return self.name
@@ -80,7 +80,7 @@ class persone(models.Model):
         ('Иностранец', 'Иностранец'),
     )
     cat_c = ((1,'Геодезия'),(2,'ПТО'),(3,'Рабочие'),(4,'АУП'),(5,'МОП'))
-    g = ((1,'Вахта'),(2,'5/7'),(3,'6/7'),(4,'2/2'),(5,'7'))
+    g = ((1,'Вахта'),(2,'5/2'),(3,'6/1'),(4,'2/2'),(5,'7'))
     d = ((1,'Водитель'),(0,'Нет'))
 
     resident = models.CharField('Гражданство', choices=country_c, null=True, blank=True, max_length=50)
@@ -98,15 +98,11 @@ class persone(models.Model):
     sum_method = models.IntegerField('Метод расчета', default=0)
     graphic = models.IntegerField('График',default='1',choices=g, null=True, blank=True)
     output = models.IntegerField('Выходные',default=1,blank=True, null=True)
-    date_accept = models.DateField('Дата приема', blank=True, null=True)
-    date_leave = models.DateField('Дата увольнения', blank=True, null=True)
-    work_hours = models.CharField('Часы работы', max_length=55,default=10, null=True, blank=True)
     comment = models.CharField('Комментарий', max_length=5000, blank=True, null=True)
     idea = models.CharField('Заметки', max_length=5000, blank=True, null=True)
     leaved = models.IntegerField('Уволен?',default=0)
     phone_number = models.CharField('Номер телефона', max_length=17, default='', blank=True, null=True)
     workgroup = models.CharField('Отдел', max_length=52, blank=True, null=True)
-    education = models.CharField('Образование', max_length=152, blank=True, null=True)
 
     def __str__(self):
         return self.full_name
@@ -421,7 +417,7 @@ class driver_list(models.Model):
 
 
 class period(models.Model):
-    g = ((1, 'Вахта'), (5, '5/7'), (6, '6/7'), (2, '2/2'))
+    g = ((1, 'Вахта'), (5, '5/2'), (6, '6/1'), (2, '2/2'))
     t = ((1, 'Геодезия'),(2,'ПТО'), (3, 'Рабочие'), (4, 'АУП'), (5, 'Кухня'))
     type = models.IntegerField('Тип табеля', default=1,choices=t)
     date = models.DateField('Период', blank=True, null=True)

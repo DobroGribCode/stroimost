@@ -178,120 +178,20 @@
                               <select id="position" name="position" class="form-control text-left" id="post_id">
                                 <optgroup label="ПМК">
                                   {% if r.position %}{% else %} <option selected disabled>Выберите должность</option> {% endif %}
-                                  <option {% if r.position == 'бетонщик' %} selected {% endif %} value="бетонщик">бетонщик</option>
-                                  <option {% if r.position == 'бухгалтер' %} selected {% endif %} value="бухгалтер">бухгалтер</option>
-                                  <option {% if r.position == 'водитель' %} selected {% endif %} value="водитель">водитель</option>
-                                  <option {% if r.position == 'главный бухгалтер' %} selected {% endif %} value="главный бухгалтер">главный бухгалтер</option>
-                                  <option {% if r.position == 'главный механик' %} selected {% endif %} value="главный механик">главный механик</option>
-                                  <option {% if r.position == 'директор' %} selected {% endif %} value="директор">директор</option>
-                                  <option {% if r.position == 'заместитель директора' %} selected {% endif %} value="заместитель директора">заместитель директора</option>
-                                  <option {% if r.position == 'инженер' %} selected {% endif %} value="инженер">инженер</option>
-                                  <option {% if r.position == 'инженер-геодезист' %} selected {% endif %} value="инженер-геодезист">инженер-геодезист</option>
-                                  <option {% if r.position == 'мастер СМР' %} selected {% endif %} value="мастер СМР">мастер СМР</option>
-                                  <option {% if r.position == 'машинист экскаватора' %} selected {% endif %} value="машинист экскаватора">машинист экскаватора</option>
-                                  <option {% if r.position == 'не работает' %} selected {% endif %} value="не работает">не работает</option>
-                                  <option {% if r.position == 'повар' %} selected {% endif %} value="повар">повар</option>
-                                  <option {% if r.position == 'помощник повара' %} selected {% endif %} value="помощник повара">помощник повара</option>
-                                  <option {% if r.position == 'прораб' %} selected {% endif %} value="прораб">прораб</option>
-                                  <option {% if r.position == 'саид' %} selected {% endif %} value="саид">саид</option>
-                                  <option {% if r.position == 'секретарь' %} selected {% endif %} value="секретарь">секретарь</option>
-                                  <option {% if r.position == 'специалист по кадрам' %} selected {% endif %} value="специалист по кадрам">специалист по кадрам</option>
-                                  <option {% if r.position == 'специалист по охране труда' %} selected {% endif %} value="специалист по охране труда">специалист по охране труда</option>
-                                  <option {% if r.position == 'сторож' %} selected {% endif %} value="сторож">сторож</option>
-                                  <option {% if r.position == 'бригадир' %} selected {% endif %} value="бригадир">бригадир</option>
-                                  <option {% if r.position == 'геодезист' %} selected {% endif %} value="геодезист">геодезист</option>
-                                  <option {% if r.position == 'машинист' %} selected {% endif %} value="машинист">машинист</option>
-                                  <option {% if r.position == 'машинист автокрана' %} selected {% endif %} value="машинист автокрана">машинист автокрана</option>
-                                  <option {% if r.position == 'машинист погрузчика' %} selected {% endif %} value="машинист погрузчика">машинист погрузчика</option>
-                                  <option {% if r.position == 'снабженец' %} selected {% endif %} value="снабженец">снабженец</option>
-                                  <option {% if r.position == 'электросварщик' %} selected {% endif %} value="электросварщик">электросварщик</option>
-                                  <option {% if r.position == 'юрист' %} selected {% endif %} value="юрист">юрист</option>
-                                  <option {% if r.position == 'рабочий' %} selected {% endif %} value="рабочий">рабочий</option>
-                                  <option {% if r.position == 'уборьщик служебных помещений' %} selected {% endif %} value="уборьщик служебных помещений">уборьщик служебных помещений</option>
-                                  <option {% if r.position == 'Советник' %} selected {% endif %} value="Советник">Советник</option>
-                                  <option {% if r.position == 'механик Патахович' %} selected {% endif %} value="механик Патахович">механик Патахович</option>
-                                  <option {% if r.position == 'ген. директор' %} selected {% endif %} value="ген. директор">ген. директор</option>
-                                  <option {% if r.position == 'инженер-программист' %} selected {% endif %} value="инженер-программист">инженер-программист</option>
-                                  <option {% if r.position == 'инженер по сварке' %} selected {% endif %} value="инженер по сварке">инженер по сварке</option>
-                                  <option {% if r.position == 'главный инженер' %} selected {% endif %} value="главный инженер">главный инженер</option>
-                                  <option {% if r.position == 'машинист бульдозера' %} selected {% endif %} value="машинист бульдозера">машинист бульдозера</option>
-                                  <option {% if r.position == 'Геодезист-техник' %} selected {% endif %} value="Геодезист-техник">Геодезист-техник</option>
-                                  <option {% if r.position == 'Машинист эксковатора' %} selected {% endif %} value="Машинист эксковатора">Машинист эксковатора</option>
-                                  <option {% if r.position == 'Машинист бульдозера' %} selected {% endif %} value="Машинист бульдозера">Машинист бульдозера</option>
-                                  <option {% if r.position == 'Машинист самосвала' %} selected {% endif %} value="Машинист самосвала">Машинист самосвала</option>
-                                  <option {% if r.position == 'Водитель самосвала' %} selected {% endif %} value="Водитель самосвала">Водитель самосвала</option>
-                                  <option {% if r.position == 'Начальник отдела геодезии' %} selected {% endif %} value="Начальник отдела геодезии">Начальник отдела геодезии</option>
-                                  <option {% if r.position == 'Заместитель директора по финансам' %} selected {% endif %} value="Заместитель директора по финансам">Заместитель директора по финансам</option>
-                                  <option {% if r.position == 'секретарь - референт' %} selected {% endif %} value="секретарь - референт">секретарь - референт</option>
-                                  <option {% if r.position == 'техник-геодезист' %} selected {% endif %} value="техник-геодезист">техник-геодезист</option>
-                                  <option {% if r.position == 'инженер-геодезист' %} selected {% endif %} value="инженер-геодезист">инженер-геодезист</option>
-                                  <option {% if r.position == 'Водитель автотопливозаправщика' %} selected {% endif %} value="Водитель автотопливозаправщика">Водитель автотопливозаправщика</option>
-                                  <option {% if r.position == 'бригадир' %} selected {% endif %} value="бригадир">бригадир</option>
-                                  <option {% if r.position == 'водитель грузового транспорта' %} selected {% endif %} value="водитель грузового транспорта">водитель грузового транспорта</option>
-                                  <option {% if r.position == 'маляр' %} selected {% endif %} value="маляр">маляр</option>
-                                  <option {% if r.position == 'инженер по мтс' %} selected {% endif %} value="инженер по мтс">инженер по мтс</option>
-                                  <option {% if r.position == 'Начальник ПТО' %} selected {% endif %} value="Начальник ПТО">Начальник ПТО</option>
-                                  <option {% if r.position == 'зав.склада' %} selected {% endif %} value="зав.склада">зав.склада</option>
-                                  <option {% if r.position == 'кладовщик' %} selected {% endif %} value="кладовщик">кладовщик</option>
-                                  <option {% if r.position == 'входной контроль' %} selected {% endif %} value="входной контроль">входной контроль</option>
-                                  <option {% if r.position == 'механик' %} selected {% endif %} value="механик">механик</option>
-                                  <option {% if r.position == 'помощник бухгалтера' %} selected {% endif %} value="помощник бухгалтера">помощник бухгалтера</option>
-                                </optgroup>
-                                <optgroup label="ТСК">
-                                  <option {% if r.position == 'не работает' %} selected {% endif %} value="не работает">не работает</option>
-                                  <option {% if r.position == 'главный бухгалтер' %} selected {% endif %} value="главный бухгалтер">главный бухгалтер</option>
-                                  <option {% if r.position == 'инженер-лаборант' %} selected {% endif %} value="инженер-лаборант">инженер-лаборант</option>
-                                  <option {% if r.position == 'директор' %} selected {% endif %} value="директор">директор</option>
-                                </optgroup>
-                                <optgroup label="неоформ">
-                                  <option {% if r.position == 'бетонщик' %} selected {% endif %} value="бетонщик">бетонщик</option>
-                                  <option {% if r.position == 'инженер-геодезист' %} selected {% endif %} value="инженер-геодезист">инженер-геодезист</option>
-                                  <option {% if r.position == 'механик' %} selected {% endif %} value="механик">механик</option>
-                                  <option {% if r.position == 'водитель самосвала' %} selected {% endif %} value="водитель самосвала">водитель самосвала</option>
-                                  <option {% if r.position == 'помощник повара' %} selected {% endif %} value="помощник повара">помощник повара</option>
-                                  <option {% if r.position == 'машинист катка' %} selected {% endif %} value="машинист катка">машинист катка</option>
-                                  <option {% if r.position == 'рабочий' %} selected {% endif %} value="рабочий">рабочий</option>
-                                  <option {% if r.position == 'производитель работ' %} selected {% endif %} value="производитель работ">производитель работ</option>
-                                  <option {% if r.position == 'сторож' %} selected {% endif %} value="сторож">сторож</option>
-                                  <option {% if r.position == 'электрик' %} selected {% endif %} value="электрик">электрик</option>
-                                  <option {% if r.position == 'электросварщик' %} selected {% endif %} value="электросварщик">электросварщик</option>
-                                  <option {% if r.position == 'Инженер' %} selected {% endif %} value="Инженер">Инженер</option>
-                                  <option {% if r.position == 'заместитель директора' %} selected {% endif %} value="заместитель директора">заместитель директора</option>
-                                  <option {% if r.position == 'Советник' %} selected {% endif %} value="Советник">Советник</option>
-                                  <option {% if r.position == 'ген. директор' %} selected {% endif %} value="ген. директор">ген. директор</option>
-                                  <option {% if r.position == 'Специалист по кадрам' %} selected {% endif %} value="Специалист по кадрам">Специалист по кадрам</option>
-                                  <option {% if r.position == 'сметчик' %} selected {% endif %} value="сметчик">сметчик</option>
-                                  <option {% if r.position == 'водитель' %} selected {% endif %} value="водитель">водитель</option>
-                                  <option {% if r.position == 'юрист' %} selected {% endif %} value="юрист">юрист</option>
-                                  <option {% if r.position == 'мастер' %} selected {% endif %} value="мастер">мастер</option>
-                                  <option {% if r.position == 'снабженец' %} selected {% endif %} value="снабженец">снабженец</option>
-                                  <option {% if r.position == 'диспетчер' %} selected {% endif %} value="диспетчер">диспетчер</option>
-                                  <option {% if r.position == 'помощник бухгалтера' %} selected {% endif %} value="помощник бухгалтера">помощник бухгалтера</option>
-                                  <option {% if r.position == 'начальник базы' %} selected {% endif %} value="начальник базы">начальник базы</option>
-                                  <option {% if r.position == 'машинист экскаватора' %} selected {% endif %} value="машинист экскаватора">машинист экскаватора</option>
-                                  <option {% if r.position == 'повар' %} selected {% endif %} value="повар">повар</option>
-                                  <option {% if r.position == 'стройконтроль' %} selected {% endif %} value="стройконтроль">стройконтроль</option>
-                                  <option {% if r.position == 'охранник' %} selected {% endif %} value="охранник">охранник</option>
-                                  <option {% if r.position == 'подсобный рабочий' %} selected {% endif %} value="подсобный рабочий">подсобный рабочий</option>
-                                  <option {% if r.position == 'машинист автокрана' %} selected {% endif %} value="машинист автокрана">машинист автокрана</option>
-                                  <option {% if r.position == 'водитель' %} selected {% endif %} value="водитель">водитель</option>
-                                  <option {% if r.position == 'практикант' %} selected {% endif %} value="практикант">практикант</option>
-                                  <option {% if r.position == 'техник-геодезист' %} selected {% endif %} value="техник-геодезист">техник-геодезист</option>
-                                  <option {% if r.position == 'техничка' %} selected {% endif %} value="техничка">техничка</option>
-                                  <option {% if r.position == 'главный бухгалтер' %} selected {% endif %} value="главный бухгалтер">главный бухгалтер</option>
-                                  <option {% if r.position == 'программист' %} selected {% endif %} value="программист">программист</option>
-                                  <option {% if r.position == 'кладовщик' %} selected {% endif %} value="кладовщик">кладовщик</option>
-                                  <option {% if r.position == 'бухгалтер' %} selected {% endif %} value="бухгалтер">бухгалтер</option>
-                                  <option {% if r.position == 'помощник' %} selected {% endif %} value="помощник">помощник</option>
+                                  {% for p in positions %}
+                                  <option {% if r.position == p %} selected {% endif %} value="{{ p.id }}">{{ p.name }}</option>
+                                  {% endfor %}
                                 </optgroup>
                               </select>
                             </div>
                           </td>
 
-                          <td>
-                            <div class=" text-center mt-2">
-                              <input id="grade" value="{{ r.grade|default:'' }}" name="grade" class="form-control text-left">
-                            </div>
+                          <td class="text-center">
+                            <select name="grade" id="id_grade" class="form-control text-center">
+                                {% for p in grades %}
+                                <option {% if r.grade == p %} selected {% endif %} value="{{ r.grade.id }}">{{ p.name }}</option>
+                                {% endfor %}
+                            </select>
                           </td>
                           <td>
                             <div class=" text-center mt-2">
@@ -346,25 +246,13 @@
                             Гражданство
                           </th>
                           <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
-                            Образование
-                          </th>
-                          <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
                             Организация
-                          </th>
-                          <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
-                            Дата приёма
-                          </th>
-                          <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
-                            Дата увольнения
                           </th>
                           <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
                             Уволен?
                           </th>
                           <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
                             Водитель?
-                          </th>
-                          <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
-                            Количество рабочих часов
                           </th>
                         </tr>
                       </thead>
@@ -387,11 +275,6 @@
                           </td>
                           <td>
                             <div class=" text-center mt-2">
-                              <input id="education" value="{{ r.education }}" name="education" class="form-control text-left">
-                            </div>
-                          </td>
-                          <td>
-                            <div class=" text-center mt-2">
                               <select name="company" id="status" class="form-control text-left">
                                 <option value="1" {% if r.company == 1 %} selected="selected" {% endif %}>
                                   ПМК
@@ -400,16 +283,6 @@
                                   Неоформ
                                 </option>
                               </select>
-                            </div>
-                          </td>
-                          <td>
-                            <div class=" text-left mt-2">
-                              <input id="date_a" name="date_a" class="form-control" value="{{ r.date_accept|date:'Y-m-d' }}" type="date">
-                            </div>
-                          </td>
-                          <td>
-                            <div class=" text-left mt-2">
-                              <input id='date_l' name="date_l" class="form-control" value="{{ r.date_leave|date:'Y-m-d' }}" type="date">
                             </div>
                           </td>
                           <td>
@@ -434,11 +307,6 @@
                                   Водитель
                                 </option>
                               </select>
-                            </div>
-                          </td>
-                          <td>
-                            <div class=" text-left mt-2">
-                              <input id="work_hours" value="{{ r.work_hours }}" name="work_hours" class="form-control text-left">
                             </div>
                           </td>
                         </tr>
@@ -551,12 +419,6 @@
                         <thead>
                           <tr>
                             <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
-                              Дата приёма
-                            </th>
-                            <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
-                              Дата увольнения
-                            </th>
-                            <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
                               Уволен?
                             </th>
                             <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
@@ -571,27 +433,12 @@
                           <tr class="col-lg-11">
                             <td>
                               <div class=" text-center mt-2">
-                                {{ r.date_accept }}
-                              </div>
-                            </td>
-                            <td>
-                              <div class=" text-center mt-2">
-                                {{ r.date_leave|default:'' }}
-                              </div>
-                            </td>
-                            <td>
-                              <div class=" text-center mt-2">
                                 {% if r.leaved == 0 %}Не уволен{% else %}Уволен{% endif %}>
                               </div>
                             </td>
                             <td>
                               <div class=" text-center mt-2">
                                 {% if r.driver == 0 %}Нет{% else %}Да{% endif %}>
-                              </div>
-                            </td>
-                            <td>
-                              <div class=" text-center mt-2">
-                                {{ r.work_hours }}
                               </div>
                             </td>
                           </tr>
@@ -1011,22 +858,6 @@
       this.style.height = 0;
       this.style.height = (this.scrollHeight) + "px";
     }
-  </script>
-  <script>
-    var inputElement = document.getElementById('date_a');
-
-    // Добавляем обработчик события изменения
-    inputElement.addEventListener('change', function() {
-        // Обновляем значение атрибута value при изменении даты
-        inputElement.setAttribute('value', inputElement.value);
-    });
-    var inputElement1 = document.getElementById('date_l');
-
-    // Добавляем обработчик события изменения
-    inputElement1.addEventListener('change', function() {
-        // Обновляем значение атрибута value при изменении даты
-        inputElement1.setAttribute('value', inputElement1.value);
-    });
   </script>
   <script>
       document.getElementById('phone_number').addEventListener('input', function (e) {

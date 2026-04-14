@@ -9,7 +9,7 @@
     <hr class="horizontal light mt-0 mb-2">
     <div class="collapse navbar-collapse  w-auto  max-height-vh-100" id="sidenav-collapse-main">
       <ul class="navbar-nav">
-          {% if perms.reference.view_period  %}
+          {% if request.user.profile.menu_personal  %}
         <li class="nav-item">
           <a class="nav-link text-white {% if 'tabel' in segment %} active bg-gradient-info {% endif %}"
              href="{% url 'tabel' %}">
@@ -20,7 +20,7 @@
           </a>
         </li>
         {% endif %}
-        {% if perms.reference.view_driver  %}
+        {% if request.user.profile.menu_driver  %}
         <li class="nav-item">
           <a class="nav-link text-white {% if 'driver' in segment %} active bg-gradient-info {% endif %}"
              href="{% url 'driver' %}">
@@ -31,8 +31,7 @@
           </a>
         </li>
         {% endif %}
-        {% if request.user.username == 'KamalydinovR' %}
-        {% else %}
+        {% if request.user.profile.menu_reference %}
         <li class="nav-item">
           <a class="nav-link text-white {% if 'ref' in segment %} active bg-gradient-info {% endif %}"
              href="{% url 'ref' %}">

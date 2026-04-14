@@ -249,11 +249,11 @@
                                 {% endif %}
                               {% endif %}
                               <td style="" class="tabellist align-middle text-center">{{ t.days }}</td>
-                              {% if user.profile.open_tp_finance and user.profile.open_tp_edit %}
+                              {% if user.profile.open_tp_finance and user.profile.open_tp_edit or per.obj.prorab == request.user %}
                               <td style="" class="tabellist align-middle text-center"><input style="" name="{{ t.id }}fine" placeholder="" id="{{ t.id }}fine" class="tabellist form-control text-center" value="{{ t.fine|default:''}}"></td>
                               <td style="" class="tabellist align-middle text-center"><input style="" name="{{ t.id }}add" placeholder="" id="{{ t.id }}add" class="tabellist form-control text-center" onchange="CheckAdd({{ t.id }})" value="{{ t.add|default:''}}"></td>
                               {% endif %}
-                              {% if user.profile.open_tp_finance or request.user.is_superuser  %}
+                              {% if user.profile.open_tp_finance or request.user.is_superuser or per.obj.prorab == request.user %}
 
                               <td style="" class="tabellist align-middle text-center">{{ t.salary|default:''|floatformat:'0' }}</td>
                               {% endif %}
@@ -262,11 +262,11 @@
                                   <a class="cursor-pointer" id="dropdownTable{{ t.id }}" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fa fa-ellipsis-v text-secondary">⋮</i> 
                                   </a>
-                                  {% if per.obj.watch1 == request.user or per.obj.watch2 == request.user %}
+                                  {% if per.obj.watch1 == request.user or per.obj.watch2 == request.user or per.obj.prorab == request.user %}
                                   {% else %}
                                   <ul class="dropdown-menu text-center" aria-labelledby="dropdownTable">
-                                    {% if perms.reference.tp_move_personal %}<li><a type="button" onclick="window.move{{ t.id }}.showModal();">Переместить</a></li>{% endif %}
-                                    {% if perms.reference.tp_delete_personal %}<li><a class="dropdown-item text-center border-radius-md" href="/del_tabl/{{ t.id }}/{{ per.id }}">Удалить</a></li>{% endif %}
+                                    {% if perms.reference.tp_move_personal or per.obj.prorab == request.user %}<li><a type="button" onclick="window.move{{ t.id }}.showModal();">Переместить</a></li>{% endif %}
+                                    {% if perms.reference.tp_delete_personal or per.obj.prorab == request.user %}<li><a class="dropdown-item text-center border-radius-md" href="/del_tabl/{{ t.id }}/{{ per.id }}">Удалить</a></li>{% endif %}
                                   </ul>
                                   {% endif %}
                                 </div>
@@ -421,7 +421,7 @@
                         </div>
                       </div>
                     </dialog>
-                    {% if request.user.profile.tp_add_personal %}
+                    {% if request.user.profile.tp_add_personal or per.obj.prorab == request.user %}
                     <dialog id="AddPersone" class="modal-body col-lg-6" style="border-top-left-radius: calc(1rem - 1px); border-top-right-radius: calc(1rem - 1px);border-bottom-left-radius: calc(1rem - 1px); border-bottom-right-radius: calc(1rem - 1px);">
                       <div>
                         <div class="modal-dialog">
