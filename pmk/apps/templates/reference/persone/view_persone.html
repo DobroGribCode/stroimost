@@ -17,7 +17,7 @@
 {% endblock stylesheets %}
 
 {% block content %}
-  {% if perms.reference.view_persone  %}
+  {% if request.user.profile.view_personal %}
     <div class="container-fluid py-4">
       <div class="row mb-12">
         <form autocomplete="off"  method="POST"> {% csrf_token %}
@@ -26,7 +26,7 @@
             <div class="card-header pb-0">
               <div class="row">
                 <div class="col-lg-12 wrap col-7">
-                  {% if perms.reference.change_persone %}
+                  {% if request.user.profile.edit_personal %}
                     <table class="table align-items-center ">
                       <thead>
                       <h4><a href="/persones"><</a></h4>
@@ -37,9 +37,6 @@
                           </th>
                           <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
                             СНИЛС
-                          </th>
-                          <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
-                            ИНН
                           </th>
                           <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
                             Телефон
@@ -61,12 +58,6 @@
                           </td>
                           <td>
                             <div class=" text-center mt-2">
-                              <input id="inn" value="{{ r.inn }}" name="inn" class="form-control text-left">
-                              <p id="messagei"></p>
-                            </div>
-                          </td>
-                          <td>
-                            <div class=" text-center mt-2">
                               <input id="phone_number" value="{{ r.phone_number }}" name="phone_number" class="form-control text-left">
                             </div>
                           </td>
@@ -81,9 +72,6 @@
                           </th>
                           <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
                             Группа
-                          </th>
-                          <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
-                            Категория
                           </th>
                           <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
                             Должность
@@ -178,23 +166,6 @@
                                 {% for g in groups %}
                                   <option value="{{ g.id }}" {% if r.group.id == g.id %} selected="selected" {% endif %}>
                                     {{ g.name }}
-                                  </option>
-                                {% endfor %}
-                              </select>
-                            </div>
-                          </td>
-                          <td>
-                            <div class=" text-center mt-2">
-                              <select name="category" id="category" class="form-control text-left">
-                                {% if r.category %}
-                                {% else %}
-                                  <option selected="selected">
-                                    Выберите категорию
-                                  </option>
-                                {% endif %}
-                                {% for c in cats %}
-                                  <option value="{{ c.id }}" {% if r.category.id == c.id %} selected="selected" {% endif %}>
-                                    {{ c.name }}
                                   </option>
                                 {% endfor %}
                               </select>
@@ -494,9 +465,6 @@
                           <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
                             Группа
                           </th>
-                          <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
-                            Категория
-                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -524,11 +492,6 @@
                           <td>
                             <div class=" text-center mt-2">
                               {{ r.group }}
-                            </div>
-                          </td>
-                          <td>
-                            <div class=" text-center mt-2">
-                              {% if r.category == 1 %}АУП{% else %}рабочие{% endif %}>
                             </div>
                           </td>
                         </tr>

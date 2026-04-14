@@ -36,14 +36,6 @@ class group(models.Model):
         verbose_name = 'Группа'
         verbose_name_plural = 'Группы'
 
-class category(models.Model):
-    name = models.CharField('Наименование', max_length=50)
-    comment = models.CharField('Комментарий',max_length=5000, blank=True,null=True)
-    def __str__(self):
-        return self.name
-    class Meta:
-        verbose_name = 'Категория'
-        verbose_name_plural = 'Категории'
 
 class automobile(models.Model):
     name = models.CharField('Наименование модели', max_length=125)
@@ -56,6 +48,26 @@ class automobile(models.Model):
         verbose_name = 'Модель автомобиля'
         verbose_name_plural = 'Модели автомобилей'
 
+
+class position(models.Model):
+    name = models.CharField('Наименование', max_length=50)
+    comment = models.CharField('Комментарий',max_length=5000, blank=True,null=True)
+    def __str__(self):
+        return self.name
+    class Meta:
+        verbose_name = 'Должность'
+        verbose_name_plural = 'Должности'
+
+class grade(models.Model):
+    position = models.ForeignKey(position, verbose_name='Должность',on_delete=models.PROTECT,blank=True,null=True)
+    name = models.CharField('Наименование', max_length=50)
+    salary = models.CharField('Ставка', max_length=50,blank=True,null=True)
+    comment = models.CharField('Комментарий',max_length=5000, blank=True,null=True)
+    def __str__(self):
+        return self.name
+    class Meta:
+        verbose_name = 'Разряд'
+        verbose_name_plural = 'Разряд'
 
 # Табели
 class persone(models.Model):
@@ -74,11 +86,12 @@ class persone(models.Model):
     resident = models.CharField('Гражданство', choices=country_c, null=True, blank=True, max_length=50)
     company = models.IntegerField('Организация', choices=org_c, null=True, blank=True)
     snils = models.CharField('СНИЛС', max_length=16, default='')
-    inn = models.CharField('ИНН', max_length=12, default='', null=True,blank=True)
     full_name = models.CharField('ФИО', max_length=55)
     group = models.ForeignKey(group, verbose_name='Группа',on_delete=models.PROTECT,blank=True,null=True)
-    position = models.CharField('Должность', max_length=55, null=True, blank=True)
-    grade = models.CharField('Разряд', max_length=15, blank=True,null=True)
+    position = models.ForeignKey(position, verbose_name='Должность', on_delete=models.PROTECT, blank=True, null=True)
+    grade = models.ForeignKey(grade, verbose_name='Разряд', on_delete=models.PROTECT, blank=True, null=True)
+    #position = models.CharField('Должность', max_length=55, null=True, blank=True)
+    #grade = models.CharField('Разряд', max_length=15, blank=True,null=True)
     driver = models.IntegerField('Водитель?',default=0, choices=d)
     salary = models.FloatField('Оклад', max_length=9,default=0, null=True, blank=True)
     exception = models.IntegerField('Исключение', default=0)
@@ -87,7 +100,6 @@ class persone(models.Model):
     output = models.IntegerField('Выходные',default=1,blank=True, null=True)
     date_accept = models.DateField('Дата приема', blank=True, null=True)
     date_leave = models.DateField('Дата увольнения', blank=True, null=True)
-    category = models.ForeignKey(category, verbose_name='Категория', on_delete=models.PROTECT, blank=True, null=True)
     work_hours = models.CharField('Часы работы', max_length=55,default=10, null=True, blank=True)
     comment = models.CharField('Комментарий', max_length=5000, blank=True, null=True)
     idea = models.CharField('Заметки', max_length=5000, blank=True, null=True)
@@ -105,8 +117,9 @@ class persone(models.Model):
 class persone_salary(models.Model):
     persone = models.ForeignKey(persone,verbose_name='Сотрудник', on_delete=models.CASCADE)
     date = models.DateField('Дата', default=datetime.date.today())
+    sum_method = models.IntegerField('Метод расчета', default=0)
     salary = models.FloatField('Оклад', default=0,blank=True,null=True)
-    grade = models.CharField('Разряд', max_length=15, blank=True,null=True)
+    grade = models.ForeignKey(grade, verbose_name='Разряд', on_delete=models.PROTECT, blank=True, null=True)
     comment = models.CharField('Комментарий', blank=True,null=True, max_length=1024)
     def __str__(self):
         return f"{self.persone.full_name} {self.date.month}"

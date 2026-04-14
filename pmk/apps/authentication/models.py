@@ -64,6 +64,14 @@ class UserProfile(models.Model):
     view_group = models.BooleanField(default=False, verbose_name="Видеть справочник групп")
     add_group = models.BooleanField(default=False, verbose_name="Добавлять группы")
 
+    # Справочник Должностей
+    view_position = models.BooleanField(default=False, verbose_name="Видеть справочник должностей")
+    add_position = models.BooleanField(default=False, verbose_name="Добавлять должности")
+
+    # Справочник Разрядов
+    view_grade = models.BooleanField(default=False, verbose_name="Видеть справочник разрядов")
+    add_grade = models.BooleanField(default=False, verbose_name="Добавлять разряды")
+
     # Справочник Персонала
     view_personal = models.BooleanField(default=False, verbose_name="Видеть справочник персонала")
     add_personal = models.BooleanField(default=False, verbose_name="Добавлять персонал")

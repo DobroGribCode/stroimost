@@ -30,6 +30,7 @@ from random import randrange
 from datetime import date
 from calendar import monthrange
 
+from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django import template
@@ -43,8 +44,8 @@ from django.db.models import Count
 from django.utils import timezone
 from django.http import HttpResponse, Http404
 from openpyxl.styles import PatternFill, Border
-from ..reference.forms import TabForm, ObjsForm, AutoForm, GroupForm,PersoneForm, DriverForm, AgreementForm, TempFileForm
-from ..reference.models import driver_tax_lagacy, notifications,notificated,persone_salary,driver_tax,temp_file,tabel_group, category, dayapprove,dayapproved,persone, period,tabel_list, objs, group, automobile, driver, driver_list, agreement, agreement_accepter,agreement_step,accepter_list,agreementer_list, ender_list
+from ..reference.forms import PositionForm, TabForm, ObjsForm, AutoForm, GroupForm,PersoneForm, DriverForm, AgreementForm, TempFileForm
+from ..reference.models import position, grade, driver_tax_lagacy, notifications,notificated,persone_salary,driver_tax,temp_file,tabel_group, dayapprove,dayapproved,persone, period,tabel_list, objs, group, automobile, driver, driver_list, agreement, agreement_accepter,agreement_step,accepter_list,agreementer_list, ender_list
 from django.contrib.auth.models import User
 
 @login_required(login_url="/login/")
@@ -1259,96 +1260,35 @@ class tab:
                 f = t.fine
                 a = t.add
                 today = datetime.date.today()
-                sal = 0
                 next_month = today.replace(day=1) + datetime.timedelta(days=32)
                 if per.date.year == today.year and per.date.month == today.month or next_month.month == per.date.month:
                     if t.persone.sum_method == 1:
                         sal = int(t.persone.salary)
-                    #else:
-                    #    if str(t.persone.grade) == '2':
-                    #        sal = 60900
-                    #    elif str(t.persone.grade) == '3':
-                    #        sal = 67800
-                    #    elif str(t.persone.grade) == '4':
-                    #        sal = 72700
-                    #    elif str(t.persone.grade) == '5':
-                    #        sal = 80000
-                    #    elif str(t.persone.grade) == '6':
-                    #        sal = 86250
-                    #    elif t.persone.salary:
-                    #        sal = int(t.persone.salary)
-                    #    else:
-                    #        sal = 0
                     else:
                         now = datetime.date(day=1,month=2,year=2025)
                         if per.date < now:
-                             if str(t.persone.grade) == '2':
-                                 sal = 60900
-                             elif str(t.persone.grade) == '3':
-                                 sal = 67800
-                             elif str(t.persone.grade) == '4':
-                                 sal = 72700
-                             elif str(t.persone.grade) == '5':
-                                 sal = 80000
-                             elif str(t.persone.grade) == '6':
-                                 sal = 86250
+                             if t.persone.grade.salary:
+                                 sal = t.persone.grade.salary
                              elif t.persone.salary:
                                  sal = int(t.persone.salary)
                              else:
                                  sal = 0
                         else:
-                            if str(t.persone.grade) == '2':
-                                sal = 80000
-                            elif str(t.persone.grade) == '3':
-                                sal = 87000
-                            elif str(t.persone.grade) == '4':
-                                sal = 92000
-                            elif str(t.persone.grade) == '5':
-                                sal = 100000
-                            elif str(t.persone.grade) == '6':
-                                sal = 106000
-                            elif str(t.persone.grade) == '1':
-                                sal = 60000
+                            if t.persone.grade.salary:
+                                sal = t.persone.grade.salary
                             elif t.persone.salary:
                                 sal = int(t.persone.salary)
                             else:
                                 sal = 0
-                    #if per.graphic == 1:
-                    #    t.sum = t.persone.salary / (int(per.workdays) * int(t.persone.work_hours)) * t.hours
-                    #else:
-                    #    t.sum = t.persone.salary / (int(per.workdays) * int(t.persone.work_hours)) * t.hours
                 else:
                     ps = persone_salary.objects.all().filter(persone=t.persone,date=per.date).order_by('-id').last()
-                    if t.persone.sum_method == 1:
+                    if ps.sum_method == 1:
                         sal = int(ps.salary)
-                    #else:
-                    #    if ps.grade == '2':
-                    #        sal = 60900
-                    #    elif ps.grade == '3':
-                    #        sal = 67800
-                    #    elif ps.grade == '4':
-                    #        sal = 72700
-                    #    elif ps.grade == '5':
-                    #        sal = 80000
-                    #    elif ps.grade == '6':
-                    #        sal = 86250
-                    #    elif ps.salary:
-                    #        sal = int(ps.salary)
-                    #    else:
-                    #        sal = 0
                     else:
                         now = datetime.date(day=1,month=2,year=2025)
                         if per.date < now:
-                            if ps.grade == '2':
-                                sal = 60900
-                            elif ps.grade == '3':
-                                sal = 67800
-                            elif ps.grade == '4':
-                                sal = 72700
-                            elif ps.grade == '5':
-                                sal = 80000
-                            elif ps.grade == '6':
-                                sal = 86250
+                            if ps.grade.salary:
+                                sal = ps.grade.salary
                             elif ps.salary:
                                 sal = int(ps.salary)
                             else:
@@ -1356,17 +1296,7 @@ class tab:
                         else:
                             try:
                                 if ps.grade == '2':
-                                    sal = 80000
-                                elif ps.grade == '3':
-                                    sal = 87000
-                                elif ps.grade == '4':
-                                    sal = 92000
-                                elif ps.grade == '5':
-                                    sal = 100000
-                                elif ps.grade == '6':
-                                    sal = 106000
-                                elif ps.grade == '1':
-                                    sal = 60000
+                                    sal = ps.grade.salary
                                 elif ps.salary:
                                     sal = int(ps.salary)
                                 else:
@@ -1698,7 +1628,6 @@ class tab:
                 period=per,
                 persone=p,
                 company=p.company,
-                category=p.category,
                 snils=p.snils,
                 full_name=p.full_name,
                 group=p.group,
@@ -1782,35 +1711,9 @@ class tab:
             else:
                 sheet["D" + str(i)].value = "неоформ"
             sheet["E" + str(i)].value = ""+str(t.persone.full_name)
-            sheet["F" + str(i)].value = ""+str(t.persone.position)
+            sheet["F" + str(i)].value = ""+str(t.persone.position.name)
             if int(t.persone.salary) == 0:
-                sal = t.persone.salary
-                now = datetime.date(day=1, month=2, year=2025)
-                if per.date < now:
-                    if str(t.persone.grade) == '2':
-                        sal = 60900
-                    elif str(t.persone.grade) == '3':
-                        sal = 67800
-                    elif str(t.persone.grade) == '4':
-                        sal = 72700
-                    elif str(t.persone.grade) == '5':
-                        sal = 80000
-                    elif str(t.persone.grade) == '6':
-                        sal = 86250
-                else:
-                    if str(t.persone.grade) == '1':
-                        sal = 60000
-                    elif str(t.persone.grade) == '2':
-                        sal = 80000
-                    elif str(t.persone.grade) == '3':
-                        sal = 87000
-                    elif str(t.persone.grade) == '4':
-                        sal = 92000
-                    elif str(t.persone.grade) == '5':
-                        sal = 100000
-                    elif str(t.persone.grade) == '6':
-                        sal = 106000
-                sheet["G" + str(i)].value = "" + str(t.persone.grade) + " разряд| "+str(sal)
+                sheet["G" + str(i)].value = "" + str(t.persone.grade.name) + " разряд| "+str(t.persone.grade.salary)
             else:
                 sheet["G" + str(i)].value = ""+str(int(float(t.persone.salary)))
             if t.d1:sheet["H" + str(i)].value = ""+str(t.d1)
@@ -2221,6 +2124,101 @@ class reference:
         return HttpResponse(html_template.render(context, request))
 
     @login_required(login_url="/login/")
+    def position(request):
+        positions = position.objects.all()
+        context = {'position': positions, 'segment': 'ref'}
+        html_template = loader.get_template('reference/position/position.html')
+        return HttpResponse(html_template.render(context, request))
+
+    @login_required(login_url="/login/")
+    def new_position(request):
+        positions = position.objects.all()
+        forms = PositionForm
+        if request.method == 'POST':
+            forms = PositionForm(request.POST)
+            if forms.is_valid():
+                post = forms.save(commit=False)
+                post.save()
+                return redirect('position')
+            else:
+                erorr = 'Некорректные данные'
+                context = {'segment': 'ref',
+                           'position': positions,
+                           'forms': forms,
+                           'erorr': erorr
+                           }
+                html_template = loader.get_template('reference/position/new_position.html')
+                return HttpResponse(html_template.render(context, request))
+        else:
+            context = {'segment': 'ref',
+                       'position': positions,
+                       'forms': forms
+                       }
+            html_template = loader.get_template('reference/position/new_position.html')
+            return HttpResponse(html_template.render(context, request))
+
+    @login_required(login_url="/login/")
+    def view_position(request, id):
+        r = position.objects.get(id=id)
+        context = {'r': r, 'segment': 'ref'}
+        html_template = loader.get_template('reference/position/view_position.html')
+        if request.method == 'POST':
+            comment = request.POST.get("comm")
+            if comment == '':
+                pass
+            else:
+                if r.comment == None:
+                    r.comment = ''
+                    r.save()
+                    comment = str(r.comment) + str(comment) + ': ' + str(request.user.last_name) + ' ' + str(
+                        request.user.first_name) + ' ' + str(
+                        datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
+                    r.comment = comment
+                    r.save()
+                else:
+                    comment = str(r.comment) + str(comment) + ': ' + str(request.user.last_name) + ' ' + str(
+                        request.user.first_name) + ' ' + str(
+                        datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
+                    r.comment = comment
+                    r.save()
+            name = request.POST.get("name")
+            if name == str(r.name):
+                pass
+            else:
+                r.name = name
+                r.save()
+        return HttpResponse(html_template.render(context, request))
+
+    @login_required
+    @require_POST
+    def grade_save(request):
+        grade_id = request.POST.get('id')
+        pos_id = request.POST.get('pos_id')
+        name = request.POST.get('name')
+        salary = request.POST.get('salary')
+
+        pos_obj = get_object_or_404(position, id=pos_id)
+
+        if grade_id:  # Редактирование
+            grade_obj = get_object_or_404(grade, id=grade_id)
+        else:  # Создание нового
+            grade_obj = grade(position=pos_obj)
+
+        grade_obj.name = name
+        grade_obj.salary = salary
+        grade_obj.save()
+
+        return JsonResponse({'status': 'ok', 'id': grade_obj.id})
+
+    @login_required
+    @require_POST
+    def grade_delete(request):
+        grade_id = request.POST.get('id')
+        grade_obj = get_object_or_404(grade, id=grade_id)
+        grade_obj.delete()
+        return JsonResponse({'status': 'ok'})
+
+    @login_required(login_url="/login/")
     def persones(request):
         # 1. Получаем поисковой запрос из URL (если он есть)
         search_query = request.GET.get('search', '')
@@ -2386,7 +2384,6 @@ class reference:
             driver_tax(driver=r,tax=0).save()
             tax = driver_tax.objects.get(driver=r)
         groups = group.objects.all().order_by('name')
-        cats = category.objects.all().order_by('name')
         persones = persone.objects.all().order_by('-id')
         if request.method == 'POST':
             comment = request.POST.get("comm")
@@ -2450,14 +2447,6 @@ class reference:
                     except:
                         r.exception = '0'
                         r.save()
-                    try:
-                        cat = request.POST.get("category")
-                        if cat:
-                            cat = category.objects.get(id=int(cat))
-                            r.category = cat
-                            r.save()
-                    except:
-                        pass
                     try:
                         date_a = request.POST.get("date_a")
                         if date_a:
@@ -2635,14 +2624,6 @@ class reference:
                     res = request.POST.get('resident')
                     if res == 'РФ' or res == 'Иностранец':
                         r.resident = res
-                        r.save()
-                except:
-                    pass
-                try:
-                    cat = request.POST.get("category")
-                    if cat:
-                        cat = category.objects.get(id=int(cat))
-                        r.category = cat
                         r.save()
                 except:
                     pass
@@ -2851,7 +2832,7 @@ class reference:
                     pass
             return redirect('/view_persone/'+str(id))
         else:
-            context = {'r': r, 'groups': groups, 'segment': 'ref', 'persones': persones, 'cats': cats, 'tax': tax, }
+            context = {'r': r, 'groups': groups, 'segment': 'ref', 'persones': persones, 'tax': tax, }
             html_template = loader.get_template('reference/persone/view_persone.html')
             return HttpResponse(html_template.render(context, request))
 
@@ -3066,390 +3047,6 @@ class Agreement:
         return response
 
 class misc:
-
-    @login_required(login_url="/login/")
-    def month_info_half(request, years, month, name):
-        date = datetime.date(years, month, 1)
-        pers = period.objects.all().filter(date=date)
-        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = 'attachment;  filename=%s' % str(name)
-        book = openpyxl.load_workbook('mix.xlsx')
-        t_list: worksheet = book.worksheets[0]
-        i = 8
-        n = 1
-        for p in pers:
-            tls = tabel_list.objects.all().filter(period=p)
-            m = int(p.date.month) - 1
-            month = ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября',
-                     'Ноября', 'Декабря']
-            my = str(month[m]) + ' ' + str(p.date.strftime("%Y"))
-            for t in tls:
-                if t.persone.company == 1:
-                    org = 'ПМК'
-                else:
-                    org = 'неоформ'
-                t_list.insert_rows(i)
-                t_list["A" + str(i)].value = "" + str(n)
-                t_list["B" + str(i)].value = "" + str(org)
-                t_list["C" + str(i)].value = "" + str(t.persone.snils)
-                t_list["D" + str(i)].value = "" + str(t.full_name)
-                t_list["E" + str(i)].value = "" + str(t.position)
-                t_list["F" + str(i)].value = "" + str(t.period.obj)
-                t_list["G" + str(i)].value = "" + str(t.group)
-                if t.persone.grade and t.persone.grade != '0':
-                    if t.persone.sum_method == 1:
-                        t_list["H" + str(i)].value = "" + str(round(t.persone.salary))
-                    else:
-                        if str(t.persone.grade) == '1':
-                            t_list["H" + str(i)].value = "60000/1"
-                        elif str(t.persone.grade) == '2':
-                            t_list["H" + str(i)].value = "80000/2"
-                        elif str(t.persone.grade) == '3':
-                            t_list["H" + str(i)].value = "87000/3"
-                        elif str(t.persone.grade) == '4':
-                            t_list["H" + str(i)].value = "92000/4"
-                        elif str(t.persone.grade) == '5':
-                            t_list["H" + str(i)].value = "100000/5"
-                        elif str(t.persone.grade) == '6':
-                            t_list["H" + str(i)].value = "106000/6"
-                else:
-                    t_list["H" + str(i)].value = "" + str(round(t.persone.salary))
-                if t.d1: t_list["J" + str(i)].value = "" + str(t.d1)
-                if t.d2: t_list["K" + str(i)].value = "" + str(t.d2)
-                if t.d3: t_list["L" + str(i)].value = "" + str(t.d3)
-                if t.d4: t_list["M" + str(i)].value = "" + str(t.d4)
-                if t.d5: t_list["N" + str(i)].value = "" + str(t.d5)
-                if t.d6: t_list["O" + str(i)].value = "" + str(t.d6)
-                if t.d7: t_list["P" + str(i)].value = "" + str(t.d7)
-                if t.d8: t_list["Q" + str(i)].value = "" + str(t.d8)
-                if t.d9: t_list["R" + str(i)].value = "" + str(t.d9)
-                if t.d10: t_list["S" + str(i)].value = "" + str(t.d10)
-                if t.d11: t_list["T" + str(i)].value = "" + str(t.d11)
-                if t.d12: t_list["U" + str(i)].value = "" + str(t.d12)
-                if t.d13: t_list["V" + str(i)].value = "" + str(t.d13)
-                if t.d14: t_list["W" + str(i)].value = "" + str(t.d14)
-                if t.d15: t_list["X" + str(i)].value = "" + str(t.d15)
-                if t.days: t_list["AO" + str(i)].value = "" + str(t.days)
-                if t.add: t_list["AP" + str(i)].value = "" + str(round(t.add))
-                if t.fine: t_list["AQ" + str(i)].value = "" + str(round(t.fine))
-                if t.sum: t_list["AR" + str(i)].value = "" + str(round(t.sum))
-                if t.comment: t_list["AS" + str(i)].value = "" + str(t.comment)
-                if request.user.profile.open_tp_finance or request.user.is_superuser:
-                    t_list["AT6"].value = "Заметки"
-                    if t.persone.idea: t_list["AT" + str(i)].value = str(t.persone.idea)
-                i += 1
-                n += 1
-        book.title = 'Отчет общий'
-        book.save(response)
-        return response
-        return redirect('/tabels/')
-
-    @login_required(login_url="/login/")
-    def view_tabel_half(request, id):
-        groups = group.objects.all()
-        per = period.objects.get(id=id)
-        pers = period.objects.all()
-        user = request.user
-        approvers = dayapprove.objects.all().filter(per=per)
-        persones = persone.objects.all().filter().order_by('full_name')
-        tabs = tabel_list.objects.all().filter(period=per).order_by('full_name')
-        html_template = loader.get_template('tabels/worker/view_tabel_half.html')
-        today = datetime.date.today()
-        next_month = today.replace(day=1) + datetime.timedelta(days=16)
-        if per.date.month == today.month or next_month.month == per.date.month or request.user.profile.open_tp_edit or per.obj.prorab == request.user or request.user.is_superuser:
-            for t in tabs:
-                if t.company:
-                    if t.company != t.persone.company:
-                        t.company = t.persone.company
-                        t.save()
-                if t.snils:
-                    if t.snils != t.persone.snils:
-                        t.snils = t.persone.snils
-                        t.save()
-                if t.full_name:
-                    if t.full_name != t.persone.full_name:
-                        t.full_name = t.persone.full_name
-                        t.save()
-                if t.graphic:
-                    if t.graphic != t.persone.graphic:
-                        t.graphic = t.persone.graphic
-                        t.save()
-                if t.group:
-                    if t.group != t.persone.group:
-                        t.group = t.persone.group
-                        t.save()
-                if t.position:
-                    if t.position != t.persone.position:
-                        t.position = t.persone.position
-                        t.save()
-        if per.date:
-            month = datetime.date.today().month
-            pm = per.date.month
-            if month > pm:
-                if datetime.date.today().year == per.date.year:
-                    per.fullblock = 1
-                    per.save()
-            if per.fullblock != 1:
-                today = datetime.date.today().day - 1
-                for day in range(1, 16):
-                    if today > day:
-                        setattr(per, f'db{day}', 1)
-                        per.save()
-            if per:
-                for day in range(1, 16):
-                    i = 0
-                    for a in approvers:
-                        if a.day == day:
-                            i += 1
-                        if i >= 1:
-                            setattr(per, f'da{day}', 1)
-                            per.save()
-        if request.method == 'POST':
-            for t in tabs:
-                out = 0
-                for i in range(1, 16):
-                    day_key = f'd{i}'
-                    da = request.POST.get(str(t.id) + day_key)
-                    if da:
-                        try:
-                            da = int(da)
-                            if 0 < da <= 23:
-                                setattr(t, day_key, da)
-                        except ValueError:
-                            da = da.upper()
-                            if da in ["ВВ", "Н", "М", "Б", "О", "Д", "В", "У"]:
-                                setattr(t, day_key, da)
-                        t.save()
-                h = 0
-                d = 0
-                for i in range(1, 16):
-                    day_key = f'd{i}'
-                    try:
-                        h_day = int(getattr(t, day_key))
-                        h += h_day
-                        d += 1
-                    except:
-                        if getattr(t, day_key) == "ВВ":
-                            out += 1
-                            if out < 3:
-                                h += int(t.persone.work_hours)
-                                d += 1
-                        elif getattr(t, day_key) == "М":
-                            if str(t.group.name) == "ИТР" or str(t.group.name) == "ПТО":
-                                h += int(t.persone.work_hours)
-                                d += 1
-                t.hours = int(h)
-                t.days = int(d)
-                t.save()
-                comment = request.POST.get("com"+str(t.id))
-                if comment == '':
-                    pass
-                else:
-                    if t.comment == None:
-                        t.comment = ''
-                        t.save()
-                        comment = str(t.comment) + str(comment)  + ': ' + str(request.user.last_name)+' '+ str(request.user.first_name) + ' ' + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
-                        t.comment = comment
-                        t.save()
-                    else:
-                        comment = str(t.comment) + str(comment)  + ': ' + str(request.user.last_name)+' '+ str(request.user.first_name) + ' ' + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
-                        t.comment = comment
-                        t.save()
-                try:
-                    fine = request.POST.get(str(t.id)+"fine")
-                    if fine:
-                        t.fine = float(fine)
-                    else:
-                        t.fine = 0
-                except:
-                    pass
-                try:
-                    add = request.POST.get(str(t.id)+"add")
-                    if add:
-                        t.add = float(add)
-                    else:
-                        t.add = 0
-                except:
-                    pass
-                f = t.fine
-                a = t.add
-                today = datetime.date.today()
-                sal = 0
-                next_month = today.replace(day=1) + datetime.timedelta(days=16)
-                if per.date.year == today.year and per.date.month == today.month or next_month.month == per.date.month:
-                    if t.persone.sum_method == 1:
-                        sal = int(t.persone.salary)
-                    #else:
-                    #    if str(t.persone.grade) == '2':
-                    #        sal = 60900
-                    #    elif str(t.persone.grade) == '3':
-                    #        sal = 67800
-                    #    elif str(t.persone.grade) == '4':
-                    #        sal = 72700
-                    #    elif str(t.persone.grade) == '5':
-                    #        sal = 80000
-                    #    elif str(t.persone.grade) == '6':
-                    #        sal = 86250
-                    #    elif t.persone.salary:
-                    #        sal = int(t.persone.salary)
-                    #    else:
-                    #        sal = 0
-                    else:
-                        now = datetime.date(day=1,month=2,year=2025)
-                        if per.date < now:
-                             if str(t.persone.grade) == '2':
-                                 sal = 60900
-                             elif str(t.persone.grade) == '3':
-                                 sal = 67800
-                             elif str(t.persone.grade) == '4':
-                                 sal = 72700
-                             elif str(t.persone.grade) == '5':
-                                 sal = 80000
-                             elif str(t.persone.grade) == '6':
-                                 sal = 86250
-                             elif t.persone.salary:
-                                 sal = int(t.persone.salary)
-                             else:
-                                 sal = 0
-                        else:
-                            if str(t.persone.grade) == '2':
-                                sal = 80000
-                            elif str(t.persone.grade) == '3':
-                                sal = 87000
-                            elif str(t.persone.grade) == '4':
-                                sal = 92000
-                            elif str(t.persone.grade) == '5':
-                                sal = 100000
-                            elif str(t.persone.grade) == '6':
-                                sal = 106000
-                            elif str(t.persone.grade) == '1':
-                                sal = 60000
-                            elif t.persone.salary:
-                                sal = int(t.persone.salary)
-                            else:
-                                sal = 0
-                    #if per.graphic == 1:
-                    #    t.sum = t.persone.salary / (int(per.workdays) * int(t.persone.work_hours)) * t.hours
-                    #else:
-                    #    t.sum = t.persone.salary / (int(per.workdays) * int(t.persone.work_hours)) * t.hours
-                else:
-                    ps = persone_salary.objects.all().filter(persone=t.persone,date=per.date).order_by('-id').last()
-                    if t.persone.sum_method == 1:
-                        sal = int(ps.salary)
-                    #else:
-                    #    if ps.grade == '2':
-                    #        sal = 60900
-                    #    elif ps.grade == '3':
-                    #        sal = 67800
-                    #    elif ps.grade == '4':
-                    #        sal = 72700
-                    #    elif ps.grade == '5':
-                    #        sal = 80000
-                    #    elif ps.grade == '6':
-                    #        sal = 86250
-                    #    elif ps.salary:
-                    #        sal = int(ps.salary)
-                    #    else:
-                    #        sal = 0
-                    else:
-                        now = datetime.date(day=1,month=2,year=2025)
-                        if per.date < now:
-                            if ps.grade == '2':
-                                sal = 60900
-                            elif ps.grade == '3':
-                                sal = 67800
-                            elif ps.grade == '4':
-                                sal = 72700
-                            elif ps.grade == '5':
-                                sal = 80000
-                            elif ps.grade == '6':
-                                sal = 86250
-                            elif ps.salary:
-                                sal = int(ps.salary)
-                            else:
-                                sal = 0
-                        else:
-                            try:
-                                if ps.grade == '2':
-                                    sal = 80000
-                                elif ps.grade == '3':
-                                    sal = 87000
-                                elif ps.grade == '4':
-                                    sal = 92000
-                                elif ps.grade == '5':
-                                    sal = 100000
-                                elif ps.grade == '6':
-                                    sal = 106000
-                                elif ps.grade == '1':
-                                    sal = 60000
-                                elif ps.salary:
-                                    sal = int(ps.salary)
-                                else:
-                                    sal = 0
-                            except:
-                                sal = 0
-                if t.graphic == 2:
-                    t.sum = sal / int(per.workdays5) * t.days
-                else:
-                    t.sum = sal / int(per.workdays) * t.days
-                if t.persone.exception == 0:
-                    t.salary = t.sum - float(f) + float(a)
-                else:
-                    t.salary = 0
-                t.save()
-            wd = request.POST.get('wd');
-            if int(wd) != per.workdays:
-                per.workdays = int(wd)
-                per.save()
-            wd5 = request.POST.get('wd5');
-            if int(wd5) != per.workdays5:
-                per.workdays5 = int(wd5)
-                per.save()
-            return redirect('/view_tabel_half/' + str(id))
-        else:
-            context = {
-                'user': user,
-                'approvers':approvers,
-                'persones': persones,
-                'groups': groups,
-                'per': per,
-                'segment': 'tabel',
-                'tabs': tabs,
-                'pers': pers,
-            }
-            return HttpResponse(html_template.render(context, request))
-
-    @login_required(login_url="/login/")
-    def converts(request):
-        if request.method == 'POST':
-            pers = persone.objects.all()
-            feb = request.POST.get('convert_date')
-            feb = datetime.datetime.strptime(feb, '%Y-%m-%d').date()
-            for p in pers:
-                persone_salary(
-                    persone=p,
-                    date=feb,
-                    salary=p.salary,
-                    grade=p.grade,
-                ).save()
-                try:
-                    tax = driver_tax.objects.get(driver=p)
-                    if tax:
-                        driver_tax_lagacy(
-                            driver=tax.driver,
-                            tax=tax.tax,
-                            date=feb
-                        ).save()
-                except:
-                    pass
-        else:
-            context = {
-                'segment': 'profile',
-            }
-            html_template = loader.get_template('home/save.html')
-            return HttpResponse(html_template.render(context, request))
-        return redirect('/persones')
-
     def notification_add(requst):
         user_list = User.objects.all()
         for user_name in user_list:
@@ -3473,6 +3070,7 @@ class misc:
                 persone=p,
                 date=feb,
                 salary=p.salary,
+                sum_method=p.sum_method,
                 grade=p.grade,
             ).save()
             try:
@@ -3487,11 +3085,6 @@ class misc:
                 pass
         return redirect('/persones')
 
-
-    def is_last_day_of_month(date):
-        last_day = calendar.monthrange(date.year, date.month)
-        return date.day == last_day
-
     def convert5(request):
         tbl = driver.objects.all()
         for t in tbl:
@@ -3501,15 +3094,6 @@ class misc:
                 t.company = 2
             t.save()
         return redirect('/persones')
-
-    def convert8(request):
-        persones = persone.objects.all()
-        for t in persones:
-            if t.group == None:
-                g = group.objects.get(name='None')
-                t.group = g
-                t.save()
-        return redirect('/persones/')
 
     @login_required(login_url="/login/")
     def persones_info(request, name):
@@ -3532,17 +3116,16 @@ class misc:
             if p.inn:
                 t_list["D" + str(i)].value = "" + str(p.inn)
             t_list["E" + str(i)].value = "" + str(p.full_name)
-            t_list["F" + str(i)].value = "" + str(p.category)
             if p.group:
                 t_list["G" + str(i)].value = "" + str(p.group)
             if p.workgroup:
                 t_list["H" + str(i)].value = "" + str(p.workgroup)
             if p.position:
-                t_list["I" + str(i)].value = "" + str(p.position)
+                t_list["I" + str(i)].value = "" + str(p.position.name)
             if p.salary:
                 t_list["J" + str(i)].value = "" + str(p.salary)
             if p.grade:
-                t_list["K" + str(i)].value = "" + str(p.grade)
+                t_list["K" + str(i)].value = "" + str(p.grade.name)
             if p.graphic:
                 t_list["L" + str(i)].value = "" + str(p.graphic)
             if p.date_accept:
@@ -3591,22 +3174,12 @@ class misc:
                 t_list["E" + str(i)].value = "" + str(t.position)
                 t_list["F" + str(i)].value = "" + str(t.period.obj)
                 t_list["G" + str(i)].value = "" + str(t.group)
-                if t.persone.grade and t.persone.grade != '0':
+                if t.persone.grade:
                     if t.persone.sum_method == 1:
                         t_list["H" + str(i)].value = "" + str(round(t.persone.salary))
                     else:
-                        if str(t.persone.grade) == '1':
-                            t_list["H" + str(i)].value = "60000/1"
-                        elif str(t.persone.grade) == '2':
-                            t_list["H" + str(i)].value = "80000/2"
-                        elif str(t.persone.grade) == '3':
-                            t_list["H" + str(i)].value = "87000/3"
-                        elif str(t.persone.grade) == '4':
-                            t_list["H" + str(i)].value = "92000/4"
-                        elif str(t.persone.grade) == '5':
-                            t_list["H" + str(i)].value = "100000/5"
-                        elif str(t.persone.grade) == '6':
-                            t_list["H" + str(i)].value = "106000/6"
+                        if t.persone.grade:
+                            t_list["H" + str(i)].value = t.persone.grade.name + "|" + t.persone.grade.salary
                 else:
                     t_list["H" + str(i)].value = "" + str(round(t.persone.salary))
                 if t.d1: t_list["J" + str(i)].value = "" + str(t.d1)

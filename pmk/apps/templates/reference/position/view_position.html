@@ -1,0 +1,506 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Редактирование группы {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<style>
+  tbody tr:hover {
+    background: #fafafa;
+  }
+</style>
+<style>
+  td:focus-within {
+    background: #f5f5f5;
+  }
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+  {% if request.user.profile.view_group  %}
+    <div class="container-fluid py-4">
+      <div class="row mb-12">
+        {% if request.user.profile.add_group %}<form method="POST"> {% csrf_token %} {% endif %}
+        <div class="col-lg-12 col-md-6 mb-md-0 mb-4">
+          <div class="card">
+            <div class="card-header pb-0">
+              <div class="row">
+                <div class="col-lg-12 col-7">
+                    <table class="table align-items-center ">
+                      <thead>
+                            <H4 class="text-center">Группа</H4>
+                        <tr>
+                          <th style="background:#e4e4e4;" class="text-center text-centerps-2">
+                            Наименование
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="col-lg-11">
+                          <td>
+                            <div class=" text-center mt-2">
+                              <input id="name" value="{{ r.name }}" name="name" class="form-control text-center">
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                  <div class="wrap col-lg-12">
+                    <textarea disabled class="col-lg-5 form-conrtol">{{ r.comment|default:'' }}</textarea>
+                    <br>
+                    {% if request.user.profile.add_group %}<table title="Введите текст и нажмите Enter" style="width:40%; border-color: #363636;" class="table col-lg-5">
+                      <tbody>
+                        <tr>
+                          <td>
+                            <input name="comm" id="comm" placeholder="Ввод комментария" class="form-control" >
+                          </td>
+                        </tr>
+                      </tbody>
+                      {% endif %}
+                    </table>
+                  </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 >Разряды должности</h5>
+                                <button type="button" class="btn btn-sm bg-gradient-success" onclick="addGradeRow()">Добавить разряд</button>
+                            </div>
+
+                            <table class="table align-items-center mb-4" id="grades-table">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Наименование (Разряд)</th>
+                                        <th class="text-center">Ставка</th>
+                                        <th class="text-center">Действие</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="grades-tbody">
+                                    {% for g in r.grade_set.all %}
+                                    <tr data-id="{{ g.id }}">
+                                        <td><input type="text" class="form-control text-center grade-name" value="{{ g.name }}" onchange="updateGrade(this)"></td>
+                                        <td><input type="text" class="form-control text-center grade-salary" value="{{ g.salary|default:'' }}" onchange="updateGrade(this)"></td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-link text-danger mb-0" onclick="deleteGrade(this)">Удалить</button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="wrap col-lg-12">
+                            <textarea disabled class="col-lg-5 form-conrtol" style="min-height: 100px;">{{ r.comment|default:'' }}</textarea>
+                            </div>
+                    </div>
+                </div>
+                {% if request.user.profile.add_group %}
+                <div class="row">
+                  <div class="col-lg-10">
+                    <br><br><br><br>
+                  </div>
+                  <div class="col-lg-2">
+                    <br><br><br>
+                    <button class="btn bg-gradient-dark px-4 mb-3" type="submit">Сохранить</button>
+                  </div>
+                </div>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+        {% if request.user.profile.add_group %}</form>{% endif %}
+      </div>
+    </div>
+  {% endif %}
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="{{ ASSETS_ROOT }}/js/plugins/chartjs.min.js"></script>
+  <script>
+    var ctx = document.getElementById("chart-bars").getContext("2d");
+
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["M", "T", "W", "T", "F", "S", "S"],
+        datasets: [{
+          label: "Sales",
+          tension: 0.4,
+          borderWidth: 0,
+          borderRadius: 4,
+          borderSkipped: false,
+          backgroundColor: "rgba(255, 255, 255, .8)",
+          data: [50, 20, 10, 22, 50, 10, 40],
+          maxBarThickness: 6
+        }, ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              suggestedMin: 0,
+              suggestedMax: 500,
+              beginAtZero: true,
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+              color: "#fff"
+            },
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+
+
+    var ctx2 = document.getElementById("chart-line").getContext("2d");
+
+    new Chart(ctx2, {
+      type: "line",
+      data: {
+        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        datasets: [{
+          label: "Mobile apps",
+          tension: 0,
+          borderWidth: 0,
+          pointRadius: 5,
+          pointBackgroundColor: "rgba(255, 255, 255, .8)",
+          pointBorderColor: "transparent",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderWidth: 4,
+          backgroundColor: "transparent",
+          fill: true,
+          data: [50, 40, 300, 320, 500, 350, 200, 230, 500],
+          maxBarThickness: 6
+
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+
+    var ctx3 = document.getElementById("chart-line-tasks").getContext("2d");
+
+    new Chart(ctx3, {
+      type: "line",
+      data: {
+        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        datasets: [{
+          label: "Mobile apps",
+          tension: 0,
+          borderWidth: 0,
+          pointRadius: 5,
+          pointBackgroundColor: "rgba(255, 255, 255, .8)",
+          pointBorderColor: "transparent",
+          borderColor: "rgba(255, 255, 255, .8)",
+          borderWidth: 4,
+          backgroundColor: "transparent",
+          fill: true,
+          data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
+          maxBarThickness: 6
+
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              padding: 10,
+              color: '#f8f9fa',
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+  </script>
+  <script>
+                window.document.onkeydown = function () {
+                        startRefocus();
+                }
+                function startRefocus(event) {
+                        event = event || window.event;
+                        //if (!event.ctrlKey) return;
+                        var key = event.keyCode;
+                        var targetElement = event.target || event.srcElement;
+                        focusMe(targetElement, key);
+                }
+                function focusMe(input, key) {
+                        var needFocusElement = true;
+                        function detectColumn(td) {
+                                var result = 0, x;
+                                while (td = td.previousElementSibling) {
+                                        ++result
+                                }
+                                return result;
+                        }
+                        try {
+                                switch (key) {
+                                        case 37:
+                                                needFocusElement = input.parentNode.previousElementSibling.querySelector("input");
+
+                                                break;
+                                        case 39:
+                                                needFocusElement = input.parentNode.nextElementSibling.querySelector("input");
+                                                break;
+                                        case 38:
+                                                needFocusElement = input.parentNode.parentNode.previousElementSibling.querySelectorAll("td")[detectColumn(input.parentNode)].querySelector("input");
+                                                break;
+                                        case 40:
+                                                needFocusElement = input.parentNode.parentNode.nextElementSibling.querySelectorAll("td")[detectColumn(input.parentNode)].querySelector("input");
+                        break;
+                    default:
+                        needFocusElement = false;
+                                }
+                        } catch (e) {
+                                needFocusElement = false;
+                        }
+
+                        if (!needFocusElement) return;
+                        needFocusElement.focus();
+                }
+        </script>
+  <script>
+    const tx = document.getElementsByTagName("textarea");
+    for (let i = 0; i < tx.length; i++) {
+      tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+      tx[i].addEventListener("input", OnInput, false);
+    }
+
+    function OnInput() {
+      this.style.height = 0;
+      this.style.height = (this.scrollHeight) + "px";
+    }
+    function addGradeRow() {
+        const tbody = document.getElementById('grades-tbody');
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><input type="text" class="form-control text-center grade-name" placeholder="Напр: 3 разряд"></td>
+            <td><input type="text" class="form-control text-center grade-salary" placeholder="Ставка"></td>
+            <td class="text-center">
+                <button type="button" class="btn btn-link text-success mb-0" onclick="updateGrade(this, true)">Сохранить</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    }
+
+    function updateGrade(element, isNew = false) {
+        const row = element.closest('tr');
+        const id = row.getAttribute('data-id') || '';
+        const name = row.querySelector('.grade-name').value;
+        const salary = row.querySelector('.grade-salary').value;
+        const posId = "{{ r.id }}";
+
+        if (!name) return; // Не сохраняем пустое имя
+
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('pos_id', posId);
+        formData.append('name', name);
+        formData.append('salary', salary);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        fetch('/reference/grade/save/', { // Проверьте этот URL в urls.py
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                row.setAttribute('data-id', data.id);
+                if (isNew) {
+                    // Меняем кнопку "Сохранить" на "Удалить"
+                    const actionTd = row.querySelector('td:last-child');
+                    actionTd.innerHTML = `<button type="button" class="btn btn-link text-danger mb-0" onclick="deleteGrade(this)">Удалить</button>`;
+                }
+            }
+        });
+    }
+
+    function deleteGrade(element) {
+        if (!confirm('Удалить разряд?')) return;
+
+        const row = element.closest('tr');
+        const id = row.getAttribute('data-id');
+
+        if (!id) {
+            row.remove();
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        fetch('/reference/grade/delete/', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') row.remove();
+        });
+    }
+  </script>
+
+
+
+{% endblock javascripts %}

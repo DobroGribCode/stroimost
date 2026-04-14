@@ -1,4 +1,4 @@
-from .models import period,objs, automobile, persone, group, driver, agreement, temp_file
+from .models import period,objs, automobile, persone, group, driver, agreement, temp_file, position
 from django.forms import ModelForm, Textarea, Select, modelformset_factory, TextInput,DateInput, FileField
 from django.contrib.auth.models import User
 from django import forms
@@ -72,6 +72,19 @@ class ObjsForm(ModelForm):
             }),
         }
 
+class PositionForm(ModelForm):
+    class Meta:
+        model = position
+        fields = ['name']
+        widgets = {
+            'name': TextInput(attrs={
+                'type': 'text',
+                'class': 'form-control',
+                'placeholder': 'Наименование'
+            }),
+        }
+
+
 class GroupForm(ModelForm):
     class Meta:
         model = group
@@ -113,7 +126,7 @@ class AutoForm(ModelForm):
 class PersoneForm(ModelForm):
     class Meta:
         model = persone
-        fields = ['education','resident','work_hours','company','inn','phone_number', 'snils', 'full_name', 'group','category', 'position', 'salary', 'graphic', 'output', 'date_accept','driver','grade']
+        fields = ['education','resident','work_hours','company','phone_number', 'snils', 'full_name', 'group', 'position', 'salary', 'graphic', 'output', 'date_accept','driver']
         widgets = {
             'education': TextInput(attrs={
                 'type': 'text',
@@ -137,22 +150,10 @@ class PersoneForm(ModelForm):
                 'class': 'form-control',
                 'placeholder': 'СНИЛС'
             }),
-            'inn': TextInput(attrs={
-                'type': 'text',
-                'class': 'form-control',
-                'placeholder': 'ИНН'
-            }),
             'phone_number': TextInput(attrs={
                 'type': 'text',
                 'class': 'form-control',
                 'placeholder': 'Номер телефона'
-            }),
-            'category': Select(attrs={
-                'type': 'text',
-                'class': 'form-control text-center',
-                'placeholder': 'Группа',
-                'color': '#fff',
-                'background': '#369',
             }),
             'group': Select(attrs={
                 'type': 'text',
@@ -161,10 +162,12 @@ class PersoneForm(ModelForm):
                 'color': '#fff',
                 'background': '#369',
             }),
-            'position': TextInput(attrs={
+            'position': Select(attrs={
                 'type': 'text',
-                'class': 'form-control',
-                'placeholder': 'Должность'
+                'class': 'form-control text-center',
+                'placeholder': 'Группа',
+                'color': '#fff',
+                'background': '#369',
             }),
             'salary': TextInput(attrs={
                 'type': 'text',
@@ -201,11 +204,6 @@ class PersoneForm(ModelForm):
                 'type': 'date',
                 'class': 'form-control',
                 'placeholder': 'Дата приёма'
-            }),
-            'grade': TextInput(attrs={
-                'type': 'text',
-                'class': 'form-control',
-                'placeholder': 'Разряд'
             }),
             'work_hours': TextInput(attrs={
                 'type': 'text',

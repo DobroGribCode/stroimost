@@ -1,8 +1,9 @@
 from django.contrib import admin
-from .models import notificated,notifications,driver_tax_lagacy, persone_salary, category,driver_tax,tabel_group,dayapprove,dayapproved,persone, period, tabel_list, temp_file, objs,ender_list , group, driver_list,driver, automobile,agreement, agreement_step,accepter_list,agreementer_list,agreement_accepter
+from .models import position, grade, notificated,notifications,driver_tax_lagacy, persone_salary, driver_tax,tabel_group,dayapprove,dayapproved,persone, period, tabel_list, temp_file, objs,ender_list , group, driver_list,driver, automobile,agreement, agreement_step,accepter_list,agreementer_list,agreement_accepter
 
 # Register your models here
-admin.site.register(category)
+admin.site.register(position)
+admin.site.register(grade)
 admin.site.register(agreement)
 admin.site.register(ender_list)
 admin.site.register(temp_file)

@@ -73,12 +73,18 @@ urlpatterns = [
     path('group', views.reference.group, name='group'),
     path('new_group', views.reference.new_group, name='new_group'),
     path('view_group/<int:id>', views.reference.view_group, name='view_group/<int:id>'),
+    path('position', views.reference.position, name='position'),
+    path('new_position', views.reference.new_position, name='new_position'),
+    path('view_position/<int:id>', views.reference.view_position, name='view_position/<int:id>'),
+    path('reference/grade/save/', views.reference.grade_save, name='grade_save'),
+    path('reference/grade/delete/', views.reference.grade_delete, name='grade_delete'),
     path('persones', views.reference.persones, name='persones'),
     path('persones_in_tabel', views.reference.persone_in_tabel, name='persones_in_tabel'),
     path('hexp_pit/<str:start_date>/<str:end_date>/<str:name>', views.reference.hexp_pit, name='hexp_pit/<str:start_date>/<str:end_date>/<str:name>'),
     path('save_idea/', views.reference.save_idea, name='save_idea'),
     path('new_persone', views.reference.new_persone, name='new_persone'),
     path('view_persone/<int:id>', views.reference.view_persone, name='view_persone/<int:id>'),
+
 
 
     #Утверждения

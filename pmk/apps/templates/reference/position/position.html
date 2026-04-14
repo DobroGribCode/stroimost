@@ -1,97 +1,59 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} Лаборатория {% endblock %}
+{% block title %} Справочник {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-{% if request.user.profile.menu_reference %}
+{% if request.user.profile.view_position  %}
     <div class="container-fluid py-4">
       <div class="row mb-12">
         <div class="col-lg-12 col-md-6 mb-md-0 mb-4">
-          <div class="">
-            <div class="pb-0">
+          <div class="card">
+            <div class="card-header pb-0">
               <div class="row">
-                <div class="col-lg-12 col-7">
-                  <h6 class="text-center">Справочник</h6>
+                <div class="col-lg-11 col-7">
+                  <h6>Должности</h6>
                 </div>
+                {% if request.user.profile.add_position %}<div class="col-lg-1 col-7">
+                  <a class="text-white" href="{% url 'new_position' %}"><button class="btn bg-gradient-dark px-3 mb-2" data-class="bg-gradient-dark">Создать</button></a>
+                </div>{% endif %}
               </div>
             </div>
-            <div class="">
+            <div class="card-body">
+
               <div class="row">
                 <div class=" col-lg-12 wrap">
-                  <div class="row">
-                    <div class=" col-lg-12 wrap">
-                      <div class="row">
-                        {% if request.user.profile.view_obj  %}
-                        <div class="col-sm colico">
-                          <a href="objs">
-                            <img src="static/assets/img/icons/object.png" class="icon">
-                          </a>
-                          <a href="objs">
-                            Объекты
-                          </a>
-                        </div>
-                        {% endif %}
-                        {% if request.user.profile.view_ts  %}
-                        <div class="col-sm colico">
-                          <a href="auto">
-                            <img src="static/assets/img/icons/inert.png" class="icon">
-                          </a>
-                          <a href="auto">
-                            Транспортные средства
-                          </a>
-                        </div>
-                        {% endif %}
-                        {% if request.user.profile.view_group %}
-                        <div class="col-sm colico">
-                          <a href="group">
-                            <img src="static/assets/img/icons/dep.png" class="icon">
-                          </a>
-                          <a href="group">
-                            Группы
-                          </a>
-                        </div>
-                        {% endif %}
-                        {% if request.user.profile.view_position %}
-                        <div class="col-sm colico">
-                          <a href="position">
-                            <img src="static/assets/img/icons/dep.png" class="icon">
-                          </a>
-                          <a href="position">
-                            Должности
-                          </a>
-                        </div>
-                        {% endif %}
-                      </div>
-                      <div class="row">
-                        {% if request.user.profile.view_personal %}
-                        <div class="col-sm colico">
-                          <a href="persones">
-                            <img src="static/assets/img/icons/workers.png" class="icon">
-                          </a>
-                          <a href="persones">
-                            Персонал
-                          </a>
-                        </div>
-                        {% endif %}
-                      </div>
-                      <br><br>
-                    </div>
-                    <br><br>
-                    <br><br>
-                  </div>
+
+                  <table class="table align-items-center mb-0">
+                    <thead>
+                      <tr>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Наименование</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for c in position %}
+                      <tr class="col-lg-11">
+                        <td>
+                          <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                              <a href="/view_position/{{ c.id }}">{{ c.name }}</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
                   <br><br>
                 </div>
                 <br><br>
                 <br><br>
               </div>
-
             </div>
           </div>
         </div>
-
       </div>
 
       {% include 'includes/footer.html' %}
