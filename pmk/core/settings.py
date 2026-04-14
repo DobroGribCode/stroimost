@@ -29,8 +29,8 @@ ASSETS_ROOT = os.getenv('ASSETS_ROOT', '/static/assets')
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
 # load production server from .env
-ALLOWED_HOSTS = ["xn--80acmmgjcx3a.xn--p1ai", "www.xn--80acmmgjcx3a.xn--p1ai", "пмктабели.рф","www.пмктабели.рф",'localhost','195.161.114.209/','195.161.114.209', '195.161.114.209:85','2c04df149c1e.vps.myjino.ru/','2c04df149c1e.vps.myjino.ru', '2c04df149c1e.vps.myjino.ru:85', 'localhost:85', '127.0.0.1', env('SERVER', default='www.pmktabel.site/') ]
-CSRF_TRUSTED_ORIGINS = ["https://xn--80acmmgjcx3a.xn--p1ai", "https://www.xn--80acmmgjcx3a.xn--p1ai", "https://пмктабели.рф", "https://www.пмктабели.рф", 'http://195.161.114.209:85','https://195.161.114.209','http://2c04df149c1e.vps.myjino.ru:85','https://2c04df149c1e.vps.myjino.ru', 'http://127.0.0.1','https://' + env('SERVER', default='www.пмктабели.рф/')]
+ALLOWED_HOSTS = ["smtabel.ru", "www.smtabel.ru", "smtabel.ru","www.smtabel.ru",'localhost','81.177.6.234/','81.177.6.234', '81.177.6.234:85','a46301f2d2da.vps.myjino.ru/','a46301f2d2da.vps.myjino.ru', 'a46301f2d2da.vps.myjino.ru:85', 'localhost:85', '127.0.0.1', env('SERVER', default='www.smtabel.site/') ]
+CSRF_TRUSTED_ORIGINS = ["https://smtabel.ru", "https://www.smtabel.ru", "https://smtabel.ru", "https://www.smtabel.ru", 'http://81.177.6.234:85','https://81.177.6.234','http://a46301f2d2da.vps.myjino.ru:85','https://a46301f2d2da.vps.myjino.ru', 'http://127.0.0.1','https://' + env('SERVER', default='www.smtabel.ru/')]
 
 # Application definition
 
