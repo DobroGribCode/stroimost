@@ -88,7 +88,7 @@
                           <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
                             Исключение
                           </th>
-                          {% if perms.reference.change_driver_tax %}
+                          {% if request.user.profile.edit_tax_personal %}
                           <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
                             Тариф водителя
                           </th>
@@ -176,7 +176,7 @@
                               <input class="form-control" type="text" id="searchInput" onchange="searchSelect()" placeholder="Поиск...">
                               <!-- <input id="position" value="{{ r.position }}" name="position" class="form-control text-center"> -->
                               <select id="position" name="position" class="form-control text-left" id="post_id">
-                                <optgroup label="ПМК">
+                                <optgroup label="СтройМост">
                                   {% if r.position %}{% else %} <option selected disabled>Выберите должность</option> {% endif %}
                                   {% for p in positions %}
                                   <option {% if r.position == p %} selected {% endif %} value="{{ p.id }}">{{ p.name }}</option>
@@ -188,8 +188,9 @@
 
                           <td class="text-center">
                             <select name="grade" id="id_grade" class="form-control text-center">
+                                <option value="">Без разряда</option>
                                 {% for p in grades %}
-                                <option {% if r.grade == p %} selected {% endif %} value="{{ r.grade.id }}">{{ p.name }}</option>
+                                    <option {% if r.grade == p %} selected {% endif %} value="{{ p.id }}">{{ p.name }}</option>
                                 {% endfor %}
                             </select>
                           </td>
@@ -229,7 +230,7 @@
                               <input type="checkbox" name="exception" id="exception" {% if r.exception == 1 %} checked {% endif %}>
                             </div>
                           </td>
-                          {% if perms.reference.change_driver_tax %}
+                          {% if request.user.profile.edit_tax_personal %}
                             <td>
                               <div class=" text-center mt-2">
                                 <input id="tax" value="{{ tax.tax|default:'0' }}" name="tax" class="form-control text-center">
@@ -277,7 +278,7 @@
                             <div class=" text-center mt-2">
                               <select name="company" id="status" class="form-control text-left">
                                 <option value="1" {% if r.company == 1 %} selected="selected" {% endif %}>
-                                  ПМК
+                                  СтройМост
                                 </option>
                                 <option value="2" {% if r.company == 2 %} selected="selected" {% endif %}>
                                   Неоформ
@@ -339,7 +340,7 @@
                         <tr class="col-lg-11">
                           <td>
                             <div class=" text-center mt-2">
-                              {% if r.company == 1 %}ООО "ПМК"{% else %}Неоформленный{% endif %}
+                              {% if r.company == 1 %}Оформлен{% else %}Неоформленный{% endif %}
                             </div>
                           </td>
                           <td>
@@ -461,7 +462,7 @@
                             <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
                               Водитель
                             </th>
-                            {% if perms.reference.change_driver_tax %}
+                            {% if request.user.profile.edit_tax_personal %}
                             <th style="background:#5ab2ec; text-transform: none !important; " class="text-center text-centerps-2">
                               Тариф
                             </th>
@@ -497,7 +498,7 @@
                               </select>
                               </div>
                             </td>
-                            {% if perms.reference.change_driver_tax %}
+                            {% if request.user.profile.edit_tax_personal %}
                             <td>
                               <div class=" text-center mt-2">
                                 <input id="tax" value="{{ tax.tax|default:'0' }}" name="tax" class="form-control text-center">
@@ -926,4 +927,78 @@
     }
 }
   </script>
+<script>
+    // --- 1. Динамическая подгрузка разрядов (Grade) при смене должности (Position) ---
+    const positionSelect = document.getElementById('position');
+    const gradeSelect = document.getElementById('id_grade');
+
+    positionSelect.addEventListener('change', function() {
+        const posId = this.value;
+
+        // Делаем запрос за разрядами
+        fetch(`/get-grades-ajax/?position_id=${posId}`)
+            .then(res => res.json())
+            .then(data => {
+                // Очищаем текущие и всегда добавляем "Без разряда"
+                gradeSelect.innerHTML = '<option value="">Без разряда</option>';
+                data.forEach(item => {
+                    gradeSelect.innerHTML += `<option value="${item.id}">${item.name}</option>`;
+                });
+
+                // Автоматически сохраняем, что разряд был сброшен
+                saveField('grade_id', '');
+            });
+    });
+
+    // --- 2. AJAX АВТОСОХРАНЕНИЕ ВСЕХ ПОЛЕЙ ---
+    function saveField(fieldName, value) {
+        const formData = new FormData();
+        formData.append('field', fieldName);
+        formData.append('value', value);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        fetch(`/persone/{{ r.id }}/update-ajax/`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                // Визуальный отклик (подсветка кнопки зелёным на секунду)
+                let btn = document.getElementById('manual-save-btn');
+                let originalText = btn.innerText;
+                btn.classList.add('bg-gradient-success');
+                btn.innerText = 'Сохранено ✓';
+                setTimeout(() => {
+                    btn.classList.remove('bg-gradient-success');
+                    btn.innerText = 'Сохранить';
+                }, 1500);
+            }
+        }).catch(err => console.error("Ошибка сохранения: ", err));
+    }
+
+    // Вешаем слушатели на ВСЕ инпуты, селекты и текстарии в форме
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+        // Для селектов и чекбоксов реагируем на 'change'
+        // Для текстовых полей логичнее реагировать на 'blur' (потеря фокуса) или 'change'
+        el.addEventListener('change', function() {
+            let fieldName = this.name;
+            let value = this.value;
+
+            // Если это ForeignKey, Django ожидает суффикс _id
+            // (в name в HTML у тебя написано group, position, grade)
+            if (fieldName === 'group') fieldName = 'group_id';
+            if (fieldName === 'position') fieldName = 'position_id';
+            if (fieldName === 'grade') fieldName = 'grade_id';
+
+            // Обработка чекбоксов
+            if (this.type === 'checkbox') {
+                value = this.checked ? 'true' : 'false';
+            }
+
+            // Для полей comm, idea (текстарии) name у тебя совпадает, отправляем как есть
+            saveField(fieldName, value);
+        });
+    });
+</script>
 {% endblock javascripts %}

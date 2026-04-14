@@ -73,8 +73,10 @@ urlpatterns = [
     path('view_group/<int:id>', views.reference.view_group, name='view_group/<int:id>'),
     path('position', views.reference.position, name='position'),
     path('new_position', views.reference.new_position, name='new_position'),
-    path('view_position/<int:id>', views.reference.view_position, name='view_position/<int:id>'),
-    path('reference/grade/save/', views.reference.grade_save, name='grade_save'),
+    path('persone/<int:id>/', views.reference.view_persone, name='view_persone'),
+    path('persone/<int:id>/update-ajax/', views.reference.update_persone_ajax, name='update_persone_ajax'),
+    path('get-grades-ajax/', views.reference.get_grades_ajax, name='get_grades_ajax'),    path('reference/grade/save/', views.reference.grade_save, name='grade_save'),
+
     path('reference/grade/delete/', views.reference.grade_delete, name='grade_delete'),
     path('persones', views.reference.persones, name='persones'),
     path('persones_in_tabel', views.reference.persone_in_tabel, name='persones_in_tabel'),

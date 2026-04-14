@@ -324,8 +324,8 @@ class tab:
         per = driver.objects.get(id=id)
         pers = driver.objects.all()
         driver_taxs = driver_tax.objects.all()
-        persones = persone.objects.all().filter(date_leave=None,driver=1).order_by('full_name')
-        all = persone.objects.all().filter(date_leave=None).order_by('full_name')
+        persones = persone.objects.all().filter(driver=1).order_by('full_name')
+        all = persone.objects.all().order_by('full_name')
         tabs = driver_list.objects.all().filter(period=per).order_by('full_name')
         autos = automobile.objects.all().order_by('name')
         approvers = dayapproved.objects.all().filter(per=per)
@@ -341,8 +341,8 @@ class tab:
                     if t.full_name != t.persone.full_name:
                         t.full_name = t.persone.full_name
                 if t.position:
-                    if t.position != t.persone.position:
-                        t.position = t.persone.position
+                    if t.position != t.persone.position.name:
+                        t.position = t.persone.position.name
         if per.date:
             month = datetime.date.today()
             year = str(month)[0:4]
@@ -2120,465 +2120,93 @@ class reference:
 
     @login_required(login_url="/login/")
     def view_persone(request, id):
-        r = persone.objects.get(id=id)
-        try :
-            tax = driver_tax.objects.get(driver=r)
-        except:
-            driver_tax(driver=r,tax=0).save()
-            tax = driver_tax.objects.get(driver=r)
-        groups = group.objects.all().order_by('name')
-        persones = persone.objects.all().order_by('-id')
-        positions = position.objects.all()
-        grades = grade.objects.all()
-        if request.method == 'POST':
-            comment = request.POST.get("comm")
-            if comment == '':
-                pass
-            else:
-                if r.comment == None:
-                    r.comment = ''
-                    r.save()
-                    comment = str(r.comment) + str(comment) + ': ' + str(request.user.last_name) + ' ' + str(request.user.first_name) + ' ' + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
-                    r.comment = comment
-                    r.save()
-                else:
-                    comment = str(r.comment) + str(comment) + ': ' + str(request.user.last_name) + ' ' + str(request.user.first_name) + ' ' + str(datetime.datetime.now().strftime("%d.%m.%y %H:%M")) + '\r\n'
-                    r.comment = comment
-                    r.save()
-            if request.user.profile.edit_tax_personal or request.user.is_superuser:
-                try:
-                    taxs = request.POST.get("tax")
-                    if taxs:
-                        tax.tax = taxs
-                        tax.save()
-                except:
-                    pass
-                try:
-                    driver = request.POST.get('driver')
-                    if driver == str(r.driver):
-                        pass
-                    else:
-                        r.driver = int(driver)
-                        r.save()
-                except:
-                    pass
-                if request.user.is_superuser:
-                    try:
-                        res = request.POST.get('resident')
-                        if res=='РФ' or res=='Иностранец' :
-                            r.resident = res
-                            r.save()
-                    except:
-                        pass
-                    try:
-                        method = request.POST.get("sum_method")
-                        if method:
-                            r.sum_method = '1'
-                            r.save()
-                        else:
-                            r.sum_method = '0'
-                            r.save()
-                    except:
-                        r.sum_method = '0'
-                        r.save()
-                    try:
-                        exception = request.POST.get("exception")
-                        if exception:
-                            r.exception = '1'
-                            r.save()
-                        else:
-                            r.exception = '0'
-                            r.save()
-                    except:
-                        r.exception = '0'
-                        r.save()
-                    try:
-                        date_a = request.POST.get("date_a")
-                        if date_a:
-                            if date_a == r.date_accept:
-                                pass
-                            else:
-                                r.date_accept = date_a
-                                r.save()
-                        else:
-                            if date_a == r.date_accept:
-                                pass
-                            else:
-                                r.date_accept = None
-                                r.save()
-                    except:
-                        pass
-                    try:
-                        date_l = request.POST.get("date_l")
-                        if date_l:
-                            if date_l == r.date_leave:
-                                pass
-                            else:
-                                r.date_leave = date_l
-                                r.save()
-                        else:
-                            if date_l == r.date_leave:
-                                pass
-                            else:
-                                r.date_leave = None
-                                r.save()
-                    except:
-                        pass
-                    try:
-                        company = request.POST.get("company")
-                        if company == str(r.company):
-                            pass
-                        else:
-                            r.company = company
-                            r.save()
-                    except:
-                        pass
-                    try:
-                        snils = request.POST.get('snils')
-                        if snils == str(r.snils):
-                            pass
-                        else:
-                            r.snils = snils
-                            r.save()
-                    except:
-                        pass
-                    try:
-                        inn = request.POST.get('inn')
-                        if snils == str(r.inn):
-                            pass
-                        else:
-                            r.inn = inn
-                            r.save()
-                    except:
-                        pass
-                    try:
-                        full_name = request.POST.get('full_name')
-                        if full_name == str(r.full_name):
-                            pass
-                        else:
-                            r.full_name = full_name
-                            r.save()
-                    except:
-                        pass
-                    try:
-                        phone_number = request.POST.get('phone_number')
-                        r.phone_number = phone_number
-                        r.save()
-                    except:
-                        pass
-                    try:
-                        p_position = request.POST.get('position')
-                        if p_position == str(r.position):
-                            pass
-                        else:
-                            r.position = p_position
-                            r.save()
-                    except:
-                        pass
-                    try:
-                        workgroup = request.POST.get('workgroup')
-                        if workgroup == str(r.workgroup):
-                            pass
-                        else:
-                            r.workgroup = workgroup
-                            r.save()
-                    except:
-                        pass
-                    try:
-                        g = request.POST.get('group')
-                        if r.group:
-                            if int(g) == r.group.id:
-                                pass
-                            else:
-                                g = int(g)
-                                r.group = group.objects.get(id=g)
-                                r.save()
-                        else:
-                            g = int(g)
-                            r.group = group.objects.get(id=g)
-                            r.save()
-                    except:
-                        pass
-                    try:
-                        p_grade = request.POST.get('grade')
-                        if p_grade == str(r.grade):
-                            pass
-                        else:
-                            r.grade = p_grade
-                            r.save()
-                    except:
-                        pass
-                    try:
-                        salary = request.POST.get('salary')
-                        if salary == str(r.salary):
-                            pass
-                        else:
-                            try:
-                                salary = int(salary)
-                            except:
-                                salary = salary.rpartition(',')[0]
-                                salary = int(salary)
-                            r.salary = float(salary)
-                            r.save()
-                    except:
-                        pass
-                    try:
-                        graphic = request.POST.get('graphic')
-                        if graphic == str(r.graphic):
-                            pass
-                        else:
-                            r.graphic = int(graphic)
-                            r.save()
-                    except:
-                        pass
-                    try:
-                        output = request.POST.get('output')
-                        if output == str(r.output):
-                            pass
-                        else:
-                            r.output = output
-                            r.save()
-                    except:
-                        pass
-                    try:
-                        driver = request.POST.get('driver')
-                        if driver == str(r.driver):
-                            pass
-                        else:
-                            r.driver = int(driver)
-                            r.save()
-                    except:
-                        pass
-                    try:
-                        leaved = request.POST.get('leaved')
-                        if leaved == str(r.leaved):
-                            pass
-                        else:
-                            r.leaved = int(leaved)
-                            r.save()
-                        work_hours = request.POST.get('work_hours')
-                        if work_hours == str(r.work_hours):
-                            pass
-                        else:
-                            r.work_hours = work_hours
-                            r.save()
-                    except:
-                        pass
-            else:
-                try:
-                    res = request.POST.get('resident')
-                    if res == 'РФ' or res == 'Иностранец':
-                        r.resident = res
-                        r.save()
-                except:
-                    pass
-                try:
-                    date_a = request.POST.get("date_a")
-                    if date_a:
-                        if date_a == r.date_accept:
-                            pass
-                        else:
-                            r.date_accept = date_a
-                            r.save()
-                    else:
-                        if date_a == r.date_accept:
-                            pass
-                        else:
-                            r.date_accept = None
-                            r.save()
-                except:
-                    pass
-                try:
-                    method = request.POST.get("sum_method")
-                    if method:
-                        r.sum_method = 1
-                        r.save()
-                    else:
-                        r.sum_method = 0
-                        r.save()
-                except:
-                    r.sum_method = 0
-                    r.save()
-                try:
-                    exception = request.POST.get("exception")
-                    if exception:
-                        r.exception = '1'
-                        r.save()
-                    else:
-                        r.exception = '0'
-                        r.save()
-                except:
-                    r.exception = '0'
-                    r.save()
-                try:
-                    date_l = request.POST.get("date_l")
-                    if date_l:
-                        if date_l == r.date_leave:
-                            pass
-                        else:
-                            r.date_leave = date_l
-                            r.save()
-                    else:
-                        if date_l == r.date_leave:
-                            pass
-                        else:
-                            r.date_leave = None
-                            r.save()
-                except:
-                    pass
-                try:
-                    company = request.POST.get("company")
-                    if company == str(r.company):
-                        pass
-                    else:
-                        r.company = company
-                        r.save()
-                except:
-                    pass
-                try:
-                    snils = request.POST.get('snils')
-                    if snils == str(r.snils):
-                        pass
-                    else:
-                        r.snils = snils
-                        r.save()
-                except:
-                    pass
-                try:
-                    inn = request.POST.get('inn')
-                    if snils == str(r.inn):
-                        pass
-                    else:
-                        r.inn = inn
-                        r.save()
-                except:
-                    pass
-                try:
-                    full_name = request.POST.get('full_name')
-                    if full_name == str(r.full_name):
-                        pass
-                    else:
-                        r.full_name = full_name
-                        r.save()
-                except:
-                    pass
-                try:
-                    phone_number = request.POST.get('phone_number')
-                    r.phone_number = phone_number
-                    r.save()
-                except:
-                    pass
-                try:
-                    p_position = request.POST.get('position')
-                    if p_position == str(r.position):
-                        pass
-                    else:
-                        r.position = p_position
-                        r.save()
-                except:
-                    pass
-                try:
-                    workgroup = request.POST.get('workgroup')
-                    if workgroup == str(r.workgroup):
-                        pass
-                    else:
-                        r.workgroup = workgroup
-                        r.save()
-                except:
-                    pass
-                try:
-                    g = request.POST.get('group')
-                    if r.group:
-                        if int(g) == r.group.id:
-                            pass
-                        else:
-                            g = int(g)
-                            r.group = group.objects.get(id=g)
-                            r.save()
-                    else:
-                        g = int(g)
-                        r.group = group.objects.get(id=g)
-                        r.save()
-                except:
-                    pass
-                try:
-                    now = datetime.date(year=datetime.date.today().year, month=datetime.date.today().month, day=1)
-                    ps = persone_salary.objects.all().filter(persone=r, date=now).last()
-                except:
-                    pass
-                try:
-                    p_grade = request.POST.get('grade')
-                    if p_grade == str(r.grade):
-                        pass
-                    else:
-                        r.grade = p_grade
-                        r.save()
-                except:
-                    pass
-                try:
-                    salary = request.POST.get('salary')
-                    if salary == str(r.salary):
-                        pass
-                    else:
-                        try:
-                            salary = int(salary)
-                        except:
-                            salary = salary.rpartition(',')[0]
-                            salary = int(salary)
-                        r.salary = float(salary)
-                        r.save()
-                        ps.salary = r.salary
-                        ps.save()
-                except:
-                    pass
-                try:
-                    graphic = request.POST.get('graphic')
-                    if graphic == str(r.graphic):
-                        pass
-                    else:
-                        r.graphic = int(graphic)
-                        r.save()
-                except:
-                    pass
-                try:
-                    output = request.POST.get('output')
-                    if output == str(r.output):
-                        pass
-                    else:
-                        r.output = output
-                        r.save()
-                except:
-                    pass
-                try:
-                    driver = request.POST.get('driver')
-                    if driver == str(r.driver):
-                        pass
-                    else:
-                        r.driver = int(driver)
-                        r.save()
-                except:
-                    pass
-                try:
-                    leaved = request.POST.get('leaved')
-                    if leaved == str(r.leaved):
-                        pass
-                    else:
-                        r.leaved = int(leaved)
-                        r.save()
-                    work_hours = request.POST.get('work_hours')
-                    if work_hours == str(r.work_hours):
-                        pass
-                    else:
-                        r.work_hours = work_hours
-                        r.save()
-                except:
-                    pass
-            return redirect('/view_persone/'+str(id))
-        else:
-            context = {'r': r, 'groups': groups,'positions': positions,'grades': grades, 'segment': 'ref', 'persones': persones, 'tax': tax, }
-            html_template = loader.get_template('reference/persone/view_persone.html')
-            return HttpResponse(html_template.render(context, request))
+        # Получаем сотрудника
+        r = get_object_or_404(persone, id=id)
 
+        # Списки для выпадающих меню
+        tax =  get_object_or_404(driver_tax, driver=r)
+        groups = group.objects.all()
+        positions = position.objects.all()
+
+        # Если должность выбрана, подтягиваем только её разряды. Если нет — список пуст.
+        if r.position:
+            grades = grade.objects.filter(position=r.position)
+        else:
+            grades = grade.objects.none()
+
+        # Для валидации СНИЛС (исключаем текущего)
+        persones_list = persone.objects.exclude(id=id)
+
+        context = {
+            'r': r,
+            'tax':tax,
+            'groups': groups,
+            'positions': positions,
+            'grades': grades,
+            'persones': persones_list,
+            'segment': 'ref'
+        }
+        return render(request, 'reference/persone/view_persone.html', context)
+
+    @login_required(login_url="/login/")
+    def get_grades_ajax(request):
+        """Возвращает список разрядов для выбранной должности в JSON формате"""
+        position_id = request.GET.get('position_id')
+        if position_id:
+            grades = grade.objects.filter(position_id=position_id).values('id', 'name')
+            return JsonResponse(list(grades), safe=False)
+        return JsonResponse([], safe=False)
+
+    @login_required(login_url="/login/")
+    @require_POST
+    def update_persone_ajax(request, id):
+        p = get_object_or_404(persone, id=id)
+
+        field = request.POST.get('field')
+        value = request.POST.get('value')
+        #request.user.profile.edit_tax_personal
+        # 1. СПЕЦИАЛЬНАЯ ОБРАБОТКА ДЛЯ ТАРИФА ВОДИТЕЛЯ (таблица driver_tax)
+        if field == 'tax':
+            # Проверка прав доступа (как у тебя в HTML: perms.reference.change_driver_tax)
+            if not request.user.profile.edit_tax_personal:
+                return JsonResponse({'status': 'error', 'message': 'Нет прав на изменение тарифа'}, status=403)
+            try:
+                # Преобразуем значение во float, заменяем запятую на точку, если ввели с запятой
+                clean_value = float(value.replace(',', '.')) if value else 0.0
+
+                # update_or_create: найдет запись для этого водителя и обновит, либо создаст новую
+                driver_tax.objects.update_or_create(
+                    driver=p,
+                    defaults={'tax': clean_value}
+                )
+                return JsonResponse({'status': 'success', 'field': field, 'value': clean_value})
+            except ValueError:
+                return JsonResponse({'status': 'error', 'message': 'Неверный формат числа'}, status=400)
+
+        # 2. СТАНДАРТНАЯ ОБРАБОТКА ДЛЯ ПОЛЕЙ СОТРУДНИКА (модель persone)
+        allowed_fields = [
+            'full_name', 'snils', 'phone_number', 'workgroup', 'group_id',
+            'position_id', 'grade_id', 'graphic', 'salary', 'sum_method',
+            'exception', 'resident', 'company', 'leaved', 'driver', 'comm', 'idea'
+        ]
+
+        if field in allowed_fields:
+            if value == '' or value == 'null':
+                value = None
+
+            if field in ['sum_method', 'exception']:
+                value = 1 if value == 'true' else 0
+
+            if field == 'salary' and not value:
+                value = 0
+
+            setattr(p, field, value)
+            p.save()
+
+            return JsonResponse({'status': 'success', 'field': field, 'value': value})
+
+        return JsonResponse({'status': 'error', 'message': 'Поле не найдено или запрещено к редактированию'},
+                            status=400)
 
 
 
